@@ -1,0 +1,140 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  /* Palette HashCode - point unique pour ajuster les couleurs */
+  --color-brand-navy: #1a1a2e;
+  --color-brand-navy-soft: #16213e;
+  --color-brand-navy-light: #272a55;
+  --color-brand-pink: #e94560;
+  --color-brand-pink-soft: #ff5c76;
+  --color-brand-bg: #0e0f1e;
+  --color-brand-card: #1b1c31;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --font-sans: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+}
+
+:root {
+  --background: #f5f5fa;
+  --foreground: #171728;
+  --card: #ffffff;
+  --card-foreground: #171728;
+  --popover: #ffffff;
+  --popover-foreground: #171728;
+  --primary: #1a1a2e;
+  --primary-foreground: #ffffff;
+  --secondary: #e7e8f2;
+  --secondary-foreground: #1a1a2e;
+  --muted: #eef0f6;
+  --muted-foreground: #6b6d85;
+  --accent: #e94560;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #e2e3ee;
+  --input: #d9dbea;
+  --ring: #e94560;
+  --chart-1: #1a1a2e;
+  --chart-2: #e94560;
+  --chart-3: #16213e;
+  --chart-4: #ff7a8a;
+  --chart-5: #4a4d75;
+  --radius: 0.625rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #171728;
+  --sidebar-primary: #1a1a2e;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f3e0e4;
+  --sidebar-accent-foreground: #1a1a2e;
+  --sidebar-border: #e2e3ee;
+  --sidebar-ring: #e94560;
+}
+
+.dark {
+  --background: #0e0f1e;
+  --foreground: #f4f4f8;
+  --card: #1b1c31;
+  --card-foreground: #f4f4f8;
+  --popover: #1b1c31;
+  --popover-foreground: #f4f4f8;
+  --primary: #272a55;
+  --primary-foreground: #ffffff;
+  --secondary: #1d1f3d;
+  --secondary-foreground: #e6e7f0;
+  --muted: #22233c;
+  --muted-foreground: #9a9cb3;
+  --accent: #e94560;
+  --accent-foreground: #ffffff;
+  --destructive: oklch(0.704 0.191 22.216);
+  --border: rgb(255 255 255 / 10%);
+  --input: rgb(255 255 255 / 12%);
+  --ring: #e94560;
+  --chart-1: #e94560;
+  --chart-2: #272a55;
+  --chart-3: #7b7ff0;
+  --chart-4: #ff7a8a;
+  --chart-5: #4a4d75;
+  --sidebar: #1b1c31;
+  --sidebar-foreground: #f4f4f8;
+  --sidebar-primary: #e94560;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1d1f3d;
+  --sidebar-accent-foreground: #f4f4f8;
+  --sidebar-border: rgb(255 255 255 / 10%);
+  --sidebar-ring: #e94560;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+  html {
+    @apply font-sans;
+  }
+}

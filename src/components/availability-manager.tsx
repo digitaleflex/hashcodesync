@@ -2,73 +2,19 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Loader2Icon,
-  PlusIcon,
-  Trash2Icon,
-  CalendarRangeIcon,
-  ClockIcon,
-  ShieldCheckIcon,
-  LockIcon,
-} from "lucide-react";
-
-const DAY_NAMES = [
-  "Lundi",
-  "Mardi",
-  "Mercredi",
-  "Jeudi",
-  "Vendredi",
-  "Samedi",
-  "Dimanche",
-];
-
-const DAY_SHORT = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
-
-const MONTHS = [
-  "janv.",
-  "févr.",
-  "mars",
-  "avr.",
-  "mai",
-  "juin",
-  "juil.",
-  "août",
-  "sept.",
-  "oct.",
-  "nov.",
-  "déc.",
-];
-
-function formatDateFr(iso: string): string {
-  const d = new Date(iso);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  return `${pad(d.getUTCDate())} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
-}
-
-function formatWeekRange(weekStart: string): string {
-  const start = new Date(weekStart);
-  const end = new Date(start.getTime() + 6 * 86400000);
-  const pad = (n: number) => String(n).padStart(2, "0");
-  const d = (dt: Date) => `${pad(dt.getUTCDate())} ${MONTHS[dt.getUTCMonth()]}`;
-  return `du ${d(start)} au ${d(end)} ${start.getUTCFullYear()}`;
-}
-
-type Availability = {
-  id: string;
-  day: number;
-  startTime: string;
-  endTime: string;
-};
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loader2Icon, CalendarDaysIcon } from "lucide-react";
+import type { Availability } from "@/components/availability/shared";
+import { computeStats } from "@/components/availability/shared";
+import { PageHeader } from "@/components/availability/page-header";
+import { KpiGrid } from "@/components/availability/kpi-grid";
+import { WeeklyOverview } from "@/components/availability/weekly-overview";
+import { TimeSlotsList } from "@/components/availability/time-slots-list";
+import { AddAvailabilityForm } from "@/components/availability/add-availability-form";
+import { AvailabilitySummaryCard } from "@/components/availability/availability-summary-card";
+import { ValidateBar } from "@/components/availability/validate-bar";
+import { LockBanner } from "@/components/availability/lock-banner";
+import { EmptyState } from "@/components/availability/empty-state";
 
 function compare(a: Availability, b: Availability) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
@@ -157,7 +103,7 @@ export function AvailabilityManager() {
 
   const grouped = useMemo<Record<number, Availability[]>>(() => {
     const g: Record<number, Availability[]> = {};
-    DAY_NAMES.forEach((_, i) => (g[i] = []));
+    for (let i = 0; i < 7; i++) g[i] = [];
     availabilities.forEach((a) => {
       if (g[a.day]) g[a.day].push(a);
     });
@@ -165,10 +111,21 @@ export function AvailabilityManager() {
     return g;
   }, [availabilities]);
 
-  const previewValid = day !== null && startTime && endTime && startTime < endTime;
+  const sorted = useMemo(() => [...availabilities].sort(compare), [availabilities]);
 
-  async function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
+  const stats = useMemo(() => computeStats(availabilities), [availabilities]);
+
+  const hoursPerDay = useMemo(() => {
+    const per = new Array(7).fill(0);
+    availabilities.forEach((a) => {
+      const sh = Number(a.startTime.slice(0, 2));
+      const eh = Number(a.endTime.slice(0, 2));
+      per[a.day] += Math.max(0, eh - sh);
+    });
+    return per;
+  }, [availabilities]);
+
+  const onAdd = useCallback(async () => {
     if (locked) {
       toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
       return;
@@ -202,7 +159,7 @@ export function AvailabilityManager() {
     } finally {
       setSubmitting(false);
     }
-  }
+  }, [locked, day, startTime, endTime]);
 
   async function handleDelete(id: string) {
     if (locked) {
@@ -222,235 +179,106 @@ export function AvailabilityManager() {
     }
   }
 
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2Icon className="size-6 animate-spin text-accent" />
+      </div>
+    );
+  }
+
   return (
-    <div className="space-y-6">
-      <Card
-        className={`${
-          locked ? "border-warning/40 bg-warning/5" : "bg-secondary/40"
-        }`}
-      >
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarRangeIcon className="size-5 text-accent" />
-            Ajouter une disponibilité
-          </CardTitle>
-          <CardDescription>
-            Indiquez un jour puis l&apos;horaire où vous êtes disponible.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          {locked && (
-            <div className="mb-5 flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/10 p-4">
-              <LockIcon className="mt-0.5 size-5 shrink-0 text-warning" />
-              <div className="space-y-1 text-sm">
-                <p className="font-medium text-foreground">
-                  Semaine validée — disponibilités figées
-                </p>
-                <p className="text-muted-foreground">
-                  Vous ne pouvez plus ajouter ou retirer de créneau jusqu&apos;au
-                  lundi suivant ({formatDateFr(weekStart ?? "")} →{" "}
-                  {formatWeekRange(weekStart ?? "")}).
-                </p>
-              </div>
-            </div>
-          )}
-          <form
-            onSubmit={handleAdd}
-            lang="fr-FR"
-            aria-disabled={locked}
-            className={`flex flex-col gap-5 ${locked ? "pointer-events-none opacity-60" : ""}`}
-          >
-            <div className="flex flex-col gap-2">
-              <Label>Jour</Label>
-              <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
-                {DAY_SHORT.map((name, i) => {
-                  const active = day === i;
-                  return (
-                    <button
-                      key={i}
-                      type="button"
-                      onClick={() => setDay(i)}
-                      aria-pressed={active}
-                      className={`flex h-10 items-center justify-center rounded-lg border text-sm font-medium transition-all ${
-                        active
-                          ? "border-accent bg-accent text-white shadow-sm"
-                          : "border-border bg-background text-muted-foreground hover:border-accent/50 hover:text-foreground"
-                      }`}
-                    >
-                      {name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+    <div className="flex flex-col gap-6">
+      <PageHeader
+        weekStart={weekStart}
+        locked={locked}
+        onValidate={() => void handleValidate()}
+        onUnvalidate={() => void handleUnvalidate()}
+        validating={validating}
+        canValidate={availabilities.length > 0}
+      />
 
-            <div className="flex flex-col gap-2">
-              <Label>Horaires</Label>
-              <div className="flex flex-wrap items-end gap-3">
-                <div className="flex flex-col gap-2">
-                  <Input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    required
-                    aria-label="Heure de début"
-                    aria-invalid={
-                      Boolean(startTime && endTime && startTime >= endTime)
-                    }
-                  />
-                </div>
-                <span className="pb-2 text-sm text-muted-foreground">à</span>
-                <div className="flex flex-col gap-2">
-                  <Input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    required
-                    aria-label="Heure de fin"
-                    aria-invalid={
-                      Boolean(startTime && endTime && startTime >= endTime)
-                    }
-                  />
-                </div>
-                <Button type="submit" disabled={submitting}>
-                  {submitting ? (
-                    <Loader2Icon className="animate-spin" />
-                  ) : (
-                    <PlusIcon />
-                  )}
-                  Ajouter
-                </Button>
-              </div>
-            </div>
+      {locked && weekStart && <LockBanner weekStart={weekStart} />}
 
-            {day !== null && (
-              <p
-                aria-live="polite"
-                className={`flex items-center gap-2 text-sm ${
-                  previewValid ? "text-success" : "text-foreground"
-                }`}
-              >
-                <ClockIcon className="size-4" />
-                {DAY_NAMES[day]}
-                {startTime || endTime ? (
-                  <>
-                    {" "}
-                    · {startTime || "--:--"} à {endTime || "--:--"}
-                    {startTime && endTime && startTime >= endTime && (
-                      <span className="text-error">
-                        — la fin doit être après le début
-                      </span>
-                    )}
-                  </>
-                ) : (
-                  " · choisissez un horaire"
-                )}
-              </p>
-            )}
-          </form>
-        </CardContent>
-      </Card>
+      <KpiGrid stats={stats} />
 
       <Card>
         <CardHeader>
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div className="space-y-1">
-              <CardTitle className="text-lg">Ma semaine</CardTitle>
-              <CardDescription>
-                {availabilities.length} créneau
-                {availabilities.length > 1 ? "x" : ""} renseigné
-                {availabilities.length > 1 ? "s" : ""}
-                {weekStart && !loading ? (
-                  <>
-                    {" "}
-                    · {formatWeekRange(weekStart)}
-                  </>
-                ) : null}
-                {locked ? " · " : ""}
-              </CardDescription>
-            </div>
-            {locked ? (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleUnvalidate}
-                disabled={validating}
-                className="border-warning/50 text-warning hover:text-warning"
-              >
-                {validating ? (
-                  <Loader2Icon className="animate-spin" />
-                ) : (
-                  <LockIcon className="size-4" />
-                )}
-                Dévalider la semaine
-              </Button>
-            ) : (
-              <Button
-                size="sm"
-                onClick={handleValidate}
-                disabled={validating || availabilities.length === 0}
-              >
-                {validating ? (
-                  <Loader2Icon className="animate-spin" />
-                ) : (
-                  <ShieldCheckIcon className="size-4" />
-                )}
-                Valider la semaine
-              </Button>
-            )}
-          </div>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <CalendarDaysIcon className="size-5 text-accent" />
+            Visuel hebdomadaire
+          </CardTitle>
+          <CardDescription>
+            Un aperçu jour par jour de vos créneaux libres.
+          </CardDescription>
         </CardHeader>
         <CardContent>
-          {loading ? (
-            <div className="flex items-center justify-center py-10">
-              <Loader2Icon className="size-6 animate-spin text-accent" />
-            </div>
-          ) : availabilities.length === 0 ? (
-            <p className="py-6 text-center text-sm text-muted-foreground">
-              Aucune disponibilité pour le moment. Ajoutez votre premier créneau.
-            </p>
+          {availabilities.length === 0 ? (
+            <EmptyState />
           ) : (
-            <div className="overflow-x-auto">
-              <div className="grid min-w-[720px] grid-cols-7 gap-2">
-                {DAY_NAMES.map((name, dayIdx) => (
-                  <div key={dayIdx} className="flex flex-col gap-1.5">
-                    <p className="text-center text-xs font-medium text-muted-foreground">
-                      {name}
-                    </p>
-                    <div className="space-y-1.5">
-                      {grouped[dayIdx].length === 0 ? (
-                        <p className="text-center text-xs text-muted-foreground/60">
-                          —
-                        </p>
-                      ) : (
-                        grouped[dayIdx].map((a) => (
-                          <div
-                            key={a.id}
-                            className="group flex items-center justify-between gap-1 rounded-lg bg-accent/90 px-2 py-1.5 text-xs font-medium text-white shadow-sm"
-                          >
-                            <span className="min-w-0 truncate">
-                              {a.startTime}–{a.endTime}
-                            </span>
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(a.id)}
-                              disabled={locked}
-                              className="shrink-0 text-white/80 opacity-0 transition-opacity hover:text-white focus:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0"
-                              aria-label={`Supprimer ${a.startTime}–${a.endTime}`}
-                            >
-                              <Trash2Icon className="size-3.5" />
-                            </button>
-                          </div>
-                        ))
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
+            <WeeklyOverview grouped={grouped} />
           )}
         </CardContent>
       </Card>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-lg">Créneaux définis</CardTitle>
+            <CardDescription>
+              {stats.slots} créneau{stats.slots > 1 ? "x" : ""} · {stats.daysCount} jour{stats.daysCount > 1 ? "s" : ""}
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <TimeSlotsList slots={sorted} onDelete={handleDelete} disabled={locked} />
+          </CardContent>
+        </Card>
+
+        <Card className={locked ? "bg-warning/5" : ""}>
+          <CardHeader>
+            <CardTitle className="text-lg">Ajouter un créneau</CardTitle>
+            <CardDescription>
+              Choisissez un jour, un horaire de début et de fin, puis ajoutez.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className={locked ? "pointer-events-none opacity-60" : ""}>
+            <AddAvailabilityForm
+              day={day}
+              onSelectDay={setDay}
+              hoursPerDay={hoursPerDay}
+              startTime={startTime}
+              endTime={endTime}
+              onStartTime={setStartTime}
+              onEndTime={setEndTime}
+              onSubmit={() => void onAdd()}
+              submitting={submitting}
+              disabled={locked}
+            />
+          </CardContent>
+        </Card>
+      </div>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-lg">Résumé — mon profil de disponibilité</CardTitle>
+          <CardDescription>
+            Comment se répartit votre temps disponible cette semaine.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AvailabilitySummaryCard stats={stats} />
+        </CardContent>
+      </Card>
+
+      <div className="rounded-xl ring-1 ring-foreground/10">
+        <ValidateBar
+          locked={locked}
+          validating={validating}
+          onValidate={() => void handleValidate()}
+          onUnvalidate={() => void handleUnvalidate()}
+          canValidate={availabilities.length > 0}
+        />
+      </div>
     </div>
   );
 }

@@ -30,6 +30,7 @@ model User {
   createdSeries    WorkshopSeries[]
   notifications    Notification[]
   joinRequests     GroupJoinRequest[]
+  weeklyValidations WeeklyValidation[]
 
   @@map("user")
 }
@@ -162,6 +163,22 @@ model Availability {
   @@index([groupId])
   @@index([activityId])
   @@index([day])
+}
+
+// Validation hebdomadaire : une fois validée, les disponibilités de l'utilisateur
+// sont figées pour la semaine (lundi -> dimanche) jusqu'au déblocage automatique
+// au lundi suivant ou une « dévalidation » manuelle. Un membre actif ne doit pas
+// modifier ses créneaux après engagement de sa semaine.
+model WeeklyValidation {
+  id        String   @id @default(cuid())
+  userId    String
+  weekStart DateTime // lundi 00:00 (fuseau de référence) de la semaine validée
+  validatedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@map("weekly_validation")
 }
 
 model Workshop {

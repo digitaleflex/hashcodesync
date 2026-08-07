@@ -2,9 +2,25 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { currentWeekStart } from "@/lib/timezone";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
+
+// Verrou : si la semaine courante est validée, l'utilisateur ne peut plus ajouter
+// une dispo (il a engagé sa semaine).
+async function ensureEditable(userId: string): Promise<NextResponse | null> {
+  const lock = await prisma.weeklyValidation.findUnique({
+    where: { userId_weekStart: { userId, weekStart: currentWeekStart() } },
+  });
+  if (lock) {
+    return NextResponse.json(
+      { error: "Semaine validée : vous ne pouvez plus modifier vos disponibilités" },
+      { status: 423 }
+    );
+  }
+  return null;
+}
 
 // GET /api/availabilities?groupId=&activityId= -> dispo de l'utilisateur (filtrées).
 export async function GET(req: NextRequest) {
@@ -52,6 +68,9 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Corps JSON invalide" }, { status: 400 });
   }
+
+  const blocked = await ensureEditable(session.user.id);
+  if (blocked) return blocked;
 
   const day = Number(body.day);
   const startTime = String(body.startTime ?? "");

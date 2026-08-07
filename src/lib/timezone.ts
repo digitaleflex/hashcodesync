@@ -78,6 +78,22 @@ export function isoWeekday(y: number, m: number, d: number) {
   return (w + 6) % 7;
 }
 
+// Instant UTC du lundi 00:00 de la semaine content (lundi -> dimanche) contenant
+// `now`, dans le fuseau de référence. `raw` (défaut true) renvoie un objet à
+// isoler avec toISOString ; sinon renvoie un Date.
+export function currentWeekStart(now = new Date(), tz = REFERENCE_TIMEZONE): Date {
+  const ref = partsInTz(now.getTime(), tz);
+  const wd = isoWeekday(ref.year, ref.month, ref.day);
+  const monday = wallToUtc(ref.year, ref.month, ref.day - wd, 0, 0, tz);
+  return new Date(monday);
+}
+
+// La semaine [weekStart, weekStart + 7j) est-elle la semaine en cours dans le
+// fuseau de référence ? Si oui, l'utilisateur est bloqué (validation active).
+export function isCurrentWeek(weekStart: Date, now = new Date(), tz = REFERENCE_TIMEZONE): boolean {
+  return currentWeekStart(now, tz).getTime() === weekStart.getTime();
+}
+
 // Convertit une fenêtre hebdomadaire locale [jour, "HH:mm", "HH:mm"] (fuseau
 // du membre) en fenêtre dans le fuseau de référence.
 export function convertAvailability(

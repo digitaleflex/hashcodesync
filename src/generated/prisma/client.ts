@@ -87,6 +87,11 @@ export type GroupActivity = Prisma.GroupActivityModel
  */
 export type Availability = Prisma.AvailabilityModel
 /**
+ * Model WeeklyValidation
+ * 
+ */
+export type WeeklyValidation = Prisma.WeeklyValidationModel
+/**
  * Model Workshop
  * 
  */

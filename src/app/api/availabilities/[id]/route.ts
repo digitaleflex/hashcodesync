@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { currentWeekStart } from "@/lib/timezone";
 
 export async function DELETE(
   _req: Request,
@@ -20,6 +21,17 @@ export async function DELETE(
     return NextResponse.json(
       { error: "Disponibilité introuvable" },
       { status: 404 }
+    );
+  }
+
+  // Verrou : si la semaine est validée, on ne peut pas retirer un créneau.
+  const lock = await prisma.weeklyValidation.findUnique({
+    where: { userId_weekStart: { userId: session.user.id, weekStart: currentWeekStart() } },
+  });
+  if (lock) {
+    return NextResponse.json(
+      { error: "Semaine validée : vous ne pouvez plus modifier vos disponibilités" },
+      { status: 423 }
     );
   }
 

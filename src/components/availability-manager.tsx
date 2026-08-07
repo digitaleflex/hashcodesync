@@ -18,6 +18,8 @@ import {
   Trash2Icon,
   CalendarRangeIcon,
   ClockIcon,
+  ShieldCheckIcon,
+  LockIcon,
 } from "lucide-react";
 
 const DAY_NAMES = [
@@ -31,6 +33,35 @@ const DAY_NAMES = [
 ];
 
 const DAY_SHORT = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+
+const MONTHS = [
+  "janv.",
+  "févr.",
+  "mars",
+  "avr.",
+  "mai",
+  "juin",
+  "juil.",
+  "août",
+  "sept.",
+  "oct.",
+  "nov.",
+  "déc.",
+];
+
+function formatDateFr(iso: string): string {
+  const d = new Date(iso);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${pad(d.getUTCDate())} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function formatWeekRange(weekStart: string): string {
+  const start = new Date(weekStart);
+  const end = new Date(start.getTime() + 6 * 86400000);
+  const pad = (n: number) => String(n).padStart(2, "0");
+  const d = (dt: Date) => `${pad(dt.getUTCDate())} ${MONTHS[dt.getUTCMonth()]}`;
+  return `du ${d(start)} au ${d(end)} ${start.getUTCFullYear()}`;
+}
 
 type Availability = {
   id: string;
@@ -47,17 +78,28 @@ export function AvailabilityManager() {
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [validating, setValidating] = useState(false);
+  const [locked, setLocked] = useState(false);
+  const [weekStart, setWeekStart] = useState<string | null>(null);
   const [day, setDay] = useState<number | null>(null);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
 
   const load = useCallback(async () => {
     setLoading(true);
-    const res = await fetch("/api/availabilities");
-    if (res.ok) {
-      setAvailabilities(await res.json());
+    const [avRes, valRes] = await Promise.all([
+      fetch("/api/availabilities"),
+      fetch("/api/availabilities/validate"),
+    ]);
+    if (avRes.ok) {
+      setAvailabilities(await avRes.json());
     } else {
       toast.error("Impossible de charger les disponibilités");
+    }
+    if (valRes.ok) {
+      const val = await valRes.json();
+      setLocked(val.validated);
+      setWeekStart(val.weekStart ?? null);
     }
     setLoading(false);
   }, []);
@@ -65,6 +107,38 @@ export function AvailabilityManager() {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function handleValidate() {
+    setValidating(true);
+    const res = await fetch("/api/availabilities/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ validated: true }),
+    });
+    setValidating(false);
+    if (res.ok) {
+      setLocked(true);
+      toast.success("Semaine validée : vos disponibilités sont maintenant figées");
+    } else {
+      toast.error("Impossible de valider la semaine");
+    }
+  }
+
+  async function handleUnvalidate() {
+    setValidating(true);
+    const res = await fetch("/api/availabilities/validate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ validated: false }),
+    });
+    setValidating(false);
+    if (res.ok) {
+      setLocked(false);
+      toast.success("Semaine dévalidée : vous pouvez à nouveau modifier");
+    } else {
+      toast.error("Impossible de dévalider la semaine");
+    }
+  }
 
   const grouped = useMemo<Record<number, Availability[]>>(() => {
     const g: Record<number, Availability[]> = {};
@@ -80,6 +154,10 @@ export function AvailabilityManager() {
 
   async function handleAdd(e: React.FormEvent) {
     e.preventDefault();
+    if (locked) {
+      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+      return;
+    }
     if (day === null) {
       toast.error("Choisissez un jour");
       return;
@@ -107,6 +185,10 @@ export function AvailabilityManager() {
   }
 
   async function handleDelete(id: string) {
+    if (locked) {
+      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+      return;
+    }
     const res = await fetch(`/api/availabilities/${id}`, { method: "DELETE" });
     if (res.ok) {
       setAvailabilities((prev) => prev.filter((a) => a.id !== id));
@@ -118,7 +200,11 @@ export function AvailabilityManager() {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-secondary/40">
+      <Card
+        className={`${
+          locked ? "border-warning/40 bg-warning/5" : "bg-secondary/40"
+        }`}
+      >
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
             <CalendarRangeIcon className="size-5 text-accent" />
@@ -129,7 +215,27 @@ export function AvailabilityManager() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleAdd} className="flex flex-col gap-5">
+          {locked && (
+            <div className="mb-5 flex items-start gap-3 rounded-lg border border-warning/40 bg-warning/10 p-4">
+              <LockIcon className="mt-0.5 size-5 shrink-0 text-warning" />
+              <div className="space-y-1 text-sm">
+                <p className="font-medium text-foreground">
+                  Semaine validée — disponibilités figées
+                </p>
+                <p className="text-muted-foreground">
+                  Vous ne pouvez plus ajouter ou retirer de créneau jusqu&apos;au
+                  lundi suivant ({formatDateFr(weekStart ?? "")} →{" "}
+                  {formatWeekRange(weekStart ?? "")}).
+                </p>
+              </div>
+            </div>
+          )}
+          <form
+            onSubmit={handleAdd}
+            lang="fr-FR"
+            aria-disabled={locked}
+            className={`flex flex-col gap-5 ${locked ? "pointer-events-none opacity-60" : ""}`}
+          >
             <div className="flex flex-col gap-2">
               <Label>Jour</Label>
               <div className="grid grid-cols-4 gap-2 sm:grid-cols-7">
@@ -223,11 +329,52 @@ export function AvailabilityManager() {
 
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Ma semaine</CardTitle>
-          <CardDescription>
-            {availabilities.length} créneau{availabilities.length > 1 ? "x" : ""} renseigné
-            {availabilities.length > 1 ? "s" : ""}.
-          </CardDescription>
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="space-y-1">
+              <CardTitle className="text-lg">Ma semaine</CardTitle>
+              <CardDescription>
+                {availabilities.length} créneau
+                {availabilities.length > 1 ? "x" : ""} renseigné
+                {availabilities.length > 1 ? "s" : ""}
+                {weekStart && !loading ? (
+                  <>
+                    {" "}
+                    · {formatWeekRange(weekStart)}
+                  </>
+                ) : null}
+                {locked ? " · " : ""}
+              </CardDescription>
+            </div>
+            {locked ? (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleUnvalidate}
+                disabled={validating}
+                className="border-warning/50 text-warning hover:text-warning"
+              >
+                {validating ? (
+                  <Loader2Icon className="animate-spin" />
+                ) : (
+                  <LockIcon className="size-4" />
+                )}
+                Dévalider la semaine
+              </Button>
+            ) : (
+              <Button
+                size="sm"
+                onClick={handleValidate}
+                disabled={validating || availabilities.length === 0}
+              >
+                {validating ? (
+                  <Loader2Icon className="animate-spin" />
+                ) : (
+                  <ShieldCheckIcon className="size-4" />
+                )}
+                Valider la semaine
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
           {loading ? (
@@ -263,7 +410,8 @@ export function AvailabilityManager() {
                             <button
                               type="button"
                               onClick={() => handleDelete(a.id)}
-                              className="shrink-0 text-white/80 opacity-0 transition-opacity hover:text-white focus:opacity-100 group-hover:opacity-100"
+                              disabled={locked}
+                              className="shrink-0 text-white/80 opacity-0 transition-opacity hover:text-white focus:opacity-100 group-hover:opacity-100 disabled:cursor-not-allowed disabled:opacity-0"
                               aria-label={`Supprimer ${a.startTime}–${a.endTime}`}
                             >
                               <Trash2Icon className="size-3.5" />

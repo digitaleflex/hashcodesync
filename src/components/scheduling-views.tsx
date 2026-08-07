@@ -143,7 +143,9 @@ export function HeatmapCard({
                         }`}
                         style={style}
                       >
-                        &nbsp;
+                        <span className="hidden md:inline">
+                          {ratio > 0 ? Math.round(ratio * 100) : ""}
+                        </span>
                       </td>
                     );
                   })}

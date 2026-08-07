@@ -6,6 +6,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { AuthCard } from "@/components/auth-card";
+import { getBrowserTimezone } from "@/lib/timezones";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -28,6 +29,7 @@ export default function RegisterPage() {
       password,
       firstname,
       lastname,
+      timezone: getBrowserTimezone(),
     });
     setLoading(false);
 

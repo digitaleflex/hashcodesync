@@ -1,0 +1,49 @@
+import Link from "next/link";
+import { prisma } from "@/lib/prisma";
+import { Button } from "@/components/ui/button";
+import { PlusIcon } from "lucide-react";
+import { WorkshopsManager } from "@/components/workshops-manager";
+
+export const dynamic = "force-dynamic";
+
+export default async function AteliersPage() {
+  const raw = await prisma.workshop.findMany({
+    orderBy: { startAt: "asc" },
+    include: {
+      creator: { select: { id: true, name: true, email: true } },
+      participants: {
+        select: {
+          id: true,
+          userId: true,
+          status: true,
+          user: { select: { id: true, name: true, email: true } },
+        },
+      },
+    },
+  });
+
+  const workshops = raw.map((w) => ({
+    ...w,
+    startAt: w.startAt.toISOString(),
+    endAt: w.endAt.toISOString(),
+  }));
+
+  return (
+    <main>
+      <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <h1 className="font-heading text-2xl font-semibold">Ateliers</h1>
+            <p className="text-sm text-muted-foreground">
+              Planifiez et rejoignez les sessions de la cohorte.
+            </p>
+          </div>
+          <Button nativeButton={false} render={<Link href="/ateliers/nouveau" />}>
+            <PlusIcon /> Nouvel atelier
+          </Button>
+        </div>
+        <WorkshopsManager initial={workshops} />
+      </div>
+    </main>
+  );
+}

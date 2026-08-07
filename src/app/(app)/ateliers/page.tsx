@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { prisma } from "@/lib/prisma";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { PlusIcon } from "lucide-react";
 import { WorkshopsManager } from "@/components/workshops-manager";
 
@@ -32,17 +33,15 @@ export default async function AteliersPage() {
   return (
     <main>
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
-        <div className="flex items-center justify-between">
-          <div className="space-y-1">
-            <h1 className="font-heading text-2xl font-semibold">Ateliers</h1>
-            <p className="text-sm text-muted-foreground">
-              Planifiez et rejoignez les sessions de la cohorte.
-            </p>
-          </div>
-          <Button nativeButton={false} render={<Link href="/ateliers/nouveau" />}>
-            <PlusIcon /> Nouvel atelier
-          </Button>
-        </div>
+        <PageTitle
+          title="Ateliers"
+          subtitle="Planifiez et rejoignez les sessions de la cohorte."
+          actions={
+            <Button nativeButton={false} render={<Link href="/ateliers/nouveau" />}>
+              <PlusIcon /> Nouvel atelier
+            </Button>
+          }
+        />
         <WorkshopsManager initial={workshops} />
       </div>
     </main>

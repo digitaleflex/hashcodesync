@@ -4,6 +4,7 @@ import Link from "next/link";
 import { auth } from "@/lib/auth";
 import { SchedulingDashboard } from "@/components/admin-scheduling";
 import { Button } from "@/components/ui/button";
+import { PageTitle } from "@/components/ui/page-title";
 import { UsersIcon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -20,14 +21,10 @@ export default async function AdminPage() {
   return (
     <main>
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
-        <div className="space-y-1">
-          <h1 className="font-heading text-2xl font-semibold">
-            Dashboard Administrateur
-          </h1>
-          <p className="text-sm text-muted-foreground">
-            Vue de la cohorte, heatmap et créneaux recommandés.
-          </p>
-          <div className="pt-2">
+        <PageTitle
+          title="Dashboard Administrateur"
+          subtitle="Vue de la cohorte, heatmap et créneaux recommandés."
+          actions={
             <Button
               nativeButton={false}
               render={<Link href="/admin/groupes" />}
@@ -36,8 +33,8 @@ export default async function AdminPage() {
               <UsersIcon />
               Gérer les groupes
             </Button>
-          </div>
-        </div>
+          }
+        />
         <SchedulingDashboard />
       </div>
     </main>

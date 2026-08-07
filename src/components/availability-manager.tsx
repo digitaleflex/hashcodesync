@@ -87,21 +87,26 @@ export function AvailabilityManager() {
 
   const load = useCallback(async () => {
     setLoading(true);
-    const [avRes, valRes] = await Promise.all([
-      fetch("/api/availabilities"),
-      fetch("/api/availabilities/validate"),
-    ]);
-    if (avRes.ok) {
-      setAvailabilities(await avRes.json());
-    } else {
-      toast.error("Impossible de charger les disponibilités");
+    try {
+      const [avRes, valRes] = await Promise.all([
+        fetch("/api/availabilities"),
+        fetch("/api/availabilities/validate"),
+      ]);
+      if (avRes.ok) {
+        setAvailabilities(await avRes.json());
+      } else {
+        toast.error("Impossible de charger les disponibilités");
+      }
+      if (valRes.ok) {
+        const val = await valRes.json();
+        setLocked(val.validated);
+        setWeekStart(val.weekStart ?? null);
+      }
+    } catch {
+      toast.error("Erreur réseau : impossible de charger vos disponibilités");
+    } finally {
+      setLoading(false);
     }
-    if (valRes.ok) {
-      const val = await valRes.json();
-      setLocked(val.validated);
-      setWeekStart(val.weekStart ?? null);
-    }
-    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -110,33 +115,43 @@ export function AvailabilityManager() {
 
   async function handleValidate() {
     setValidating(true);
-    const res = await fetch("/api/availabilities/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ validated: true }),
-    });
-    setValidating(false);
-    if (res.ok) {
-      setLocked(true);
-      toast.success("Semaine validée : vos disponibilités sont maintenant figées");
-    } else {
-      toast.error("Impossible de valider la semaine");
+    try {
+      const res = await fetch("/api/availabilities/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ validated: true }),
+      });
+      if (res.ok) {
+        setLocked(true);
+        toast.success("Semaine validée : vos disponibilités sont maintenant figées");
+      } else {
+        toast.error("Impossible de valider la semaine");
+      }
+    } catch {
+      toast.error("Erreur réseau : impossible de valider la semaine");
+    } finally {
+      setValidating(false);
     }
   }
 
   async function handleUnvalidate() {
     setValidating(true);
-    const res = await fetch("/api/availabilities/validate", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ validated: false }),
-    });
-    setValidating(false);
-    if (res.ok) {
-      setLocked(false);
-      toast.success("Semaine dévalidée : vous pouvez à nouveau modifier");
-    } else {
-      toast.error("Impossible de dévalider la semaine");
+    try {
+      const res = await fetch("/api/availabilities/validate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ validated: false }),
+      });
+      if (res.ok) {
+        setLocked(false);
+        toast.success("Semaine dévalidée : vous pouvez à nouveau modifier");
+      } else {
+        toast.error("Impossible de dévalider la semaine");
+      }
+    } catch {
+      toast.error("Erreur réseau : impossible de dévalider la semaine");
+    } finally {
+      setValidating(false);
     }
   }
 
@@ -163,25 +178,30 @@ export function AvailabilityManager() {
       return;
     }
     setSubmitting(true);
-    const res = await fetch("/api/availabilities", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ day, startTime, endTime }),
-    });
-    setSubmitting(false);
+    try {
+      const res = await fetch("/api/availabilities", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ day, startTime, endTime }),
+      });
 
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: "Erreur" }));
-      toast.error(err.error ?? "Erreur lors de l'ajout");
-      return;
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({ error: "Erreur" }));
+        toast.error(err.error ?? "Erreur lors de l'ajout");
+        return;
+      }
+      const created = await res.json();
+      setAvailabilities((prev) =>
+        [...prev, created].sort((x, y) => x.day - y.day || x.startTime.localeCompare(y.startTime))
+      );
+      setStartTime("");
+      setEndTime("");
+      toast.success("Disponibilité ajoutée");
+    } catch {
+      toast.error("Erreur réseau : impossible d'ajouter la disponibilité");
+    } finally {
+      setSubmitting(false);
     }
-    const created = await res.json();
-    setAvailabilities((prev) =>
-      [...prev, created].sort((x, y) => x.day - y.day || x.startTime.localeCompare(y.startTime))
-    );
-    setStartTime("");
-    setEndTime("");
-    toast.success("Disponibilité ajoutée");
   }
 
   async function handleDelete(id: string) {
@@ -189,12 +209,16 @@ export function AvailabilityManager() {
       toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
       return;
     }
-    const res = await fetch(`/api/availabilities/${id}`, { method: "DELETE" });
-    if (res.ok) {
-      setAvailabilities((prev) => prev.filter((a) => a.id !== id));
-      toast.success("Disponibilité supprimée");
-    } else {
-      toast.error("Suppression impossible");
+    try {
+      const res = await fetch(`/api/availabilities/${id}`, { method: "DELETE" });
+      if (res.ok) {
+        setAvailabilities((prev) => prev.filter((a) => a.id !== id));
+        toast.success("Disponibilité supprimée");
+      } else {
+        toast.error("Suppression impossible");
+      }
+    } catch {
+      toast.error("Erreur réseau : suppression impossible");
     }
   }
 

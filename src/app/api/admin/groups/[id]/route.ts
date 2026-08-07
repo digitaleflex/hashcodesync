@@ -102,36 +102,55 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
     if (!reqRow || reqRow.groupId !== id) {
       return NextResponse.json({ error: "Demande introuvable" }, { status: 404 });
     }
-    if (status === "accepted") {
-      const hoursPerWeek = Number(body.hoursPerWeek ?? 0);
-      await prisma.$transaction([
-        prisma.groupMember.create({
+    try {
+      if (status === "accepted") {
+        const hoursPerWeek = Number(body.hoursPerWeek ?? 0);
+        const existing = await prisma.groupMember.findUnique({
+          where: { groupId_userId: { groupId: id, userId: reqRow.userId } },
+        });
+        await prisma.$transaction([
+          existing
+            ? prisma.groupMember.update({
+                where: { id: existing.id },
+                data: {
+                  hoursPerWeek: Number.isFinite(hoursPerWeek) ? hoursPerWeek : existing.hoursPerWeek,
+                },
+              })
+            : prisma.groupMember.create({
+                data: {
+                  groupId: id,
+                  userId: reqRow.userId,
+                  hoursPerWeek: Number.isFinite(hoursPerWeek) ? hoursPerWeek : 0,
+                },
+              }),
+          prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "accepted" } }),
+        ]);
+        await prisma.notification.create({
           data: {
-            groupId: id,
             userId: reqRow.userId,
-            hoursPerWeek: Number.isFinite(hoursPerWeek) ? hoursPerWeek : 0,
+            type: "group_join_accepted",
+            title: "Demande acceptée",
+            message: `Votre demande d'accès au groupe a été acceptée.`,
           },
-        }),
-        prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "accepted" } }),
-      ]);
-      await prisma.notification.create({
-        data: {
-          userId: reqRow.userId,
-          type: "group_join_accepted",
-          title: "Demande acceptée",
-          message: `Votre demande d'accès au groupe a été acceptée.`,
-        },
-      });
-    } else {
-      await prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "rejected" } });
-      await prisma.notification.create({
-        data: {
-          userId: reqRow.userId,
-          type: "group_join_rejected",
-          title: "Demande refusée",
-          message: `Votre demande d'accès au groupe a été refusée.`,
-        },
-      });
+        });
+      } else {
+        await prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "rejected" } });
+        await prisma.notification.create({
+          data: {
+            userId: reqRow.userId,
+            type: "group_join_rejected",
+            title: "Demande refusée",
+            message: `Votre demande d'accès au groupe a été refusée.`,
+          },
+        });
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error &&
+        typeof (err as unknown as { code?: unknown }).code === "string"
+          ? `Impossible de traiter la demande (${(err as unknown as { code: string }).code})`
+          : "Impossible de traiter la demande";
+      return NextResponse.json({ error: message }, { status: 409 });
     }
     return NextResponse.json({ success: true });
   }

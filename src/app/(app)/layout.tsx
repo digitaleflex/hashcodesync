@@ -8,7 +8,7 @@ export default function AppLayout({
   return (
     <div className="min-h-screen">
       <AppShell />
-      <main className="min-h-[calc(100vh-3.5rem)]">{children}</main>
+      <main className="min-h-[calc(100vh-3.5rem)] pb-20 md:pb-0">{children}</main>
     </div>
   );
 }

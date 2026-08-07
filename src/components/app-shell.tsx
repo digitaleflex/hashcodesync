@@ -6,14 +6,7 @@ import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
 import { Button } from "@/components/ui/button";
 import { NotificationsBell } from "@/components/notifications";
-import {
-  Sheet,
-  SheetClose,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from "@/components/ui/sheet";
+import { MobileBottomNav } from "@/components/mobile-bottom-nav";
 import {
   LogOutIcon,
   CalendarRangeIcon,
@@ -21,7 +14,6 @@ import {
   LayoutDashboardIcon,
   ShieldCheckIcon,
   UsersIcon,
-  MenuIcon,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -57,7 +49,8 @@ export function AppShell() {
       : roleNav;
 
   return (
-    <header className="sticky top-0 z-10 border-b border-white/10 bg-primary/80 backdrop-blur">
+    <>
+      <header className="sticky top-0 z-10 border-b border-white/10 bg-primary/80 backdrop-blur">
       <div className="mx-auto flex h-14 max-w-6xl items-center justify-between gap-3 px-4">
         <Link
           href="/dashboard"
@@ -103,51 +96,10 @@ export function AppShell() {
             <LogOutIcon />
             Déconnexion
           </Button>
-
-          {/* Menu mobile */}
-          <Sheet>
-            <SheetTrigger
-              render={
-                <Button variant="ghost" size="icon" className="md:hidden" aria-label="Ouvrir le menu">
-                  <MenuIcon />
-                </Button>
-              }
-            />
-            <SheetContent side="right">
-              <SheetHeader>
-                <SheetTitle className="text-accent">HashCode Sync</SheetTitle>
-              </SheetHeader>
-              <nav className="flex flex-col gap-1 p-2">
-                {adminNav.map((item) => {
-                  const active = isActive(item.match);
-                  return (
-                    <SheetClose
-                      key={item.href}
-                      render={
-                        <Button
-                          nativeButton={false}
-                          render={<Link href={item.href} />}
-                          variant="ghost"
-                          className={`justify-start ${active ? "bg-muted" : ""}`}
-                        >
-                          <item.icon />
-                          {item.label}
-                        </Button>
-                      }
-                    />
-                  );
-                })}
-              </nav>
-              <div className="mt-4 border-t pt-4 sm:hidden">
-                <Button variant="outline" className="w-full" onClick={handleSignOut}>
-                  <LogOutIcon />
-                  Déconnexion
-                </Button>
-              </div>
-            </SheetContent>
-          </Sheet>
         </div>
       </div>
-    </header>
+      </header>
+      <MobileBottomNav userRole={user?.role} />
+    </>
   );
 }

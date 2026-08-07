@@ -78,7 +78,7 @@ export function AddAvailabilityForm({
 
       <div className="flex flex-col gap-2">
         <Label htmlFor="dispo-start">Horaires</Label>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
           <Input
             id="dispo-start"
             type="time"
@@ -88,9 +88,9 @@ export function AddAvailabilityForm({
             required
             disabled={disabled}
             aria-invalid={invalid}
-            className="w-32"
+            className="w-full min-h-11 sm:w-32 sm:min-h-0 sm:h-9"
           />
-          <ArrowRightIcon className="size-4 shrink-0 text-muted-foreground" />
+          <ArrowRightIcon className="hidden size-4 shrink-0 text-muted-foreground sm:block" />
           <Input
             id="dispo-end"
             type="time"
@@ -100,9 +100,9 @@ export function AddAvailabilityForm({
             required
             disabled={disabled}
             aria-invalid={invalid}
-            className="w-32"
+            className="w-full min-h-11 sm:w-32 sm:min-h-0 sm:h-9"
           />
-          <Button type="button" onClick={onSubmit} disabled={disabled || submitting} className="h-9">
+          <Button type="button" onClick={onSubmit} disabled={disabled || submitting} className="h-11 w-full sm:h-9 sm:w-auto">
             {submitting ? <Loader2Icon className="size-4 animate-spin" /> : <PlusIcon className="size-4" />}
             Ajouter
           </Button>

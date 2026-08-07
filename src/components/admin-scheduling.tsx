@@ -15,6 +15,7 @@ import {
 import { Loader2Icon, SparklesIcon, UsersIcon, CalendarRangeIcon } from "lucide-react";
 import { DAY_NAMES_FULL, HeatmapCard, RecommendationCard } from "@/components/scheduling-views";
 import { StatCard } from "@/components/ui/stat-card";
+import { AttendanceNudgeCard } from "@/components/dashboard/attendance-nudge";
 
 type Rec = {
   day: number;
@@ -121,6 +122,8 @@ export function SchedulingDashboard() {
               </SelectContent>
             </Select>
           </div>
+
+          <AttendanceNudgeCard />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <StatCard

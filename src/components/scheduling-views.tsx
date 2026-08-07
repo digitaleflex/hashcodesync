@@ -143,7 +143,7 @@ export function HeatmapCard({
                         }`}
                         style={style}
                       >
-                        {ratio > 0 ? Math.round(ratio * 100) : ""}
+                        &nbsp;
                       </td>
                     );
                   })}
@@ -171,7 +171,7 @@ export function HeatmapCard({
                 className="h-2.5 w-28 rounded-full"
                 style={{
                   background:
-                    "linear-gradient(90deg, hsl(345,30%,97%), hsl(345,80%,44%))",
+                    "linear-gradient(90deg, hsl(0, 0%, 97%), hsl(0, 0%, 44%))",
                 }}
               />
               0 → {totalMembers} dispo

@@ -32,6 +32,7 @@ import {
   HeatmapCard,
   RecommendationCard,
 } from "@/components/scheduling-views";
+import { AttendanceNudgeCard } from "@/components/dashboard/attendance-nudge";
 
 type HeatCell = { day: number; hour: number; count: number };
 type Rec = {
@@ -138,6 +139,8 @@ export function MentorDashboard() {
               </SelectContent>
             </Select>
           </div>
+
+          <AttendanceNudgeCard />
 
           <div className="grid gap-4 sm:grid-cols-3">
             <Card>

@@ -82,6 +82,7 @@ export function AddAvailabilityForm({
           <Input
             id="dispo-start"
             type="time"
+            lang="fr-FR"
             value={startTime}
             onChange={(e) => onStartTime(e.target.value)}
             required
@@ -93,6 +94,7 @@ export function AddAvailabilityForm({
           <Input
             id="dispo-end"
             type="time"
+            lang="fr-FR"
             value={endTime}
             onChange={(e) => onEndTime(e.target.value)}
             required

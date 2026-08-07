@@ -10,6 +10,7 @@ import {
   CalendarRangeIcon,
   UsersIcon,
   ClockIcon,
+  BellIcon,
 } from "lucide-react";
 import { StatCard } from "@/components/ui/stat-card";
 import {
@@ -20,6 +21,7 @@ import {
   UpcomingWorkshopsCard,
   type UpcomingWorkshop,
 } from "@/components/dashboard/upcoming-workshops";
+import { computeMassHours } from "@/lib/masse-horaire";
 import {
   ActivityFeedCard,
   type ActivityItem,
@@ -32,6 +34,10 @@ const roleLabels: Record<string, string> = {
   mentor: "Mentor",
   admin: "Administrateur",
 };
+
+function capped(text: string): string {
+  return text.length > 18 ? `${text.slice(0, 18)}…` : text;
+}
 
 type CohortData = {
   heatmap: { day: number; hour: number; count: number }[];
@@ -52,6 +58,7 @@ export default function DashboardPage() {
   const { data, isPending } = authClient.useSession();
 
   const [availCount, setAvailCount] = useState<number | null>(null);
+  const [massHours, setMassHours] = useState<number | null>(null);
   const [weekValidated, setWeekValidated] = useState(false);
   const [upcoming, setUpcoming] = useState<UpcomingWorkshop[]>([]);
   const [groupCount, setGroupCount] = useState<number | null>(null);
@@ -78,7 +85,18 @@ export default function DashboardPage() {
 
       if (avail.status === "fulfilled" && avail.value.ok) {
         const arr = await avail.value.json();
-        if (Array.isArray(arr)) setAvailCount(arr.length);
+        if (Array.isArray(arr)) {
+          setAvailCount(arr.length);
+          setMassHours(
+            computeMassHours(
+              arr.map((a: { day: number; startTime: string; endTime: string }) => ({
+                day: a.day,
+                startTime: a.startTime,
+                endTime: a.endTime,
+              }))
+            )
+          );
+        }
       }
       if (validation.status === "fulfilled" && validation.value?.ok) {
         const v = await validation.value.json();
@@ -148,6 +166,18 @@ export default function DashboardPage() {
   const role = user?.role as string | undefined;
   const isLeader = role === "mentor" || role === "admin";
 
+  const next = upcoming[0];
+  const nextLabel = (() => {
+    if (!next) return "—";
+    const diff = new Date(next.startAt).getTime() - Date.now();
+    if (diff <= 0) return "Aujourd'hui";
+    const days = Math.floor(diff / 86400000);
+    const hours = Math.floor((diff % 86400000) / 3600000);
+    if (days > 0) return `${days} j ${hours} h`;
+    return `${hours} h`;
+  })();
+  const massLabel = massHours === null ? "—" : `${massHours} h`;
+
   return (
     <div className="mx-auto max-w-7xl space-y-6 px-4 py-8">
       <div className="space-y-1">
@@ -170,18 +200,24 @@ export default function DashboardPage() {
 
       <WeekValidationBanner weekValidated={weekValidated} availCount={availCount ?? 0} />
 
-      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard
           icon={<CalendarRangeIcon className="size-4 text-accent" />}
           label="Mes disponibilités"
           value={availCount === null ? "—" : availCount}
-          footnote="pour la semaine en cours"
+          footnote="créneaux de la semaine"
         />
         <StatCard
           icon={<CalendarDaysIcon className="size-4 text-accent" />}
-          label="Ateliers à venir"
-          value={upcoming.length}
-          footnote="programmés ou à venir"
+          label="Prochain atelier"
+          value={nextLabel}
+          footnote={next?.title ? capped(next.title) : "aucun de planifié"}
+        />
+        <StatCard
+          icon={<ClockIcon className="size-4 text-accent" />}
+          label="Masse horaire"
+          value={massLabel}
+          footnote="disponibilité / semaine"
         />
         <StatCard
           icon={<UsersIcon className="size-4 text-accent" />}
@@ -190,8 +226,8 @@ export default function DashboardPage() {
           footnote="dont je suis membre"
         />
         <StatCard
-          icon={<ClockIcon className="size-4 text-accent" />}
-          label={isLeader ? "Cohorte couverte" : "Dernière activité"}
+          icon={isLeader ? <UsersIcon className="size-4 text-accent" /> : <BellIcon className="size-4 text-accent" />}
+          label={isLeader ? "Cohorte couverte" : "Notifications"}
           value={
             isLeader
               ? cohort?.totalMembers ?? "—"
@@ -200,6 +236,12 @@ export default function DashboardPage() {
                 : "—"
           }
           footnote={isLeader ? "membres renseignés" : "événements non lus"}
+        />
+        <StatCard
+          icon={<CalendarDaysIcon className="size-4 text-accent" />}
+          label="Ateliers à venir"
+          value={upcoming.length}
+          footnote="programmés"
         />
       </div>
 

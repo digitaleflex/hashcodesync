@@ -33,6 +33,7 @@ export type PublicWorkshop = {
   startAt: string;
   endAt: string;
   createdBy: string;
+  series?: { id: string; name: string } | null;
   creator: { id: string; name: string; email: string };
   participants: {
     id: string;
@@ -154,7 +155,18 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
         <CardHeader>
           <div className="flex items-start justify-between gap-3">
             <div>
-              <CardTitle className="text-base">{w.title}</CardTitle>
+              <CardTitle className="text-base">
+                {w.title}
+                {w.series && (
+                  <Badge
+                    variant="secondary"
+                    className="ml-2 align-middle font-normal"
+                  >
+                    <CalendarDaysIcon className="mr-1 size-3" />
+                    {w.series.name}
+                  </Badge>
+                )}
+              </CardTitle>
               <CardDescription className="mt-1">
                 {formatDate(w.startAt)} · {formatTime(w.startAt)} –{" "}
                 {formatTime(w.endAt)}

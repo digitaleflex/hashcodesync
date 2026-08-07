@@ -103,7 +103,7 @@ export async function GET(req: NextRequest) {
           select: {
             id: true,
             timezone: true,
-            attendance: { select: { status: true } },
+            attendances: { select: { status: true } },
             availabilities: {
               select: {
                 day: true,
@@ -121,7 +121,7 @@ export async function GET(req: NextRequest) {
     users = members.map((m) => ({
       id: m.user.id,
       timezone: m.user.timezone,
-      attendance: countAttendance(m.user.attendance),
+      attendance: countAttendance(m.user.attendances),
       availabilities: m.user.availabilities,
     }));
   } else {
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest) {
       select: {
         id: true,
         timezone: true,
-        attendance: { select: { status: true } },
+        attendances: { select: { status: true } },
         availabilities: {
           select: {
             day: true,
@@ -146,7 +146,7 @@ export async function GET(req: NextRequest) {
     users = all.map((u) => ({
       id: u.id,
       timezone: u.timezone,
-      attendance: countAttendance(u.attendance),
+      attendance: countAttendance(u.attendances),
       availabilities: u.availabilities,
     }));
   }

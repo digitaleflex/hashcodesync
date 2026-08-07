@@ -237,7 +237,7 @@ export type ParticipantCreateInput = {
   status?: string
   createdAt?: Date | string
   workshop: Prisma.WorkshopCreateNestedOneWithoutParticipantsInput
-  user: Prisma.UserCreateNestedOneWithoutParticipantsInput
+  user: Prisma.UserCreateNestedOneWithoutParticipationInput
 }
 
 export type ParticipantUncheckedCreateInput = {
@@ -253,7 +253,7 @@ export type ParticipantUpdateInput = {
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   workshop?: Prisma.WorkshopUpdateOneRequiredWithoutParticipantsNestedInput
-  user?: Prisma.UserUpdateOneRequiredWithoutParticipantsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutParticipationNestedInput
 }
 
 export type ParticipantUncheckedUpdateInput = {
@@ -464,7 +464,7 @@ export type ParticipantCreateWithoutWorkshopInput = {
   id?: string
   status?: string
   createdAt?: Date | string
-  user: Prisma.UserCreateNestedOneWithoutParticipantsInput
+  user: Prisma.UserCreateNestedOneWithoutParticipationInput
 }
 
 export type ParticipantUncheckedCreateWithoutWorkshopInput = {
@@ -539,7 +539,7 @@ export type ParticipantUpdateWithoutWorkshopInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  user?: Prisma.UserUpdateOneRequiredWithoutParticipantsNestedInput
+  user?: Prisma.UserUpdateOneRequiredWithoutParticipationNestedInput
 }
 
 export type ParticipantUncheckedUpdateWithoutWorkshopInput = {

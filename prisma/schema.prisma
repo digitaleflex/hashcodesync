@@ -23,12 +23,13 @@ model User {
   accounts      Account[]
   availabilities Availability[]
   workshops     Workshop[]
-  participants  Participant[]
-  notifications Notification[]
-  attendance    Attendance[]
+  participation    Participant[]
+  attendances      Attendance[]
   groupMemberships GroupMember[]
-  createdGroups Group[]
-  joinRequests GroupJoinRequest[]
+  createdGroups    Group[]
+  createdSeries    WorkshopSeries[]
+  notifications    Notification[]
+  joinRequests     GroupJoinRequest[]
 
   @@map("user")
 }
@@ -170,7 +171,9 @@ model Workshop {
   startAt     DateTime
   endAt       DateTime
   createdBy   String
+  seriesId    String?
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  series      WorkshopSeries? @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   participants Participant[]
   attendance  Attendance[]
   createdAt   DateTime @default(now())
@@ -178,6 +181,22 @@ model Workshop {
 
   @@index([createdBy])
   @@index([startAt])
+  @@index([seriesId])
+}
+
+// Un programme regroupé (bootcamp, cycle de mentorat...) qui rassemble
+// plusieurs ateliers, chacun planifié sur son meilleur créneau.
+model WorkshopSeries {
+  id          String    @id @default(cuid())
+  name        String
+  description String?
+  createdBy   String
+  creator     User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  workshops   Workshop[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([createdBy])
 }
 
 model Participant {

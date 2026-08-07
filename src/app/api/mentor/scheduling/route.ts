@@ -119,7 +119,7 @@ export async function GET(req: NextRequest) {
             lastname: true,
             email: true,
             timezone: true,
-            attendance: { select: { status: true } },
+            attendances: { select: { status: true } },
             availabilities: {
               select: {
                 day: true,
@@ -151,7 +151,7 @@ export async function GET(req: NextRequest) {
           applicable.map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }))
         );
         const p = presenceProbability(
-          { present: mem.user.attendance.filter((x) => x.status === "present").length, absent: mem.user.attendance.filter((x) => x.status === "absent").length },
+          { present: mem.user.attendances.filter((x) => x.status === "present").length, absent: mem.user.attendances.filter((x) => x.status === "absent").length },
           mass
         );
         return {
@@ -160,7 +160,7 @@ export async function GET(req: NextRequest) {
           lastname: mem.user.lastname,
           email: mem.user.email,
           timezone: mem.user.timezone,
-          attendance: mem.user.attendance,
+          attendance: mem.user.attendances,
           availabilities: applicable.map((a) => ({
             day: a.day,
             startTime: a.startTime,
@@ -189,7 +189,7 @@ export async function GET(req: NextRequest) {
         select: {
           id: true,
           timezone: true,
-          attendance: { select: { status: true } },
+          attendances: { select: { status: true } },
           availabilities: {
             select: { day: true, startTime: true, endTime: true },
           },
@@ -204,7 +204,7 @@ export async function GET(req: NextRequest) {
           lastname: true,
 email: true,
             timezone: true,
-            attendance: { select: { status: true } },
+            attendances: { select: { status: true } },
             availabilities: {
             orderBy: { day: "asc" },
             select: { day: true, startTime: true, endTime: true },
@@ -221,7 +221,7 @@ email: true,
         u.availabilities.map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }))
       );
       const p = presenceProbability(
-        { present: u.attendance.filter((x) => x.status === "present").length, absent: u.attendance.filter((x) => x.status === "absent").length },
+        { present: u.attendances.filter((x) => x.status === "present").length, absent: u.attendances.filter((x) => x.status === "absent").length },
         mass
       );
       return {
@@ -230,7 +230,7 @@ email: true,
         lastname: u.lastname,
         email: u.email,
         timezone: u.timezone,
-        attendance: u.attendance,
+        attendance: u.attendances,
         availabilities: u.availabilities.map((a) => ({
           day: a.day,
           startTime: a.startTime,
@@ -244,7 +244,7 @@ p,
         u.availabilities.map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }))
       );
       const w = presenceProbability(
-        { present: u.attendance.filter((x) => x.status === "present").length, absent: u.attendance.filter((x) => x.status === "absent").length },
+        { present: u.attendances.filter((x) => x.status === "present").length, absent: u.attendances.filter((x) => x.status === "absent").length },
         mass
       );
       return u.availabilities.map((a) => ({

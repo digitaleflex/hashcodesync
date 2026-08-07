@@ -29,7 +29,7 @@ async function main() {
         select: {
           id: true,
           timezone: true,
-          attendance: { select: { status: true } },
+          attendances: { select: { status: true } },
           availabilities: {
             where: { groupId: group.id, activityId: null },
             select: { day: true, startTime: true, endTime: true },

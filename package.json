@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "seed": "tsx scripts/seed-members.ts",
+    "seed:serie": "tsx scripts/seed-serie.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

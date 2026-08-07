@@ -61,19 +61,19 @@ function partsInTz(instant: number, tz: string): ZoneClock {
 }
 
 // Décalage (ms) du fuseau à cet instant = (heure locale vue comme UTC) - instant.
-function staticOffset(tz: string, instant: number) {
+export function staticOffset(tz: string, instant: number) {
   const p = partsInTz(instant, tz);
   return Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute) - instant;
 }
 
 // Heure locale (y,m,d,h,min) -> instant UTC réel.
-function wallToUtc(y: number, m: number, d: number, h: number, min: number, tz: string) {
+export function wallToUtc(y: number, m: number, d: number, h: number, min: number, tz: string) {
   const guess = Date.UTC(y, m - 1, d, h, min);
   return guess - staticOffset(tz, guess);
 }
 
 // Jour ISO (0=Lundi..6=Dimanche) d'une date grégorienne.
-function isoWeekday(y: number, m: number, d: number) {
+export function isoWeekday(y: number, m: number, d: number) {
   const w = new Date(Date.UTC(y, m - 1, d)).getUTCDay();
   return (w + 6) % 7;
 }

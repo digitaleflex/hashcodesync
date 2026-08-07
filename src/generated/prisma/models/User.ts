@@ -234,11 +234,12 @@ export type UserWhereInput = {
   accounts?: Prisma.AccountListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
   workshops?: Prisma.WorkshopListRelationFilter
-  participants?: Prisma.ParticipantListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
-  attendance?: Prisma.AttendanceListRelationFilter
+  participation?: Prisma.ParticipantListRelationFilter
+  attendances?: Prisma.AttendanceListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
   createdGroups?: Prisma.GroupListRelationFilter
+  createdSeries?: Prisma.WorkshopSeriesListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
 }
 
@@ -258,11 +259,12 @@ export type UserOrderByWithRelationInput = {
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   availabilities?: Prisma.AvailabilityOrderByRelationAggregateInput
   workshops?: Prisma.WorkshopOrderByRelationAggregateInput
-  participants?: Prisma.ParticipantOrderByRelationAggregateInput
-  notifications?: Prisma.NotificationOrderByRelationAggregateInput
-  attendance?: Prisma.AttendanceOrderByRelationAggregateInput
+  participation?: Prisma.ParticipantOrderByRelationAggregateInput
+  attendances?: Prisma.AttendanceOrderByRelationAggregateInput
   groupMemberships?: Prisma.GroupMemberOrderByRelationAggregateInput
   createdGroups?: Prisma.GroupOrderByRelationAggregateInput
+  createdSeries?: Prisma.WorkshopSeriesOrderByRelationAggregateInput
+  notifications?: Prisma.NotificationOrderByRelationAggregateInput
   joinRequests?: Prisma.GroupJoinRequestOrderByRelationAggregateInput
 }
 
@@ -285,11 +287,12 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
   workshops?: Prisma.WorkshopListRelationFilter
-  participants?: Prisma.ParticipantListRelationFilter
-  notifications?: Prisma.NotificationListRelationFilter
-  attendance?: Prisma.AttendanceListRelationFilter
+  participation?: Prisma.ParticipantListRelationFilter
+  attendances?: Prisma.AttendanceListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
   createdGroups?: Prisma.GroupListRelationFilter
+  createdSeries?: Prisma.WorkshopSeriesListRelationFilter
+  notifications?: Prisma.NotificationListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
 }, "id" | "email">
 
@@ -343,11 +346,12 @@ export type UserCreateInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -367,11 +371,12 @@ export type UserUncheckedCreateInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -391,11 +396,12 @@ export type UserUpdateInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -415,11 +421,12 @@ export type UserUncheckedUpdateInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -626,32 +633,46 @@ export type UserUpdateOneRequiredWithoutWorkshopsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkshopsInput, Prisma.UserUpdateWithoutWorkshopsInput>, Prisma.UserUncheckedUpdateWithoutWorkshopsInput>
 }
 
-export type UserCreateNestedOneWithoutParticipantsInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutParticipantsInput, Prisma.UserUncheckedCreateWithoutParticipantsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutParticipantsInput
+export type UserCreateNestedOneWithoutCreatedSeriesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSeriesInput, Prisma.UserUncheckedCreateWithoutCreatedSeriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSeriesInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutParticipantsNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutParticipantsInput, Prisma.UserUncheckedCreateWithoutParticipantsInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutParticipantsInput
-  upsert?: Prisma.UserUpsertWithoutParticipantsInput
+export type UserUpdateOneRequiredWithoutCreatedSeriesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutCreatedSeriesInput, Prisma.UserUncheckedCreateWithoutCreatedSeriesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutCreatedSeriesInput
+  upsert?: Prisma.UserUpsertWithoutCreatedSeriesInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutParticipantsInput, Prisma.UserUpdateWithoutParticipantsInput>, Prisma.UserUncheckedUpdateWithoutParticipantsInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutCreatedSeriesInput, Prisma.UserUpdateWithoutCreatedSeriesInput>, Prisma.UserUncheckedUpdateWithoutCreatedSeriesInput>
 }
 
-export type UserCreateNestedOneWithoutAttendanceInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendanceInput, Prisma.UserUncheckedCreateWithoutAttendanceInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendanceInput
+export type UserCreateNestedOneWithoutParticipationInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutParticipationInput, Prisma.UserUncheckedCreateWithoutParticipationInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutParticipationInput
   connect?: Prisma.UserWhereUniqueInput
 }
 
-export type UserUpdateOneRequiredWithoutAttendanceNestedInput = {
-  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendanceInput, Prisma.UserUncheckedCreateWithoutAttendanceInput>
-  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendanceInput
-  upsert?: Prisma.UserUpsertWithoutAttendanceInput
+export type UserUpdateOneRequiredWithoutParticipationNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutParticipationInput, Prisma.UserUncheckedCreateWithoutParticipationInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutParticipationInput
+  upsert?: Prisma.UserUpsertWithoutParticipationInput
   connect?: Prisma.UserWhereUniqueInput
-  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttendanceInput, Prisma.UserUpdateWithoutAttendanceInput>, Prisma.UserUncheckedUpdateWithoutAttendanceInput>
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutParticipationInput, Prisma.UserUpdateWithoutParticipationInput>, Prisma.UserUncheckedUpdateWithoutParticipationInput>
+}
+
+export type UserCreateNestedOneWithoutAttendancesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutAttendancesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutAttendancesInput
+  upsert?: Prisma.UserUpsertWithoutAttendancesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAttendancesInput, Prisma.UserUpdateWithoutAttendancesInput>, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
 }
 
 export type UserCreateNestedOneWithoutNotificationsInput = {
@@ -683,11 +704,12 @@ export type UserCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -706,11 +728,12 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -745,11 +768,12 @@ export type UserUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -768,11 +792,12 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -791,11 +816,12 @@ export type UserCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -814,11 +840,12 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -853,11 +880,12 @@ export type UserUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -876,11 +904,12 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -900,10 +929,11 @@ export type UserCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -923,10 +953,11 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -962,10 +993,11 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -985,10 +1017,11 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1008,10 +1041,11 @@ export type UserCreateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -1031,10 +1065,11 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1070,10 +1105,11 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -1093,10 +1129,11 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1116,11 +1153,12 @@ export type UserCreateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutJoinRequestsInput = {
@@ -1139,11 +1177,12 @@ export type UserUncheckedCreateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutJoinRequestsInput = {
@@ -1178,11 +1217,12 @@ export type UserUpdateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJoinRequestsInput = {
@@ -1201,11 +1241,12 @@ export type UserUncheckedUpdateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAvailabilitiesInput = {
@@ -1223,11 +1264,12 @@ export type UserCreateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -1246,11 +1288,12 @@ export type UserUncheckedCreateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1285,11 +1328,12 @@ export type UserUpdateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -1308,11 +1352,12 @@ export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1331,11 +1376,12 @@ export type UserCreateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -1354,11 +1400,12 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1393,11 +1440,12 @@ export type UserUpdateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -1416,15 +1464,16 @@ export type UserUncheckedUpdateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type UserCreateWithoutParticipantsInput = {
+export type UserCreateWithoutCreatedSeriesInput = {
   id?: string
   name: string
   email: string
@@ -1440,14 +1489,15 @@ export type UserCreateWithoutParticipantsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutParticipantsInput = {
+export type UserUncheckedCreateWithoutCreatedSeriesInput = {
   id?: string
   name: string
   email: string
@@ -1463,30 +1513,31 @@ export type UserUncheckedCreateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutParticipantsInput = {
+export type UserCreateOrConnectWithoutCreatedSeriesInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutParticipantsInput, Prisma.UserUncheckedCreateWithoutParticipantsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSeriesInput, Prisma.UserUncheckedCreateWithoutCreatedSeriesInput>
 }
 
-export type UserUpsertWithoutParticipantsInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutParticipantsInput, Prisma.UserUncheckedUpdateWithoutParticipantsInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutParticipantsInput, Prisma.UserUncheckedCreateWithoutParticipantsInput>
+export type UserUpsertWithoutCreatedSeriesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSeriesInput, Prisma.UserUncheckedUpdateWithoutCreatedSeriesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutCreatedSeriesInput, Prisma.UserUncheckedCreateWithoutCreatedSeriesInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutParticipantsInput = {
+export type UserUpdateToOneWithWhereWithoutCreatedSeriesInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutParticipantsInput, Prisma.UserUncheckedUpdateWithoutParticipantsInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutCreatedSeriesInput, Prisma.UserUncheckedUpdateWithoutCreatedSeriesInput>
 }
 
-export type UserUpdateWithoutParticipantsInput = {
+export type UserUpdateWithoutCreatedSeriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1502,14 +1553,15 @@ export type UserUpdateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutParticipantsInput = {
+export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1525,14 +1577,15 @@ export type UserUncheckedUpdateWithoutParticipantsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
-export type UserCreateWithoutAttendanceInput = {
+export type UserCreateWithoutParticipationInput = {
   id?: string
   name: string
   email: string
@@ -1548,14 +1601,15 @@ export type UserCreateWithoutAttendanceInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
-export type UserUncheckedCreateWithoutAttendanceInput = {
+export type UserUncheckedCreateWithoutParticipationInput = {
   id?: string
   name: string
   email: string
@@ -1571,30 +1625,31 @@ export type UserUncheckedCreateWithoutAttendanceInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
-export type UserCreateOrConnectWithoutAttendanceInput = {
+export type UserCreateOrConnectWithoutParticipationInput = {
   where: Prisma.UserWhereUniqueInput
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendanceInput, Prisma.UserUncheckedCreateWithoutAttendanceInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutParticipationInput, Prisma.UserUncheckedCreateWithoutParticipationInput>
 }
 
-export type UserUpsertWithoutAttendanceInput = {
-  update: Prisma.XOR<Prisma.UserUpdateWithoutAttendanceInput, Prisma.UserUncheckedUpdateWithoutAttendanceInput>
-  create: Prisma.XOR<Prisma.UserCreateWithoutAttendanceInput, Prisma.UserUncheckedCreateWithoutAttendanceInput>
+export type UserUpsertWithoutParticipationInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutParticipationInput, Prisma.UserUncheckedUpdateWithoutParticipationInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutParticipationInput, Prisma.UserUncheckedCreateWithoutParticipationInput>
   where?: Prisma.UserWhereInput
 }
 
-export type UserUpdateToOneWithWhereWithoutAttendanceInput = {
+export type UserUpdateToOneWithWhereWithoutParticipationInput = {
   where?: Prisma.UserWhereInput
-  data: Prisma.XOR<Prisma.UserUpdateWithoutAttendanceInput, Prisma.UserUncheckedUpdateWithoutAttendanceInput>
+  data: Prisma.XOR<Prisma.UserUpdateWithoutParticipationInput, Prisma.UserUncheckedUpdateWithoutParticipationInput>
 }
 
-export type UserUpdateWithoutAttendanceInput = {
+export type UserUpdateWithoutParticipationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1610,14 +1665,15 @@ export type UserUpdateWithoutAttendanceInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
-export type UserUncheckedUpdateWithoutAttendanceInput = {
+export type UserUncheckedUpdateWithoutParticipationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
@@ -1633,10 +1689,123 @@ export type UserUncheckedUpdateWithoutAttendanceInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutAttendancesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutAttendancesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutAttendancesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+}
+
+export type UserUpsertWithoutAttendancesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutAttendancesInput, Prisma.UserUncheckedCreateWithoutAttendancesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutAttendancesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutAttendancesInput, Prisma.UserUncheckedUpdateWithoutAttendancesInput>
+}
+
+export type UserUpdateWithoutAttendancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutAttendancesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1656,10 +1825,11 @@ export type UserCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
 }
 
@@ -1679,10 +1849,11 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
-  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
-  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
 }
 
@@ -1718,10 +1889,11 @@ export type UserUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
 }
 
@@ -1741,10 +1913,11 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
-  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
-  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
 }
 
@@ -1758,11 +1931,12 @@ export type UserCountOutputType = {
   accounts: number
   availabilities: number
   workshops: number
-  participants: number
-  notifications: number
-  attendance: number
+  participation: number
+  attendances: number
   groupMemberships: number
   createdGroups: number
+  createdSeries: number
+  notifications: number
   joinRequests: number
 }
 
@@ -1771,11 +1945,12 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   availabilities?: boolean | UserCountOutputTypeCountAvailabilitiesArgs
   workshops?: boolean | UserCountOutputTypeCountWorkshopsArgs
-  participants?: boolean | UserCountOutputTypeCountParticipantsArgs
-  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
-  attendance?: boolean | UserCountOutputTypeCountAttendanceArgs
+  participation?: boolean | UserCountOutputTypeCountParticipationArgs
+  attendances?: boolean | UserCountOutputTypeCountAttendancesArgs
   groupMemberships?: boolean | UserCountOutputTypeCountGroupMembershipsArgs
   createdGroups?: boolean | UserCountOutputTypeCountCreatedGroupsArgs
+  createdSeries?: boolean | UserCountOutputTypeCountCreatedSeriesArgs
+  notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   joinRequests?: boolean | UserCountOutputTypeCountJoinRequestsArgs
 }
 
@@ -1820,21 +1995,14 @@ export type UserCountOutputTypeCountWorkshopsArgs<ExtArgs extends runtime.Types.
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountParticipantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountParticipationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ParticipantWhereInput
 }
 
 /**
  * UserCountOutputType without action
  */
-export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.NotificationWhereInput
-}
-
-/**
- * UserCountOutputType without action
- */
-export type UserCountOutputTypeCountAttendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type UserCountOutputTypeCountAttendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.AttendanceWhereInput
 }
 
@@ -1850,6 +2018,20 @@ export type UserCountOutputTypeCountGroupMembershipsArgs<ExtArgs extends runtime
  */
 export type UserCountOutputTypeCountCreatedGroupsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GroupWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountCreatedSeriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkshopSeriesWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountNotificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.NotificationWhereInput
 }
 
 /**
@@ -1876,11 +2058,12 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   availabilities?: boolean | Prisma.User$availabilitiesArgs<ExtArgs>
   workshops?: boolean | Prisma.User$workshopsArgs<ExtArgs>
-  participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
-  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
-  attendance?: boolean | Prisma.User$attendanceArgs<ExtArgs>
+  participation?: boolean | Prisma.User$participationArgs<ExtArgs>
+  attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
+  createdSeries?: boolean | Prisma.User$createdSeriesArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   joinRequests?: boolean | Prisma.User$joinRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
@@ -1933,11 +2116,12 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   availabilities?: boolean | Prisma.User$availabilitiesArgs<ExtArgs>
   workshops?: boolean | Prisma.User$workshopsArgs<ExtArgs>
-  participants?: boolean | Prisma.User$participantsArgs<ExtArgs>
-  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
-  attendance?: boolean | Prisma.User$attendanceArgs<ExtArgs>
+  participation?: boolean | Prisma.User$participationArgs<ExtArgs>
+  attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
   createdGroups?: boolean | Prisma.User$createdGroupsArgs<ExtArgs>
+  createdSeries?: boolean | Prisma.User$createdSeriesArgs<ExtArgs>
+  notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   joinRequests?: boolean | Prisma.User$joinRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1951,11 +2135,12 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     availabilities: Prisma.$AvailabilityPayload<ExtArgs>[]
     workshops: Prisma.$WorkshopPayload<ExtArgs>[]
-    participants: Prisma.$ParticipantPayload<ExtArgs>[]
-    notifications: Prisma.$NotificationPayload<ExtArgs>[]
-    attendance: Prisma.$AttendancePayload<ExtArgs>[]
+    participation: Prisma.$ParticipantPayload<ExtArgs>[]
+    attendances: Prisma.$AttendancePayload<ExtArgs>[]
     groupMemberships: Prisma.$GroupMemberPayload<ExtArgs>[]
     createdGroups: Prisma.$GroupPayload<ExtArgs>[]
+    createdSeries: Prisma.$WorkshopSeriesPayload<ExtArgs>[]
+    notifications: Prisma.$NotificationPayload<ExtArgs>[]
     joinRequests: Prisma.$GroupJoinRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -2368,11 +2553,12 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   availabilities<T extends Prisma.User$availabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$availabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workshops<T extends Prisma.User$workshopsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workshopsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  participants<T extends Prisma.User$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-  attendance<T extends Prisma.User$attendanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  participation<T extends Prisma.User$participationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$participationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attendances<T extends Prisma.User$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groupMemberships<T extends Prisma.User$groupMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$groupMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   createdGroups<T extends Prisma.User$createdGroupsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdGroupsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  createdSeries<T extends Prisma.User$createdSeriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$createdSeriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkshopSeriesPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   joinRequests<T extends Prisma.User$joinRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$joinRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupJoinRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -2903,9 +3089,9 @@ export type User$workshopsArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * User.participants
+ * User.participation
  */
-export type User$participantsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$participationArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Participant
    */
@@ -2927,33 +3113,9 @@ export type User$participantsArgs<ExtArgs extends runtime.Types.Extensions.Inter
 }
 
 /**
- * User.notifications
+ * User.attendances
  */
-export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Notification
-   */
-  select?: Prisma.NotificationSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Notification
-   */
-  omit?: Prisma.NotificationOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.NotificationInclude<ExtArgs> | null
-  where?: Prisma.NotificationWhereInput
-  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
-  cursor?: Prisma.NotificationWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
-}
-
-/**
- * User.attendance
- */
-export type User$attendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+export type User$attendancesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Attendance
    */
@@ -3020,6 +3182,54 @@ export type User$createdGroupsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.GroupScalarFieldEnum | Prisma.GroupScalarFieldEnum[]
+}
+
+/**
+ * User.createdSeries
+ */
+export type User$createdSeriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WorkshopSeries
+   */
+  select?: Prisma.WorkshopSeriesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WorkshopSeries
+   */
+  omit?: Prisma.WorkshopSeriesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkshopSeriesInclude<ExtArgs> | null
+  where?: Prisma.WorkshopSeriesWhereInput
+  orderBy?: Prisma.WorkshopSeriesOrderByWithRelationInput | Prisma.WorkshopSeriesOrderByWithRelationInput[]
+  cursor?: Prisma.WorkshopSeriesWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkshopSeriesScalarFieldEnum | Prisma.WorkshopSeriesScalarFieldEnum[]
+}
+
+/**
+ * User.notifications
+ */
+export type User$notificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Notification
+   */
+  select?: Prisma.NotificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Notification
+   */
+  omit?: Prisma.NotificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.NotificationInclude<ExtArgs> | null
+  where?: Prisma.NotificationWhereInput
+  orderBy?: Prisma.NotificationOrderByWithRelationInput | Prisma.NotificationOrderByWithRelationInput[]
+  cursor?: Prisma.NotificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.NotificationScalarFieldEnum | Prisma.NotificationScalarFieldEnum[]
 }
 
 /**

@@ -68,6 +68,11 @@ export type Availability = Prisma.AvailabilityModel
  */
 export type Workshop = Prisma.WorkshopModel
 /**
+ * Model WorkshopSeries
+ * 
+ */
+export type WorkshopSeries = Prisma.WorkshopSeriesModel
+/**
  * Model Participant
  * 
  */

@@ -152,11 +152,17 @@ export default function WorkshopDetailPage() {
         <Card>
           <CardHeader>
             <div className="flex items-start justify-between gap-3">
-              <div className="space-y-1">
+              <div className="space-y-2">
                 <CardTitle className="flex items-center gap-2 text-xl">
                   <CalendarDaysIcon className="size-5 text-accent" />
                   {workshop.title}
                 </CardTitle>
+                {workshop.series && (
+                  <Badge variant="secondary">
+                    <CalendarDaysIcon className="mr-1 size-3" />
+                    Programme : {workshop.series.name}
+                  </Badge>
+                )}
                 <CardDescription>
                   {formatDate(workshop.startAt)} · {formatTime(workshop.startAt)} –
                   {formatTime(workshop.endAt)}

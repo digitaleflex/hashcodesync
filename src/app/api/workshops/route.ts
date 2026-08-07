@@ -6,6 +6,7 @@ import { notifyMany } from "@/lib/notifications";
 
 const include = {
   creator: { select: { id: true, name: true, email: true } },
+  series: { select: { id: true, name: true } },
   participants: {
     select: {
       id: true,

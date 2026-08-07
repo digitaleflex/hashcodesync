@@ -11,6 +11,7 @@ export default async function AteliersPage() {
     orderBy: { startAt: "asc" },
     include: {
       creator: { select: { id: true, name: true, email: true } },
+      series: { select: { id: true, name: true } },
       participants: {
         select: {
           id: true,

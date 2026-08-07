@@ -36,7 +36,7 @@ export async function GET() {
               firstname: true,
               lastname: true,
               email: true,
-              attendance: { select: { status: true } },
+              attendances: { select: { status: true } },
               availabilities: {
                 select: {
                   day: true,
@@ -66,8 +66,8 @@ export async function GET() {
         .filter((a) => a.groupId === g.id)
         .map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }));
       const hoursPerWeek = computeMassHours(slots);
-      const present = m.user.attendance.filter((x) => x.status === "present").length;
-      const absent = m.user.attendance.filter((x) => x.status === "absent").length;
+      const present = m.user.attendances.filter((x) => x.status === "present").length;
+      const absent = m.user.attendances.filter((x) => x.status === "absent").length;
       const reliability = Math.round(presenceProbability({ present, absent }, hoursPerWeek) * 100);
       totalHours += hoursPerWeek;
       return {

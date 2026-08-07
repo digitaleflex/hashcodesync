@@ -59,6 +59,8 @@ export function HeatmapCard({
   totalMembers,
   refLabel,
   highlightCell,
+  title,
+  description,
 }: {
   heatmap: HeatCell[];
   minHour: number;
@@ -66,6 +68,8 @@ export function HeatmapCard({
   totalMembers: number;
   refLabel?: string;
   highlightCell?: { day: number; hour: number } | null;
+  title?: string;
+  description?: string;
 }) {
   const index = new Map<string, HeatCell>();
   for (const c of heatmap) index.set(`${c.day}:${c.hour}`, c);
@@ -81,11 +85,12 @@ export function HeatmapCard({
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
           <FlameIcon className="size-5 text-accent" />
-          Heatmap des disponibilités
+          {title ?? "Heatmap des disponibilités"}
         </CardTitle>
         <CardDescription>
-          Une couleur par jour, l&apos;intensité = part de la cohorte disponible
-          à cette heure. {refLabel ? `Fuseau de référence : ${refLabel}.` : ""}
+          {description ??
+            "Une couleur par jour, l'intensité = part de la cohorte disponible à cette heure. "}
+          {refLabel ? `Fuseau de référence : ${refLabel}.` : ""}
         </CardDescription>
       </CardHeader>
       <CardContent>

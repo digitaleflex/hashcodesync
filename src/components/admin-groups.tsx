@@ -29,6 +29,7 @@ import {
   CheckIcon,
   XIcon,
   UserPlusIcon,
+  LockIcon,
 } from "lucide-react";
 
 const TYPE_LABELS: Record<string, string> = {
@@ -51,6 +52,8 @@ type GroupMember = {
   role: string;
   hoursPerWeek: number;
   reliability?: number;
+  weekValidated?: boolean;
+  weekValidatedAt?: string | null;
   joinedAt: string;
   user: Creator;
 };
@@ -385,6 +388,20 @@ export function AdminGroups() {
                               title="Fiabilité estimée (probabilité de présence)"
                             >
                               fiabilité {member.reliability}%
+                            </Badge>
+                          )}
+                          {member.weekValidated && (
+                            <Badge
+                              variant="secondary"
+                              className="border-warning/50 text-warning"
+                              title={
+                                member.weekValidatedAt
+                                  ? `Semaine validée le ${new Date(member.weekValidatedAt).toLocaleString("fr-FR")}`
+                                  : "Semaine validée (disponibilités figées)"
+                              }
+                            >
+                              <LockIcon className="mr-1 size-3" />
+                              Semaine validée
                             </Badge>
                           )}
                           {member.role === "manager" && (

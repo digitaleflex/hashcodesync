@@ -37,6 +37,7 @@ export async function GET() {
               lastname: true,
               email: true,
               attendances: { select: { status: true } },
+              weeklyValidations: { select: { id: true, weekStart: true, validatedAt: true } },
               availabilities: {
                 select: {
                   day: true,
@@ -69,6 +70,8 @@ export async function GET() {
       const present = m.user.attendances.filter((x) => x.status === "present").length;
       const absent = m.user.attendances.filter((x) => x.status === "absent").length;
       const reliability = Math.round(presenceProbability({ present, absent }, hoursPerWeek) * 100);
+      const weekValidation =
+        [...m.user.weeklyValidations].sort((a, b) => b.weekStart.getTime() - a.weekStart.getTime())[0] ?? null;
       totalHours += hoursPerWeek;
       return {
         id: m.id,
@@ -76,6 +79,8 @@ export async function GET() {
         joinedAt: m.joinedAt,
         hoursPerWeek,
         reliability,
+        weekValidated: Boolean(weekValidation),
+        weekValidatedAt: weekValidation?.validatedAt.toISOString() ?? null,
         user: { id: m.user.id, firstname: m.user.firstname, lastname: m.user.lastname, email: m.user.email },
       };
     });

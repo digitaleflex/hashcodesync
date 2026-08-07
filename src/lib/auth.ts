@@ -9,6 +9,12 @@ export const auth = betterAuth({
   }),
   emailAndPassword: {
     enabled: true,
+    sendResetPassword: async ({ user, url }) => {
+      // Dev : pas de SMTP configuré, on logue le lien pour récupération locale.
+      console.log(
+        `[HashCode Sync] Lien de réinitialisation pour ${user.email} : ${url}`
+      );
+    },
   },
   user: {
     additionalFields: {
@@ -24,6 +30,11 @@ export const auth = betterAuth({
       lastname: {
         type: "string",
         required: true,
+      },
+      timezone: {
+        type: "string",
+        defaultValue: "Africa/Porto-Novo",
+        input: true,
       },
     },
   },

@@ -6,12 +6,35 @@ Plateforme de coordination de cohorte : centralise les disponibilités, recomman
 
 ## ✨ Fonctionnalités
 
-- **Authentification** (Better Auth) : inscription, connexion, déconnexion, sessions sécurisées
-- **Dashboard** : vue utilisateur, rôle, navigation
-- **Disponibilités** *(à venir)* : calendrier hebdomadaire, CRUD des créneaux
-- **Ateliers** *(à venir)* : création, planification, participants
-- **Smart Scheduling** *(à venir)* : heatmap, recommandation automatique de créneaux
-- **Notifications** *(à venir)*
+### Authentification
+- Inscription, connexion, déconnexion, sessions sécurisées
+- Mot de passe oublié / réinitialisation
+- Rôles : membre, mentor, administrateur
+- Profil : prénom/nom, fuseau horaire, changement de mot de passe
+
+### Disponibilités
+- Calendrier hebdomadaire : ajout / suppression de créneaux (`HH:mm`)
+- Validation (format, heure de fin, chevauchements)
+- Disponibilités par **groupe** et **activité** (réservées aux membres du groupe)
+
+### Smart Scheduling
+- Heatmap (24 h × 7 j) d'intensité de disponibilité
+- Recommandation automatique des meilleurs créneaux (algorithme d'optimisation d'intervalles, fenêtre réglable 1-4 h)
+- Conversion multi-fuseaux vers un fuseau de référence (`Africa/Porto-Novo` par défaut)
+
+### Groupes & Activités
+- Création de groupes, gestion des activités (atelier, conférence, lab, autre)
+- Demande d'accès, acceptation/refus, rôles (membre / manager), heures/semaine
+- Dashboard admin/mentor de gestion
+
+### Ateliers & Mentorat
+- Création, édition, suppression (réservé au créateur)
+- Inscription / désinscription des participants (invité, accepté, refusé)
+- Dashboard mentor pour suivre la cohorte et planifier
+
+### Notifications
+- Nouvel atelier, modification, annulation, participant, groupe
+- Marquer comme lu / tout lire
 
 ## 🧱 Stack
 
@@ -65,14 +88,17 @@ DATABASE_URL="postgresql://hashcode:hashcode123@localhost:5433/hashcodesyncdb"
 BETTER_AUTH_SECRET="<secret long et aléatoire>"
 BETTER_AUTH_URL="http://localhost:3000"
 NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
+# Fuseau de référence de la cohorte (optionnel, par défaut Africa/Porto-Novo)
+REFERENCE_TIMEZONE="Africa/Porto-Novo"
 ```
 
-> Le `.env` est ignoré par git (secret). Utilisez `.env.example` et générez un vrai `BETTER_AUTH_SECRET` en production (ex. `openssl rand -hex 64`).
+> Le `.env` est ignoré par git (secret). Utilisez `.env.example` et générez un vrai `BETTER_AUTH_SECRET` en production (ex. `openssl rand -hex 64`). Sans SMTP configuré, le lien de réinitialisation du mot de passe est affiché dans la console du serveur.
 
 ## 🗄️ Schéma de données
 
-- **User** — compte, rôle (member/mentor/admin), prénom, nom
-- **Availability** — créneau hebdomadaire (jour, heure début/fin)
+- **User** — compte, rôle (member/mentor/admin), prénom, nom, fuseau horaire
+- **Group** / **GroupMember** / **GroupJoinRequest** / **GroupActivity** — équipes, membres (rôles, heures/semaine), demandes d'accès et activités propres
+- **Availability** — créneau hebdomadaire (jour, début/fin), lié à un groupe/activité
 - **Workshop** — atelier / session de mentorat
 - **Participant** — inscription à un atelier (invité, accepté, refusé)
 - **Notification** — notifications utilisateur
@@ -80,12 +106,13 @@ NEXT_PUBLIC_BETTER_AUTH_URL="http://localhost:3000"
 ## 🧭 Roadmap
 
 - [x] Fondations (auth, palette, dashboard)
-- [ ] Gestion des disponibilités
-- [ ] Dashboard administrateur (heatmap, recommandations)
-- [ ] Ateliers & participants
-- [ ] Notifications
-- [ ] Smart Scheduling
-- [ ] V2 : Google/Outlook Calendar, stats avancées
+- [x] Gestion des disponibilités (y compris par groupe/activité)
+- [x] Dashboard administrateur (heatmap, recommandations)
+- [x] Groupes & activités
+- [x] Ateliers & participants
+- [x] Notifications
+- [x] Smart Scheduling (+ multi-fuseaux)
+- [ ] V2 : Google/Outlook Calendar, stats avancées, export
 
 ## 📜 Scripts utiles
 

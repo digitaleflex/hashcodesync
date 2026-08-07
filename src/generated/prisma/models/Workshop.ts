@@ -208,6 +208,7 @@ export type WorkshopWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   participants?: Prisma.ParticipantListRelationFilter
+  attendance?: Prisma.AttendanceListRelationFilter
 }
 
 export type WorkshopOrderByWithRelationInput = {
@@ -221,6 +222,7 @@ export type WorkshopOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
   participants?: Prisma.ParticipantOrderByRelationAggregateInput
+  attendance?: Prisma.AttendanceOrderByRelationAggregateInput
 }
 
 export type WorkshopWhereUniqueInput = Prisma.AtLeast<{
@@ -237,6 +239,7 @@ export type WorkshopWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   participants?: Prisma.ParticipantListRelationFilter
+  attendance?: Prisma.AttendanceListRelationFilter
 }, "id">
 
 export type WorkshopOrderByWithAggregationInput = {
@@ -277,6 +280,7 @@ export type WorkshopCreateInput = {
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopUncheckedCreateInput = {
@@ -289,6 +293,7 @@ export type WorkshopUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopUpdateInput = {
@@ -301,6 +306,7 @@ export type WorkshopUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopUncheckedUpdateInput = {
@@ -313,6 +319,7 @@ export type WorkshopUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopCreateManyInput = {
@@ -451,6 +458,20 @@ export type WorkshopUpdateOneRequiredWithoutParticipantsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.WorkshopUpdateToOneWithWhereWithoutParticipantsInput, Prisma.WorkshopUpdateWithoutParticipantsInput>, Prisma.WorkshopUncheckedUpdateWithoutParticipantsInput>
 }
 
+export type WorkshopCreateNestedOneWithoutAttendanceInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutAttendanceInput, Prisma.WorkshopUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutAttendanceInput
+  connect?: Prisma.WorkshopWhereUniqueInput
+}
+
+export type WorkshopUpdateOneRequiredWithoutAttendanceNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutAttendanceInput, Prisma.WorkshopUncheckedCreateWithoutAttendanceInput>
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutAttendanceInput
+  upsert?: Prisma.WorkshopUpsertWithoutAttendanceInput
+  connect?: Prisma.WorkshopWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.WorkshopUpdateToOneWithWhereWithoutAttendanceInput, Prisma.WorkshopUpdateWithoutAttendanceInput>, Prisma.WorkshopUncheckedUpdateWithoutAttendanceInput>
+}
+
 export type WorkshopCreateWithoutCreatorInput = {
   id?: string
   title: string
@@ -460,6 +481,7 @@ export type WorkshopCreateWithoutCreatorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopUncheckedCreateWithoutCreatorInput = {
@@ -471,6 +493,7 @@ export type WorkshopUncheckedCreateWithoutCreatorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopCreateOrConnectWithoutCreatorInput = {
@@ -522,6 +545,7 @@ export type WorkshopCreateWithoutParticipantsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
+  attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopUncheckedCreateWithoutParticipantsInput = {
@@ -533,6 +557,7 @@ export type WorkshopUncheckedCreateWithoutParticipantsInput = {
   createdBy: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutWorkshopInput
 }
 
 export type WorkshopCreateOrConnectWithoutParticipantsInput = {
@@ -560,6 +585,7 @@ export type WorkshopUpdateWithoutParticipantsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
+  attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopUncheckedUpdateWithoutParticipantsInput = {
@@ -571,6 +597,71 @@ export type WorkshopUncheckedUpdateWithoutParticipantsInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutWorkshopNestedInput
+}
+
+export type WorkshopCreateWithoutAttendanceInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
+}
+
+export type WorkshopUncheckedCreateWithoutAttendanceInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt: Date | string
+  createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
+}
+
+export type WorkshopCreateOrConnectWithoutAttendanceInput = {
+  where: Prisma.WorkshopWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkshopCreateWithoutAttendanceInput, Prisma.WorkshopUncheckedCreateWithoutAttendanceInput>
+}
+
+export type WorkshopUpsertWithoutAttendanceInput = {
+  update: Prisma.XOR<Prisma.WorkshopUpdateWithoutAttendanceInput, Prisma.WorkshopUncheckedUpdateWithoutAttendanceInput>
+  create: Prisma.XOR<Prisma.WorkshopCreateWithoutAttendanceInput, Prisma.WorkshopUncheckedCreateWithoutAttendanceInput>
+  where?: Prisma.WorkshopWhereInput
+}
+
+export type WorkshopUpdateToOneWithWhereWithoutAttendanceInput = {
+  where?: Prisma.WorkshopWhereInput
+  data: Prisma.XOR<Prisma.WorkshopUpdateWithoutAttendanceInput, Prisma.WorkshopUncheckedUpdateWithoutAttendanceInput>
+}
+
+export type WorkshopUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
+}
+
+export type WorkshopUncheckedUpdateWithoutAttendanceInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopCreateManyCreatorInput = {
@@ -592,6 +683,7 @@ export type WorkshopUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopUncheckedUpdateWithoutCreatorInput = {
@@ -603,6 +695,7 @@ export type WorkshopUncheckedUpdateWithoutCreatorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutWorkshopNestedInput
 }
 
 export type WorkshopUncheckedUpdateManyWithoutCreatorInput = {
@@ -622,10 +715,12 @@ export type WorkshopUncheckedUpdateManyWithoutCreatorInput = {
 
 export type WorkshopCountOutputType = {
   participants: number
+  attendance: number
 }
 
 export type WorkshopCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   participants?: boolean | WorkshopCountOutputTypeCountParticipantsArgs
+  attendance?: boolean | WorkshopCountOutputTypeCountAttendanceArgs
 }
 
 /**
@@ -645,6 +740,13 @@ export type WorkshopCountOutputTypeCountParticipantsArgs<ExtArgs extends runtime
   where?: Prisma.ParticipantWhereInput
 }
 
+/**
+ * WorkshopCountOutputType without action
+ */
+export type WorkshopCountOutputTypeCountAttendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AttendanceWhereInput
+}
+
 
 export type WorkshopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -657,6 +759,7 @@ export type WorkshopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   participants?: boolean | Prisma.Workshop$participantsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Workshop$attendanceArgs<ExtArgs>
   _count?: boolean | Prisma.WorkshopCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["workshop"]>
 
@@ -699,6 +802,7 @@ export type WorkshopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type WorkshopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   participants?: boolean | Prisma.Workshop$participantsArgs<ExtArgs>
+  attendance?: boolean | Prisma.Workshop$attendanceArgs<ExtArgs>
   _count?: boolean | Prisma.WorkshopCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type WorkshopIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -713,6 +817,7 @@ export type $WorkshopPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     creator: Prisma.$UserPayload<ExtArgs>
     participants: Prisma.$ParticipantPayload<ExtArgs>[]
+    attendance: Prisma.$AttendancePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1119,6 +1224,7 @@ export interface Prisma__WorkshopClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   creator<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   participants<T extends Prisma.Workshop$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  attendance<T extends Prisma.Workshop$attendanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1578,6 +1684,30 @@ export type Workshop$participantsArgs<ExtArgs extends runtime.Types.Extensions.I
   take?: number
   skip?: number
   distinct?: Prisma.ParticipantScalarFieldEnum | Prisma.ParticipantScalarFieldEnum[]
+}
+
+/**
+ * Workshop.attendance
+ */
+export type Workshop$attendanceArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Attendance
+   */
+  select?: Prisma.AttendanceSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Attendance
+   */
+  omit?: Prisma.AttendanceOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AttendanceInclude<ExtArgs> | null
+  where?: Prisma.AttendanceWhereInput
+  orderBy?: Prisma.AttendanceOrderByWithRelationInput | Prisma.AttendanceOrderByWithRelationInput[]
+  cursor?: Prisma.AttendanceWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AttendanceScalarFieldEnum | Prisma.AttendanceScalarFieldEnum[]
 }
 
 /**

@@ -18,12 +18,17 @@ model User {
   role          String          @default("member")
   firstname     String
   lastname      String
+  timezone      String          @default("Africa/Porto-Novo")
   sessions      Session[]
   accounts      Account[]
   availabilities Availability[]
   workshops     Workshop[]
   participants  Participant[]
   notifications Notification[]
+  attendance    Attendance[]
+  groupMemberships GroupMember[]
+  createdGroups Group[]
+  joinRequests GroupJoinRequest[]
 
   @@map("user")
 }
@@ -75,17 +80,86 @@ model Verification {
   @@map("verification")
 }
 
+model Group {
+  id          String           @id @default(cuid())
+  name        String
+  description String?
+  createdBy   String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  members     GroupMember[]
+  activities  GroupActivity[]
+  availabilities Availability[]
+  joinRequests GroupJoinRequest[]
+
+  @@index([createdBy])
+}
+
+// Une équipe : un utilisateur y est membre et donne des dispo par groupe et/ou
+// par activité (atelier, conférence, lab, ...) propres au groupe.
+model GroupMember {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  role      String   @default("member") // member | manager
+  hoursPerWeek Int    @default(0) // temps qu'il consacre aux activités du groupe
+  joinedAt  DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+}
+
+// Demande d'accès : un utilisateur postule à un groupe, un admin/manager
+// l'accepte -> devient GroupMember.
+model GroupJoinRequest {
+  id        String   @id @default(cuid())
+  groupId   String
+  userId    String
+  status    String   @default("pending") // pending | accepted | rejected
+  message   String?
+  createdAt DateTime @default(now())
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([userId])
+  @@index([groupId])
+}
+
+model GroupActivity {
+  id          String   @id @default(cuid())
+  groupId     String
+  name        String
+  type        String   @default("atelier") // atelier | conference | lab | autre
+  description String?
+  group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  availabilities Availability[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([groupId])
+}
+
 model Availability {
   id        String   @id @default(cuid())
   userId    String
+  groupId   String?
+  activityId String?
   day       Int // 0 = Lundi ... 6 = Dimanche
   startTime String // format "HH:mm"
   endTime   String // format "HH:mm"
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group     Group?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  activity  GroupActivity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
 
   @@index([userId])
+  @@index([groupId])
+  @@index([activityId])
   @@index([day])
 }
 
@@ -98,6 +172,7 @@ model Workshop {
   createdBy   String
   creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   participants Participant[]
+  attendance  Attendance[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -116,6 +191,22 @@ model Participant {
 
   @@unique([workshopId, userId])
   @@index([userId])
+}
+
+// Présence réellement constatée à un atelier : sert de feedback pour estimer la
+// probabilité de présence pᵢ de chaque membre (mise à jour bayésienne Beta).
+model Attendance {
+  id        String   @id @default(cuid())
+  workshopId String
+  userId    String
+  status    String   // present | absent
+  createdAt DateTime @default(now())
+  workshop  Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workshopId, userId])
+  @@index([userId])
+  @@map("attendance")
 }
 
 model Notification {

@@ -37,6 +37,8 @@ export type AvailabilitySumAggregateOutputType = {
 export type AvailabilityMinAggregateOutputType = {
   id: string | null
   userId: string | null
+  groupId: string | null
+  activityId: string | null
   day: number | null
   startTime: string | null
   endTime: string | null
@@ -47,6 +49,8 @@ export type AvailabilityMinAggregateOutputType = {
 export type AvailabilityMaxAggregateOutputType = {
   id: string | null
   userId: string | null
+  groupId: string | null
+  activityId: string | null
   day: number | null
   startTime: string | null
   endTime: string | null
@@ -57,6 +61,8 @@ export type AvailabilityMaxAggregateOutputType = {
 export type AvailabilityCountAggregateOutputType = {
   id: number
   userId: number
+  groupId: number
+  activityId: number
   day: number
   startTime: number
   endTime: number
@@ -77,6 +83,8 @@ export type AvailabilitySumAggregateInputType = {
 export type AvailabilityMinAggregateInputType = {
   id?: true
   userId?: true
+  groupId?: true
+  activityId?: true
   day?: true
   startTime?: true
   endTime?: true
@@ -87,6 +95,8 @@ export type AvailabilityMinAggregateInputType = {
 export type AvailabilityMaxAggregateInputType = {
   id?: true
   userId?: true
+  groupId?: true
+  activityId?: true
   day?: true
   startTime?: true
   endTime?: true
@@ -97,6 +107,8 @@ export type AvailabilityMaxAggregateInputType = {
 export type AvailabilityCountAggregateInputType = {
   id?: true
   userId?: true
+  groupId?: true
+  activityId?: true
   day?: true
   startTime?: true
   endTime?: true
@@ -194,6 +206,8 @@ export type AvailabilityGroupByArgs<ExtArgs extends runtime.Types.Extensions.Int
 export type AvailabilityGroupByOutputType = {
   id: string
   userId: string
+  groupId: string | null
+  activityId: string | null
   day: number
   startTime: string
   endTime: string
@@ -227,23 +241,31 @@ export type AvailabilityWhereInput = {
   NOT?: Prisma.AvailabilityWhereInput | Prisma.AvailabilityWhereInput[]
   id?: Prisma.StringFilter<"Availability"> | string
   userId?: Prisma.StringFilter<"Availability"> | string
+  groupId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Availability"> | string | null
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  activity?: Prisma.XOR<Prisma.GroupActivityNullableScalarRelationFilter, Prisma.GroupActivityWhereInput> | null
 }
 
 export type AvailabilityOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityId?: Prisma.SortOrderInput | Prisma.SortOrder
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
+  group?: Prisma.GroupOrderByWithRelationInput
+  activity?: Prisma.GroupActivityOrderByWithRelationInput
 }
 
 export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
@@ -252,17 +274,23 @@ export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.AvailabilityWhereInput[]
   NOT?: Prisma.AvailabilityWhereInput | Prisma.AvailabilityWhereInput[]
   userId?: Prisma.StringFilter<"Availability"> | string
+  groupId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Availability"> | string | null
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
+  group?: Prisma.XOR<Prisma.GroupNullableScalarRelationFilter, Prisma.GroupWhereInput> | null
+  activity?: Prisma.XOR<Prisma.GroupActivityNullableScalarRelationFilter, Prisma.GroupActivityWhereInput> | null
 }, "id">
 
 export type AvailabilityOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityId?: Prisma.SortOrderInput | Prisma.SortOrder
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -281,6 +309,8 @@ export type AvailabilityScalarWhereWithAggregatesInput = {
   NOT?: Prisma.AvailabilityScalarWhereWithAggregatesInput | Prisma.AvailabilityScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Availability"> | string
   userId?: Prisma.StringWithAggregatesFilter<"Availability"> | string
+  groupId?: Prisma.StringNullableWithAggregatesFilter<"Availability"> | string | null
+  activityId?: Prisma.StringNullableWithAggregatesFilter<"Availability"> | string | null
   day?: Prisma.IntWithAggregatesFilter<"Availability"> | number
   startTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
   endTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
@@ -296,11 +326,15 @@ export type AvailabilityCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
+  group?: Prisma.GroupCreateNestedOneWithoutAvailabilitiesInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutAvailabilitiesInput
 }
 
 export type AvailabilityUncheckedCreateInput = {
   id?: string
   userId: string
+  groupId?: string | null
+  activityId?: string | null
   day: number
   startTime: string
   endTime: string
@@ -316,11 +350,15 @@ export type AvailabilityUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
+  group?: Prisma.GroupUpdateOneWithoutAvailabilitiesNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutAvailabilitiesNestedInput
 }
 
 export type AvailabilityUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -331,6 +369,8 @@ export type AvailabilityUncheckedUpdateInput = {
 export type AvailabilityCreateManyInput = {
   id?: string
   userId: string
+  groupId?: string | null
+  activityId?: string | null
   day: number
   startTime: string
   endTime: string
@@ -350,6 +390,8 @@ export type AvailabilityUpdateManyMutationInput = {
 export type AvailabilityUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   userId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -370,6 +412,8 @@ export type AvailabilityOrderByRelationAggregateInput = {
 export type AvailabilityCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -384,6 +428,8 @@ export type AvailabilityAvgOrderByAggregateInput = {
 export type AvailabilityMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -394,6 +440,8 @@ export type AvailabilityMaxOrderByAggregateInput = {
 export type AvailabilityMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   userId?: Prisma.SortOrder
+  groupId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
@@ -447,12 +495,88 @@ export type AvailabilityUncheckedUpdateManyWithoutUserNestedInput = {
   deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type AvailabilityCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput> | Prisma.AvailabilityCreateWithoutGroupInput[] | Prisma.AvailabilityUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutGroupInput | Prisma.AvailabilityCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.AvailabilityCreateManyGroupInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUncheckedCreateNestedManyWithoutGroupInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput> | Prisma.AvailabilityCreateWithoutGroupInput[] | Prisma.AvailabilityUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutGroupInput | Prisma.AvailabilityCreateOrConnectWithoutGroupInput[]
+  createMany?: Prisma.AvailabilityCreateManyGroupInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput> | Prisma.AvailabilityCreateWithoutGroupInput[] | Prisma.AvailabilityUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutGroupInput | Prisma.AvailabilityCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutGroupInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.AvailabilityCreateManyGroupInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutGroupInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutGroupInput | Prisma.AvailabilityUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutGroupNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput> | Prisma.AvailabilityCreateWithoutGroupInput[] | Prisma.AvailabilityUncheckedCreateWithoutGroupInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutGroupInput | Prisma.AvailabilityCreateOrConnectWithoutGroupInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutGroupInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutGroupInput[]
+  createMany?: Prisma.AvailabilityCreateManyGroupInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutGroupInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutGroupInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutGroupInput | Prisma.AvailabilityUpdateManyWithWhereWithoutGroupInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
+}
+
+export type AvailabilityCreateNestedManyWithoutActivityInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput> | Prisma.AvailabilityCreateWithoutActivityInput[] | Prisma.AvailabilityUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutActivityInput | Prisma.AvailabilityCreateOrConnectWithoutActivityInput[]
+  createMany?: Prisma.AvailabilityCreateManyActivityInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUncheckedCreateNestedManyWithoutActivityInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput> | Prisma.AvailabilityCreateWithoutActivityInput[] | Prisma.AvailabilityUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutActivityInput | Prisma.AvailabilityCreateOrConnectWithoutActivityInput[]
+  createMany?: Prisma.AvailabilityCreateManyActivityInputEnvelope
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+}
+
+export type AvailabilityUpdateManyWithoutActivityNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput> | Prisma.AvailabilityCreateWithoutActivityInput[] | Prisma.AvailabilityUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutActivityInput | Prisma.AvailabilityCreateOrConnectWithoutActivityInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutActivityInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutActivityInput[]
+  createMany?: Prisma.AvailabilityCreateManyActivityInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutActivityInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutActivityInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutActivityInput | Prisma.AvailabilityUpdateManyWithWhereWithoutActivityInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutActivityNestedInput = {
+  create?: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput> | Prisma.AvailabilityCreateWithoutActivityInput[] | Prisma.AvailabilityUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.AvailabilityCreateOrConnectWithoutActivityInput | Prisma.AvailabilityCreateOrConnectWithoutActivityInput[]
+  upsert?: Prisma.AvailabilityUpsertWithWhereUniqueWithoutActivityInput | Prisma.AvailabilityUpsertWithWhereUniqueWithoutActivityInput[]
+  createMany?: Prisma.AvailabilityCreateManyActivityInputEnvelope
+  set?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  disconnect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  delete?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  connect?: Prisma.AvailabilityWhereUniqueInput | Prisma.AvailabilityWhereUniqueInput[]
+  update?: Prisma.AvailabilityUpdateWithWhereUniqueWithoutActivityInput | Prisma.AvailabilityUpdateWithWhereUniqueWithoutActivityInput[]
+  updateMany?: Prisma.AvailabilityUpdateManyWithWhereWithoutActivityInput | Prisma.AvailabilityUpdateManyWithWhereWithoutActivityInput[]
+  deleteMany?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
 }
 
 export type AvailabilityCreateWithoutUserInput = {
@@ -462,10 +586,14 @@ export type AvailabilityCreateWithoutUserInput = {
   endTime: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  group?: Prisma.GroupCreateNestedOneWithoutAvailabilitiesInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutAvailabilitiesInput
 }
 
 export type AvailabilityUncheckedCreateWithoutUserInput = {
   id?: string
+  groupId?: string | null
+  activityId?: string | null
   day: number
   startTime: string
   endTime: string
@@ -505,6 +633,8 @@ export type AvailabilityScalarWhereInput = {
   NOT?: Prisma.AvailabilityScalarWhereInput | Prisma.AvailabilityScalarWhereInput[]
   id?: Prisma.StringFilter<"Availability"> | string
   userId?: Prisma.StringFilter<"Availability"> | string
+  groupId?: Prisma.StringNullableFilter<"Availability"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Availability"> | string | null
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
@@ -512,8 +642,106 @@ export type AvailabilityScalarWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
 }
 
+export type AvailabilityCreateWithoutGroupInput = {
+  id?: string
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutAvailabilitiesInput
+}
+
+export type AvailabilityUncheckedCreateWithoutGroupInput = {
+  id?: string
+  userId: string
+  activityId?: string | null
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityCreateOrConnectWithoutGroupInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput>
+}
+
+export type AvailabilityCreateManyGroupInputEnvelope = {
+  data: Prisma.AvailabilityCreateManyGroupInput | Prisma.AvailabilityCreateManyGroupInput[]
+  skipDuplicates?: boolean
+}
+
+export type AvailabilityUpsertWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  update: Prisma.XOR<Prisma.AvailabilityUpdateWithoutGroupInput, Prisma.AvailabilityUncheckedUpdateWithoutGroupInput>
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutGroupInput, Prisma.AvailabilityUncheckedCreateWithoutGroupInput>
+}
+
+export type AvailabilityUpdateWithWhereUniqueWithoutGroupInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateWithoutGroupInput, Prisma.AvailabilityUncheckedUpdateWithoutGroupInput>
+}
+
+export type AvailabilityUpdateManyWithWhereWithoutGroupInput = {
+  where: Prisma.AvailabilityScalarWhereInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateManyMutationInput, Prisma.AvailabilityUncheckedUpdateManyWithoutGroupInput>
+}
+
+export type AvailabilityCreateWithoutActivityInput = {
+  id?: string
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
+  group?: Prisma.GroupCreateNestedOneWithoutAvailabilitiesInput
+}
+
+export type AvailabilityUncheckedCreateWithoutActivityInput = {
+  id?: string
+  userId: string
+  groupId?: string | null
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityCreateOrConnectWithoutActivityInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput>
+}
+
+export type AvailabilityCreateManyActivityInputEnvelope = {
+  data: Prisma.AvailabilityCreateManyActivityInput | Prisma.AvailabilityCreateManyActivityInput[]
+  skipDuplicates?: boolean
+}
+
+export type AvailabilityUpsertWithWhereUniqueWithoutActivityInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  update: Prisma.XOR<Prisma.AvailabilityUpdateWithoutActivityInput, Prisma.AvailabilityUncheckedUpdateWithoutActivityInput>
+  create: Prisma.XOR<Prisma.AvailabilityCreateWithoutActivityInput, Prisma.AvailabilityUncheckedCreateWithoutActivityInput>
+}
+
+export type AvailabilityUpdateWithWhereUniqueWithoutActivityInput = {
+  where: Prisma.AvailabilityWhereUniqueInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateWithoutActivityInput, Prisma.AvailabilityUncheckedUpdateWithoutActivityInput>
+}
+
+export type AvailabilityUpdateManyWithWhereWithoutActivityInput = {
+  where: Prisma.AvailabilityScalarWhereInput
+  data: Prisma.XOR<Prisma.AvailabilityUpdateManyMutationInput, Prisma.AvailabilityUncheckedUpdateManyWithoutActivityInput>
+}
+
 export type AvailabilityCreateManyUserInput = {
   id?: string
+  groupId?: string | null
+  activityId?: string | null
   day: number
   startTime: string
   endTime: string
@@ -528,10 +756,14 @@ export type AvailabilityUpdateWithoutUserInput = {
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneWithoutAvailabilitiesNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutAvailabilitiesNestedInput
 }
 
 export type AvailabilityUncheckedUpdateWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -541,6 +773,96 @@ export type AvailabilityUncheckedUpdateWithoutUserInput = {
 
 export type AvailabilityUncheckedUpdateManyWithoutUserInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityCreateManyGroupInput = {
+  id?: string
+  userId: string
+  activityId?: string | null
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutAvailabilitiesNestedInput
+}
+
+export type AvailabilityUncheckedUpdateWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutGroupInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityCreateManyActivityInput = {
+  id?: string
+  userId: string
+  groupId?: string | null
+  day: number
+  startTime: string
+  endTime: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type AvailabilityUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
+  group?: Prisma.GroupUpdateOneWithoutAvailabilitiesNestedInput
+}
+
+export type AvailabilityUncheckedUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  day?: Prisma.IntFieldUpdateOperationsInput | number
+  startTime?: Prisma.StringFieldUpdateOperationsInput | string
+  endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type AvailabilityUncheckedUpdateManyWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  userId?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
@@ -553,39 +875,53 @@ export type AvailabilityUncheckedUpdateManyWithoutUserInput = {
 export type AvailabilitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  groupId?: boolean
+  activityId?: boolean
   day?: boolean
   startTime?: boolean
   endTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  groupId?: boolean
+  activityId?: boolean
   day?: boolean
   startTime?: boolean
   endTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   userId?: boolean
+  groupId?: boolean
+  activityId?: boolean
   day?: boolean
   startTime?: boolean
   endTime?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }, ExtArgs["result"]["availability"]>
 
 export type AvailabilitySelectScalar = {
   id?: boolean
   userId?: boolean
+  groupId?: boolean
+  activityId?: boolean
   day?: boolean
   startTime?: boolean
   endTime?: boolean
@@ -593,25 +929,35 @@ export type AvailabilitySelectScalar = {
   updatedAt?: boolean
 }
 
-export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "day" | "startTime" | "endTime" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
+export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "groupId" | "activityId" | "day" | "startTime" | "endTime" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
 export type AvailabilityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }
 export type AvailabilityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }
 export type AvailabilityIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
+  group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
+  activity?: boolean | Prisma.Availability$activityArgs<ExtArgs>
 }
 
 export type $AvailabilityPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Availability"
   objects: {
     user: Prisma.$UserPayload<ExtArgs>
+    group: Prisma.$GroupPayload<ExtArgs> | null
+    activity: Prisma.$GroupActivityPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     userId: string
+    groupId: string | null
+    activityId: string | null
     day: number
     startTime: string
     endTime: string
@@ -1012,6 +1358,8 @@ readonly fields: AvailabilityFieldRefs;
 export interface Prisma__AvailabilityClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
   user<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  group<T extends Prisma.Availability$groupArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Availability$groupArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  activity<T extends Prisma.Availability$activityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Availability$activityArgs<ExtArgs>>): Prisma.Prisma__GroupActivityClient<runtime.Types.Result.GetResult<Prisma.$GroupActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1043,6 +1391,8 @@ export interface Prisma__AvailabilityClient<T, Null = never, ExtArgs extends run
 export interface AvailabilityFieldRefs {
   readonly id: Prisma.FieldRef<"Availability", 'String'>
   readonly userId: Prisma.FieldRef<"Availability", 'String'>
+  readonly groupId: Prisma.FieldRef<"Availability", 'String'>
+  readonly activityId: Prisma.FieldRef<"Availability", 'String'>
   readonly day: Prisma.FieldRef<"Availability", 'Int'>
   readonly startTime: Prisma.FieldRef<"Availability", 'String'>
   readonly endTime: Prisma.FieldRef<"Availability", 'String'>
@@ -1446,6 +1796,44 @@ export type AvailabilityDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.
    * Limit how many Availabilities to delete.
    */
   limit?: number
+}
+
+/**
+ * Availability.group
+ */
+export type Availability$groupArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Group
+   */
+  select?: Prisma.GroupSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Group
+   */
+  omit?: Prisma.GroupOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupInclude<ExtArgs> | null
+  where?: Prisma.GroupWhereInput
+}
+
+/**
+ * Availability.activity
+ */
+export type Availability$activityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupActivity
+   */
+  select?: Prisma.GroupActivitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupActivity
+   */
+  omit?: Prisma.GroupActivityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupActivityInclude<ExtArgs> | null
+  where?: Prisma.GroupActivityWhereInput
 }
 
 /**

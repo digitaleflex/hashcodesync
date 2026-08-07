@@ -38,6 +38,26 @@ export type Account = Prisma.AccountModel
  */
 export type Verification = Prisma.VerificationModel
 /**
+ * Model Group
+ * 
+ */
+export type Group = Prisma.GroupModel
+/**
+ * Model GroupMember
+ * 
+ */
+export type GroupMember = Prisma.GroupMemberModel
+/**
+ * Model GroupJoinRequest
+ * 
+ */
+export type GroupJoinRequest = Prisma.GroupJoinRequestModel
+/**
+ * Model GroupActivity
+ * 
+ */
+export type GroupActivity = Prisma.GroupActivityModel
+/**
  * Model Availability
  * 
  */
@@ -52,6 +72,11 @@ export type Workshop = Prisma.WorkshopModel
  * 
  */
 export type Participant = Prisma.ParticipantModel
+/**
+ * Model Attendance
+ * 
+ */
+export type Attendance = Prisma.AttendanceModel
 /**
  * Model Notification
  * 

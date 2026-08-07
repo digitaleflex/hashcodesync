@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { removeUpload } from "@/lib/uploads";
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -60,11 +61,35 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   const path = url.pathname;
   const requestId = path.split("/").pop();
 
-  let body: { status?: unknown; hoursPerWeek?: unknown; role?: unknown };
+  let body: { status?: unknown; hoursPerWeek?: unknown; role?: unknown; coverImage?: unknown };
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Corps JSON invalide" }, { status: 400 });
+  }
+
+  // Mise à jour de l'image de couverture (PATCH /api/admin/groups/:id  { coverImage: "/uploads/x.png" }).
+  if (!path.includes("join-requests")) {
+    const coverImage = typeof body.coverImage === "string" ? body.coverImage.trim() : null;
+    if (coverImage !== null && !coverImage.startsWith("/uploads/")) {
+      return NextResponse.json(
+        { error: "Chemin d'image invalide" },
+        { status: 400 }
+      );
+    }
+    const current = await prisma.group.findUnique({ where: { id }, select: { coverImage: true } });
+    if (!current) {
+      return NextResponse.json({ error: "Groupe introuvable" }, { status: 404 });
+    }
+    const updated = await prisma.group.update({
+      where: { id },
+      data: { coverImage },
+      select: { id: true, coverImage: true },
+    });
+    if (current.coverImage && current.coverImage !== coverImage) {
+      await removeUpload(current.coverImage);
+    }
+    return NextResponse.json(updated);
   }
 
   const status = String(body.status ?? "");

@@ -29,3 +29,7 @@ yarn-error.log*
 # prisma
 prisma/dev.db
 src/generated/prisma/internal
+
+# uploads (images utilisateurs)
+/public/uploads/*
+!/public/uploads/.gitkeep

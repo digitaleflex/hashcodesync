@@ -42,6 +42,7 @@ type GroupSummary = {
   id: string;
   name: string;
   description: string | null;
+  coverImage?: string | null;
   memberCount: number;
   role: string | null;
   hoursPerWeek: number;
@@ -52,6 +53,7 @@ type MyGroup = {
   id: string;
   name: string;
   description: string | null;
+  coverImage?: string | null;
   role: string;
   hoursPerWeek: number;
   memberCount: number;
@@ -70,6 +72,20 @@ type Availability = {
 };
 
 const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
+function CoverBanner({ src, name }: { src?: string | null; name: string }) {
+  if (!src) return null;
+  return (
+    <div className="relative mb-3 -mx-3 -mt-3 h-24 overflow-hidden rounded-t-lg bg-gradient-to-r from-accent/20 to-secondary">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={src}
+        alt={`Image de couverture du groupe ${name}`}
+        className="h-full w-full object-cover"
+      />
+    </div>
+  );
+}
 
 export function GroupsManager() {
   const { data, mutate, isLoading } = useSWR<{
@@ -331,8 +347,9 @@ export function GroupsManager() {
               {myGroups.map((g) => (
                 <div
                   key={g.id}
-                  className="flex flex-col gap-2 rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
+                  className="flex flex-col gap-2 overflow-hidden rounded-lg border p-3 sm:flex-row sm:items-center sm:justify-between"
                 >
+                  <CoverBanner src={g.coverImage} name={g.name} />
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="font-medium">{g.name}</p>
@@ -380,8 +397,9 @@ export function GroupsManager() {
                 return (
                   <div
                     key={g.id}
-                    className="flex flex-col gap-2 rounded-lg border p-3"
+                    className="flex flex-col gap-2 overflow-hidden rounded-lg border p-3"
                   >
+                    <CoverBanner src={g.coverImage} name={g.name} />
                     <div className="flex items-center justify-between gap-2">
                       <p className="font-medium">{g.name}</p>
                       <div className="flex items-center gap-1.5">

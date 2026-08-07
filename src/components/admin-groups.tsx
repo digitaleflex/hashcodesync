@@ -70,6 +70,7 @@ type Group = {
   id: string;
   name: string;
   description: string | null;
+  coverImage?: string | null;
   createdAt: string;
   creator: Creator;
   members: GroupMember[];
@@ -107,6 +108,7 @@ export function AdminGroups() {
   const [removingMember, setRemovingMember] = useState<string | null>(null);
   const [removingActivity, setRemovingActivity] = useState<string | null>(null);
   const [decidingRequest, setDecidingRequest] = useState<string | null>(null);
+  const [coverBusy, setCoverBusy] = useState<string | null>(null);
 
   const post = useCallback(
     async (path: string, body: unknown, method = "POST") => {
@@ -196,6 +198,32 @@ export function AdminGroups() {
     if (ok) toast.success(status === "accepted" ? "Demande acceptée" : "Demande refusée");
   }
 
+  async function uploadCover(groupId: string, file: File | null) {
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image trop lourde (5 Mo maximum)");
+      return;
+    }
+    setCoverBusy(groupId);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const up = await fetch("/api/upload", { method: "POST", body: fd });
+      if (!up.ok) {
+        const err = await up.json().catch(() => ({ error: "Upload impossible" }));
+        toast.error(err.error ?? "Upload impossible");
+        return;
+      }
+      const { url } = await up.json();
+      const ok = await post(`/api/admin/groups/${groupId}`, { coverImage: url }, "PATCH");
+      if (ok) toast.success("Image de couverture mise à jour");
+    } catch {
+      toast.error("Erreur réseau : upload impossible");
+    } finally {
+      setCoverBusy(null);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Card className="bg-secondary/40">
@@ -246,7 +274,53 @@ export function AdminGroups() {
         </p>
       ) : (
         groups.map((group) => (
-          <Card key={group.id}>
+          <Card key={group.id} className="overflow-hidden">
+            <div
+              className="relative h-32 bg-gradient-to-r from-accent/20 to-secondary sm:h-40"
+              role="img"
+              aria-label={
+                group.coverImage
+                  ? `Image de couverture du groupe ${group.name}`
+                  : undefined
+              }
+            >
+              {group.coverImage ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={group.coverImage}
+                  alt={`Image de couverture du groupe ${group.name}`}
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <div className="flex h-full items-center justify-center">
+                  <UsersIcon className="size-10 text-white/70" />
+                </div>
+              )}
+              <label
+                className={`absolute right-3 top-3 cursor-pointer rounded-full bg-background/90 px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-background ${coverBusy === group.id ? "pointer-events-none opacity-70" : ""}`}
+              >
+                {coverBusy === group.id ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Loader2Icon className="size-3.5 animate-spin" />
+                    Envoi…
+                  </span>
+                ) : group.coverImage ? (
+                  "Changer"
+                ) : (
+                  "Ajouter une image"
+                )}
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  className="sr-only"
+                  onChange={(e) => {
+                    const f = e.target.files?.[0] ?? null;
+                    e.target.value = "";
+                    uploadCover(group.id, f);
+                  }}
+                />
+              </label>
+            </div>
             <CardHeader>
               <CardTitle className="flex items-center gap-2 text-lg">
                 <UsersIcon className="size-5 text-accent" />

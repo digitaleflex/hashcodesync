@@ -31,6 +31,7 @@ model User {
   notifications    Notification[]
   joinRequests     GroupJoinRequest[]
   weeklyValidations WeeklyValidation[]
+  weekSnapshots     WeekSnapshot[]
 
   @@map("user")
 }
@@ -180,6 +181,34 @@ model WeeklyValidation {
   @@unique([userId, weekStart])
   @@index([userId])
   @@map("weekly_validation")
+}
+
+// Historique des disponibilités : copie figée des créneaux de l'utilisateur
+// au moment où il valide sa semaine. La dévalidation libère l'édition mais
+// ne supprime pas l'historique (traçabilité des semaines engagées).
+model WeekSnapshot {
+  id          String           @id @default(cuid())
+  userId      String
+  weekStart   DateTime         // lundi 00:00 (fuseau de référence)
+  validatedAt DateTime         @default(now())
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  slots       SlotSnapshot[]
+
+  @@unique([userId, weekStart])
+  @@index([userId])
+  @@map("week_snapshot")
+}
+
+model SlotSnapshot {
+  id        String       @id @default(cuid())
+  snapshotId String
+  day        Int // 0 = Lundi ... 6 = Dimanche
+  startTime  String       // format "HH:mm"
+  endTime    String       // format "HH:mm"
+  snapshot   WeekSnapshot @relation(fields: [snapshotId], references: [id], onDelete: Cascade)
+
+  @@index([snapshotId])
+  @@map("slot_snapshot")
 }
 
 model Workshop {

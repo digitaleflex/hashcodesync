@@ -56,5 +56,27 @@ export async function POST(req: NextRequest) {
     create: { userId: session.user.id, weekStart },
   });
 
+  // Historique : figer une copie des créneaux actuels au moment de l'engagement.
+  // Révalider remplace la copie de la semaine (cohérent avec le verrou).
+  const availabilities = await prisma.availability.findMany({
+    where: { userId: session.user.id },
+    select: { day: true, startTime: true, endTime: true },
+  });
+
+  const snapshot = await prisma.weekSnapshot.upsert({
+    where: { userId_weekStart: { userId: session.user.id, weekStart } },
+    update: { validatedAt: new Date() },
+    create: { userId: session.user.id, weekStart },
+  });
+
+  await prisma.$transaction([
+    prisma.slotSnapshot.deleteMany({ where: { snapshotId: snapshot.id } }),
+    ...availabilities.map((a) =>
+      prisma.slotSnapshot.create({
+        data: { snapshotId: snapshot.id, day: a.day, startTime: a.startTime, endTime: a.endTime },
+      })
+    ),
+  ]);
+
   return NextResponse.json({ weekStart: weekStart.toISOString(), validated: true });
 }

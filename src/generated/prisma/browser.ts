@@ -68,6 +68,16 @@ export type Availability = Prisma.AvailabilityModel
  */
 export type WeeklyValidation = Prisma.WeeklyValidationModel
 /**
+ * Model WeekSnapshot
+ * 
+ */
+export type WeekSnapshot = Prisma.WeekSnapshotModel
+/**
+ * Model SlotSnapshot
+ * 
+ */
+export type SlotSnapshot = Prisma.SlotSnapshotModel
+/**
  * Model Workshop
  * 
  */

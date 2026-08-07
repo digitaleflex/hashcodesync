@@ -1,4 +1,4 @@
-import type { Availability } from "@/components/availability/shared";
+import type { SlotInput } from "@/components/availability/shared";
 import { DAY_NAMES } from "@/components/availability/constants";
 import { CircleIcon } from "lucide-react";
 
@@ -18,7 +18,7 @@ function durationLabel(start: string, end: string): string {
 export function MobileWeeklyTimeline({
   grouped,
 }: {
-  grouped: Record<number, Availability[]>;
+  grouped: Record<number, SlotInput[]>;
 }) {
   return (
     <ul className="divide-y divide-border">
@@ -37,9 +37,9 @@ export function MobileWeeklyTimeline({
             </div>
             {has ? (
               <div className="flex flex-wrap gap-1.5">
-                {slots.map((s) => (
+                {slots.map((s, si) => (
                   <span
-                    key={s.id}
+                    key={`${day}-${s.startTime}-${si}`}
                     className="inline-flex items-center gap-1.5 rounded-md bg-accent/15 px-2 py-1 text-xs font-medium text-accent"
                   >
                     {s.startTime}–{s.endTime}

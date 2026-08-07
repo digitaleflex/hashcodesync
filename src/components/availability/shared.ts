@@ -7,6 +7,12 @@ export type Availability = {
   endTime: string;
 };
 
+export type SlotInput = {
+  day: number;
+  startTime: string;
+  endTime: string;
+};
+
 export type AvailabilityStats = {
   slots: number;
   hours: number;
@@ -21,7 +27,7 @@ function toMinutes(time: string): number {
   return h * 60 + m;
 }
 
-export function computeStats(list: Availability[]): AvailabilityStats {
+export function computeStats(list: SlotInput[]): AvailabilityStats {
   if (list.length === 0) {
     return { slots: 0, hours: 0, minutes: 0, daysCount: 0, bestDay: null, avgSlotMinutes: null };
   }
@@ -56,6 +62,19 @@ export function durationLabel(minutes: number): string {
 
 export function rangeLabel(start: string, end: string): string {
   return `${start}–${end}`;
+}
+
+export function groupSlots(slots: SlotInput[]): Record<number, SlotInput[]> {
+  const g: Record<number, SlotInput[]> = {};
+  for (let i = 0; i < 7; i++) g[i] = [];
+  slots.forEach((s) => {
+    if (g[s.day]) g[s.day].push(s);
+  });
+  return g;
+}
+
+export function compareSlots(a: SlotInput, b: SlotInput) {
+  return a.day - b.day || a.startTime.localeCompare(b.startTime);
 }
 
 export { DAY_NAMES, DAY_SHORT };

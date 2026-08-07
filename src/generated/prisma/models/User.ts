@@ -242,6 +242,7 @@ export type UserWhereInput = {
   notifications?: Prisma.NotificationListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
   weeklyValidations?: Prisma.WeeklyValidationListRelationFilter
+  weekSnapshots?: Prisma.WeekSnapshotListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -268,6 +269,7 @@ export type UserOrderByWithRelationInput = {
   notifications?: Prisma.NotificationOrderByRelationAggregateInput
   joinRequests?: Prisma.GroupJoinRequestOrderByRelationAggregateInput
   weeklyValidations?: Prisma.WeeklyValidationOrderByRelationAggregateInput
+  weekSnapshots?: Prisma.WeekSnapshotOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -297,6 +299,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   notifications?: Prisma.NotificationListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
   weeklyValidations?: Prisma.WeeklyValidationListRelationFilter
+  weekSnapshots?: Prisma.WeekSnapshotListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -357,6 +360,7 @@ export type UserCreateInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -383,6 +387,7 @@ export type UserUncheckedCreateInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -409,6 +414,7 @@ export type UserUpdateInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -435,6 +441,7 @@ export type UserUncheckedUpdateInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -640,6 +647,20 @@ export type UserUpdateOneRequiredWithoutWeeklyValidationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWeeklyValidationsInput, Prisma.UserUpdateWithoutWeeklyValidationsInput>, Prisma.UserUncheckedUpdateWithoutWeeklyValidationsInput>
 }
 
+export type UserCreateNestedOneWithoutWeekSnapshotsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWeekSnapshotsInput, Prisma.UserUncheckedCreateWithoutWeekSnapshotsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWeekSnapshotsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutWeekSnapshotsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutWeekSnapshotsInput, Prisma.UserUncheckedCreateWithoutWeekSnapshotsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutWeekSnapshotsInput
+  upsert?: Prisma.UserUpsertWithoutWeekSnapshotsInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWeekSnapshotsInput, Prisma.UserUpdateWithoutWeekSnapshotsInput>, Prisma.UserUncheckedUpdateWithoutWeekSnapshotsInput>
+}
+
 export type UserCreateNestedOneWithoutWorkshopsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWorkshopsInput, Prisma.UserUncheckedCreateWithoutWorkshopsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkshopsInput
@@ -733,6 +754,7 @@ export type UserCreateWithoutSessionsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -758,6 +780,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -799,6 +822,7 @@ export type UserUpdateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -824,6 +848,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -849,6 +874,7 @@ export type UserCreateWithoutAccountsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -874,6 +900,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -915,6 +942,7 @@ export type UserUpdateWithoutAccountsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -940,6 +968,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedGroupsInput = {
@@ -965,6 +994,7 @@ export type UserCreateWithoutCreatedGroupsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -990,6 +1020,7 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -1031,6 +1062,7 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -1056,6 +1088,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGroupMembershipsInput = {
@@ -1081,6 +1114,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
@@ -1106,6 +1140,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -1147,6 +1182,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
@@ -1172,6 +1208,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutJoinRequestsInput = {
@@ -1197,6 +1234,7 @@ export type UserCreateWithoutJoinRequestsInput = {
   createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutJoinRequestsInput = {
@@ -1222,6 +1260,7 @@ export type UserUncheckedCreateWithoutJoinRequestsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutJoinRequestsInput = {
@@ -1263,6 +1302,7 @@ export type UserUpdateWithoutJoinRequestsInput = {
   createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJoinRequestsInput = {
@@ -1288,6 +1328,7 @@ export type UserUncheckedUpdateWithoutJoinRequestsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAvailabilitiesInput = {
@@ -1313,6 +1354,7 @@ export type UserCreateWithoutAvailabilitiesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAvailabilitiesInput = {
@@ -1338,6 +1380,7 @@ export type UserUncheckedCreateWithoutAvailabilitiesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAvailabilitiesInput = {
@@ -1379,6 +1422,7 @@ export type UserUpdateWithoutAvailabilitiesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
@@ -1404,6 +1448,7 @@ export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWeeklyValidationsInput = {
@@ -1429,6 +1474,7 @@ export type UserCreateWithoutWeeklyValidationsInput = {
   createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
@@ -1454,6 +1500,7 @@ export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWeeklyValidationsInput = {
@@ -1495,6 +1542,7 @@ export type UserUpdateWithoutWeeklyValidationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
@@ -1520,6 +1568,127 @@ export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutWeekSnapshotsInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutWeekSnapshotsInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutWeekSnapshotsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutWeekSnapshotsInput, Prisma.UserUncheckedCreateWithoutWeekSnapshotsInput>
+}
+
+export type UserUpsertWithoutWeekSnapshotsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutWeekSnapshotsInput, Prisma.UserUncheckedUpdateWithoutWeekSnapshotsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutWeekSnapshotsInput, Prisma.UserUncheckedCreateWithoutWeekSnapshotsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutWeekSnapshotsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutWeekSnapshotsInput, Prisma.UserUncheckedUpdateWithoutWeekSnapshotsInput>
+}
+
+export type UserUpdateWithoutWeekSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutWeekSnapshotsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkshopsInput = {
@@ -1545,6 +1714,7 @@ export type UserCreateWithoutWorkshopsInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkshopsInput = {
@@ -1570,6 +1740,7 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkshopsInput = {
@@ -1611,6 +1782,7 @@ export type UserUpdateWithoutWorkshopsInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkshopsInput = {
@@ -1636,6 +1808,7 @@ export type UserUncheckedUpdateWithoutWorkshopsInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedSeriesInput = {
@@ -1661,6 +1834,7 @@ export type UserCreateWithoutCreatedSeriesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedSeriesInput = {
@@ -1686,6 +1860,7 @@ export type UserUncheckedCreateWithoutCreatedSeriesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedSeriesInput = {
@@ -1727,6 +1902,7 @@ export type UserUpdateWithoutCreatedSeriesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
@@ -1752,6 +1928,7 @@ export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationInput = {
@@ -1777,6 +1954,7 @@ export type UserCreateWithoutParticipationInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationInput = {
@@ -1802,6 +1980,7 @@ export type UserUncheckedCreateWithoutParticipationInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationInput = {
@@ -1843,6 +2022,7 @@ export type UserUpdateWithoutParticipationInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationInput = {
@@ -1868,6 +2048,7 @@ export type UserUncheckedUpdateWithoutParticipationInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAttendancesInput = {
@@ -1893,6 +2074,7 @@ export type UserCreateWithoutAttendancesInput = {
   notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAttendancesInput = {
@@ -1918,6 +2100,7 @@ export type UserUncheckedCreateWithoutAttendancesInput = {
   notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAttendancesInput = {
@@ -1959,6 +2142,7 @@ export type UserUpdateWithoutAttendancesInput = {
   notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttendancesInput = {
@@ -1984,6 +2168,7 @@ export type UserUncheckedUpdateWithoutAttendancesInput = {
   notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2009,6 +2194,7 @@ export type UserCreateWithoutNotificationsInput = {
   createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2034,6 +2220,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2075,6 +2262,7 @@ export type UserUpdateWithoutNotificationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2100,6 +2288,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -2120,6 +2309,7 @@ export type UserCountOutputType = {
   notifications: number
   joinRequests: number
   weeklyValidations: number
+  weekSnapshots: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2135,6 +2325,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
   joinRequests?: boolean | UserCountOutputTypeCountJoinRequestsArgs
   weeklyValidations?: boolean | UserCountOutputTypeCountWeeklyValidationsArgs
+  weekSnapshots?: boolean | UserCountOutputTypeCountWeekSnapshotsArgs
 }
 
 /**
@@ -2231,6 +2422,13 @@ export type UserCountOutputTypeCountWeeklyValidationsArgs<ExtArgs extends runtim
   where?: Prisma.WeeklyValidationWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountWeekSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WeekSnapshotWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2256,6 +2454,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   joinRequests?: boolean | Prisma.User$joinRequestsArgs<ExtArgs>
   weeklyValidations?: boolean | Prisma.User$weeklyValidationsArgs<ExtArgs>
+  weekSnapshots?: boolean | Prisma.User$weekSnapshotsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -2315,6 +2514,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   notifications?: boolean | Prisma.User$notificationsArgs<ExtArgs>
   joinRequests?: boolean | Prisma.User$joinRequestsArgs<ExtArgs>
   weeklyValidations?: boolean | Prisma.User$weeklyValidationsArgs<ExtArgs>
+  weekSnapshots?: boolean | Prisma.User$weekSnapshotsArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -2335,6 +2535,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     notifications: Prisma.$NotificationPayload<ExtArgs>[]
     joinRequests: Prisma.$GroupJoinRequestPayload<ExtArgs>[]
     weeklyValidations: Prisma.$WeeklyValidationPayload<ExtArgs>[]
+    weekSnapshots: Prisma.$WeekSnapshotPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2754,6 +2955,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   notifications<T extends Prisma.User$notificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   joinRequests<T extends Prisma.User$joinRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$joinRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupJoinRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   weeklyValidations<T extends Prisma.User$weeklyValidationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$weeklyValidationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeeklyValidationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  weekSnapshots<T extends Prisma.User$weekSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$weekSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeekSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3472,6 +3674,30 @@ export type User$weeklyValidationsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.WeeklyValidationScalarFieldEnum | Prisma.WeeklyValidationScalarFieldEnum[]
+}
+
+/**
+ * User.weekSnapshots
+ */
+export type User$weekSnapshotsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the WeekSnapshot
+   */
+  select?: Prisma.WeekSnapshotSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the WeekSnapshot
+   */
+  omit?: Prisma.WeekSnapshotOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WeekSnapshotInclude<ExtArgs> | null
+  where?: Prisma.WeekSnapshotWhereInput
+  orderBy?: Prisma.WeekSnapshotOrderByWithRelationInput | Prisma.WeekSnapshotOrderByWithRelationInput[]
+  cursor?: Prisma.WeekSnapshotWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WeekSnapshotScalarFieldEnum | Prisma.WeekSnapshotScalarFieldEnum[]
 }
 
 /**

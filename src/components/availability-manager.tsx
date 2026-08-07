@@ -3,7 +3,8 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { Loader2Icon, CalendarDaysIcon } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Loader2Icon, CalendarDaysIcon, ShieldCheckIcon, LockIcon, HistoryIcon } from "lucide-react";
 import type { Availability } from "@/components/availability/shared";
 import { computeStats } from "@/components/availability/shared";
 import { PageHeader } from "@/components/availability/page-header";
@@ -15,6 +16,8 @@ import { AvailabilitySummaryCard } from "@/components/availability/availability-
 import { ValidateBar } from "@/components/availability/validate-bar";
 import { LockBanner } from "@/components/availability/lock-banner";
 import { EmptyState } from "@/components/availability/empty-state";
+import { MobileWeeklyTimeline } from "@/components/availability/mobile-weekly-timeline";
+import { HistorySection } from "@/components/availability/history-section";
 
 function compare(a: Availability, b: Availability) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
@@ -188,7 +191,7 @@ export function AvailabilityManager() {
   }
 
   return (
-    <div className="flex flex-col gap-6">
+    <div className="flex flex-col gap-6 pb-20 sm:pb-0">
       <PageHeader
         weekStart={weekStart}
         locked={locked}
@@ -216,7 +219,14 @@ export function AvailabilityManager() {
           {availabilities.length === 0 ? (
             <EmptyState />
           ) : (
-            <WeeklyOverview grouped={grouped} />
+            <>
+              <div className="sm:hidden">
+                <MobileWeeklyTimeline grouped={grouped} />
+              </div>
+              <div className="hidden sm:block">
+                <WeeklyOverview grouped={grouped} />
+              </div>
+            </>
           )}
         </CardContent>
       </Card>
@@ -270,7 +280,22 @@ export function AvailabilityManager() {
         </CardContent>
       </Card>
 
-      <div className="rounded-xl ring-1 ring-foreground/10">
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-lg">
+            <HistoryIcon className="size-5 text-accent" />
+            Historique des semaines
+          </CardTitle>
+          <CardDescription>
+            Les semaines que vous avez validées, avec les créneaux figés à ce moment.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <HistorySection />
+        </CardContent>
+      </Card>
+
+      <div className="hidden rounded-xl ring-1 ring-foreground/10 sm:block">
         <ValidateBar
           locked={locked}
           validating={validating}
@@ -279,6 +304,31 @@ export function AvailabilityManager() {
           canValidate={availabilities.length > 0}
         />
       </div>
+
+      {locked ? (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+          <Button
+            variant="outline"
+            className="h-11 w-full border-warning/50 text-warning hover:text-warning"
+            onClick={() => void handleUnvalidate()}
+            disabled={validating}
+          >
+            {validating ? <Loader2Icon className="size-4 animate-spin" /> : <LockIcon className="size-4" />}
+            Dévalider la semaine
+          </Button>
+        </div>
+      ) : (
+        <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
+          <Button
+            className="h-11 w-full"
+            onClick={() => void handleValidate()}
+            disabled={validating || availabilities.length === 0}
+          >
+            {validating ? <Loader2Icon className="size-4 animate-spin" /> : <ShieldCheckIcon className="size-4" />}
+            Valider la semaine
+          </Button>
+        </div>
+      )}
     </div>
   );
 }

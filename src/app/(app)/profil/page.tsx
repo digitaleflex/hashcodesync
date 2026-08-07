@@ -54,6 +54,7 @@ export default function ProfilPage() {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [changing, setChanging] = useState(false);
+  const [tzQuery, setTzQuery] = useState("");
 
   if (isPending) {
     return (
@@ -65,6 +66,12 @@ export default function ProfilPage() {
 
   const user = data?.user;
   const selectedTimezone = timezone ?? user?.timezone ?? getBrowserTimezone();
+
+  const q = tzQuery.trim().toLowerCase();
+  const filteredRegions = TIMEZONE_REGIONS.map(({ region, zones }) => ({
+    region,
+    zones: q ? zones.filter((z) => z.toLowerCase().includes(q)) : zones,
+  })).filter((r) => r.zones.length > 0);
 
   const saveProfile = async () => {
     if (!user) return;
@@ -170,8 +177,14 @@ export default function ProfilPage() {
             <Label htmlFor="email">Email</Label>
             <Input id="email" value={user?.email ?? ""} disabled />
           </div>
-          <div className="space-y-2">
-            <Label>Fuseau horaire</Label>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="tz-search">Fuseau horaire</Label>
+            <Input
+              id="tz-search"
+              placeholder="Rechercher un fuseau (ex. Porto, Paris…)"
+              value={tzQuery}
+              onChange={(e) => setTzQuery(e.target.value)}
+            />
             <Select
               value={selectedTimezone}
               onValueChange={(v) => setTimezone(v ?? undefined)}
@@ -180,16 +193,22 @@ export default function ProfilPage() {
                 <SelectValue placeholder="Choisir un fuseau" />
               </SelectTrigger>
               <SelectContent>
-                {TIMEZONE_REGIONS.map(({ region, zones }) => (
-                  <SelectGroup key={region}>
-                    <SelectLabel>{region}</SelectLabel>
-                    {zones.map((tz) => (
-                      <SelectItem key={tz} value={tz}>
-                        {tz}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                ))}
+                {filteredRegions.length === 0 ? (
+                  <p className="px-3 py-2 text-sm text-muted-foreground">
+                    Aucun fuseau trouvé.
+                  </p>
+                ) : (
+                  filteredRegions.map(({ region, zones }) => (
+                    <SelectGroup key={region}>
+                      <SelectLabel>{region}</SelectLabel>
+                      {zones.map((tz) => (
+                        <SelectItem key={tz} value={tz}>
+                          {tz}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  ))
+                )}
               </SelectContent>
             </Select>
             <p className="text-xs text-muted-foreground">

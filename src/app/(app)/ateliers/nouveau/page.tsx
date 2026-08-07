@@ -74,7 +74,7 @@ export default function NewWorkshopPage() {
 
   return (
     <main className="min-h-screen">
-      <div className="mx-auto max-w-xl space-y-6 px-4 py-8">
+      <div className="mx-auto max-w-3xl space-y-6 px-4 py-8">
         <Link
           href="/ateliers"
           className="inline-flex items-center gap-1 text-sm text-accent hover:underline"

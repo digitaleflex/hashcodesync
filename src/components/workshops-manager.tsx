@@ -10,6 +10,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -177,9 +178,9 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
               </span>
             </div>
           </div>
-          <div className="flex justify-end border-t pt-3">
+          <CardFooter className="justify-end">
             <ActionButtons w={w} />
-          </div>
+          </CardFooter>
         </CardContent>
       </Card>
     );

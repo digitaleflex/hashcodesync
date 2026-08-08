@@ -126,3 +126,8 @@ export type Attendance = Prisma.AttendanceModel
  * 
  */
 export type Notification = Prisma.NotificationModel
+/**
+ * Model NotificationPreference
+ * 
+ */
+export type NotificationPreference = Prisma.NotificationPreferenceModel

@@ -98,6 +98,16 @@ export type Participant = Prisma.ParticipantModel
  */
 export type Attendance = Prisma.AttendanceModel
 /**
+ * Model Waitlist
+ * 
+ */
+export type Waitlist = Prisma.WaitlistModel
+/**
+ * Model WorkshopFeedback
+ * 
+ */
+export type WorkshopFeedback = Prisma.WorkshopFeedbackModel
+/**
  * Model Notification
  * 
  */

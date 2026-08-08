@@ -56,6 +56,11 @@ export default function WorkshopDetailPage() {
   const [workshop, setWorkshop] = useState<PublicWorkshop | null>(null);
   const [loading, setLoading] = useState(true);
   const [busyUserId, setBusyUserId] = useState<string | null>(null);
+  const [bulkSelection, setBulkSelection] = useState<Record<string, "present" | "absent" | "">>({});
+  const [bulkSubmitting, setBulkSubmitting] = useState(false);
+  const [feedbackRating, setFeedbackRating] = useState(0);
+  const [feedbackComment, setFeedbackComment] = useState("");
+  const [feedbackSubmitting, setFeedbackSubmitting] = useState(false);
 
   const me = data?.user;
   const isCreator = workshop ? me?.id === workshop.createdBy : false;
@@ -135,6 +140,57 @@ export default function WorkshopDetailPage() {
     load();
   }
 
+  async function handleBulkAttendance() {
+    if (!workshop) return;
+    const entries = Object.entries(bulkSelection).filter(([, v]) => v === "present" || v === "absent");
+    if (entries.length === 0) {
+      toast.error("Sélectionnez au moins un participant");
+      return;
+    }
+    setBulkSubmitting(true);
+    const res = await fetch(`/api/admin/workshops/${workshop.id}/attendance/bulk`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        entries: entries.map(([userId, status]) => ({ userId, status })),
+      }),
+    });
+    setBulkSubmitting(false);
+    if (res.ok) {
+      toast.success("Présences enregistrées");
+      setBulkSelection({});
+      load();
+    } else {
+      const err = await res.json().catch(() => ({ error: "Erreur" }));
+      toast.error(err.error ?? "Enregistrement impossible");
+    }
+  }
+
+  async function handleFeedback() {
+    if (!workshop || !feedbackRating) {
+      toast.error("Sélectionnez une note");
+      return;
+    }
+    setFeedbackSubmitting(true);
+    const res = await fetch(`/api/workshops/${workshop.id}/feedback`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        rating: feedbackRating,
+        comment: feedbackComment || null,
+      }),
+    });
+    setFeedbackSubmitting(false);
+    if (res.ok) {
+      toast.success("Feedback envoyé !");
+      setFeedbackRating(0);
+      setFeedbackComment("");
+    } else {
+      const err = await res.json().catch(() => ({ error: "Erreur" }));
+      toast.error(err.error ?? "Envoi impossible");
+    }
+  }
+
   const attendanceByUser = new Map(
     (workshop.attendance ?? []).map((a) => [a.userId, a.status])
   );
@@ -197,9 +253,22 @@ export default function WorkshopDetailPage() {
               </Badge>
               <span className="inline-flex items-center gap-1.5 text-sm text-muted-foreground">
                 <UsersIcon className="size-4" />
-                {workshop.participants.length} participant
-                {workshop.participants.length > 1 ? "s" : ""}
+                {workshop.participants.length} participant{workshop.participants.length > 1 ? "s" : ""}
+                {workshop.capacity ? ` / ${workshop.capacity}` : ""}
               </span>
+              {workshop.location && (
+                <span className="text-sm text-muted-foreground">📍 {workshop.location}</span>
+              )}
+              {workshop.meetingUrl && (
+                <a
+                  href={workshop.meetingUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-sm text-primary hover:underline"
+                >
+                  Lien de réunion
+                </a>
+              )}
               {!isCreator &&
                 (part ? (
                   <Button variant="outline" className="ml-auto" onClick={handleLeave}>
@@ -224,6 +293,56 @@ export default function WorkshopDetailPage() {
               </CardDescription>
             </CardHeader>
             <CardContent>
+              {isCreator && workshop.participants.length > 0 && (
+                <div className="mb-4 flex flex-col gap-3 rounded-lg border p-3">
+                  <p className="text-sm font-medium">Saisie de présence en lot</p>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const selection: Record<string, "present" | "absent" | ""> = {};
+                        for (const p of workshop.participants) {
+                          selection[p.userId] = "present";
+                        }
+                        setBulkSelection(selection);
+                      }}
+                    >
+                      Tout marquer présent
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        const selection: Record<string, "present" | "absent" | ""> = {};
+                        for (const p of workshop.participants) {
+                          selection[p.userId] = "absent";
+                        }
+                        setBulkSelection(selection);
+                      }}
+                    >
+                      Tout marquer absent
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => setBulkSelection({})}
+                    >
+                      Réinitialiser
+                    </Button>
+                    <Button
+                      size="sm"
+                      onClick={handleBulkAttendance}
+                      disabled={bulkSubmitting || Object.keys(bulkSelection).length === 0}
+                    >
+                      {bulkSubmitting ? (
+                        <Loader2Icon className="animate-spin" />
+                      ) : (
+                        "Enregistrer les présences"
+                      )}
+                    </Button>
+                  </div>
+                </div>
+              )}
               {workshop.participants.length === 0 ? (
                 <p className="text-sm text-muted-foreground">
                   Aucun participant pour le moment.
@@ -285,10 +404,60 @@ export default function WorkshopDetailPage() {
               )}
             </CardContent>
           </Card>
-      </div>
-    </main>
-  );
-}
+
+          {!isCreator && inPast && part && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Votre feedback</CardTitle>
+                <CardDescription>
+                  Notez cet atelier pour améliorer les recommandations.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-col gap-3">
+                  <div className="flex items-center gap-2">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <button
+                        key={star}
+                        type="button"
+                        onClick={() => setFeedbackRating(star)}
+                        className="text-2xl transition-colors"
+                        aria-label={`Note ${star}/5`}
+                      >
+                        {star <= feedbackRating ? "★" : "☆"}
+                      </button>
+                    ))}
+                  </div>
+                  <Input
+                    placeholder="Commentaire (optionnel)"
+                    value={feedbackComment}
+                    onChange={(e) => setFeedbackComment(e.target.value)}
+                  />
+                  <Button onClick={handleFeedback} disabled={feedbackSubmitting || !feedbackRating}>
+                    {feedbackSubmitting ? <Loader2Icon className="animate-spin" /> : "Envoyer"}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+
+          {isCreator && (
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Feedbacks</CardTitle>
+                <CardDescription>
+                  Notes et commentaires laissés par les participants.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <FeedbackList workshopId={workshop.id} isCreator={isCreator} />
+              </CardContent>
+            </Card>
+          )}
+        </div>
+      </main>
+    );
+  }
 
 function statusBadge(status: string) {
   if (status === "accepted") return "default";
@@ -307,6 +476,9 @@ function EditDialog({
   const [description, setDescription] = useState(workshop.description ?? "");
   const [startAt, setStartAt] = useState(toDatetimeLocal(workshop.startAt));
   const [endAt, setEndAt] = useState(toDatetimeLocal(workshop.endAt));
+  const [capacity, setCapacity] = useState(workshop.capacity ?? "");
+  const [location, setLocation] = useState(workshop.location ?? "");
+  const [meetingUrl, setMeetingUrl] = useState(workshop.meetingUrl ?? "");
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
@@ -319,6 +491,9 @@ function EditDialog({
         description,
         startAt: new Date(startAt).toISOString(),
         endAt: new Date(endAt).toISOString(),
+        capacity: capacity ? Number(capacity) : null,
+        location: location || null,
+        meetingUrl: meetingUrl || null,
       }),
     });
     setSaving(false);
@@ -377,6 +552,34 @@ function EditDialog({
               onChange={(e) => setEndAt(e.target.value)}
             />
           </div>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="ec">Capacité</Label>
+              <Input
+                id="ec"
+                type="number"
+                min={1}
+                value={capacity}
+                onChange={(e) => setCapacity(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="el">Lieu</Label>
+              <Input
+                id="el"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+              />
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="em">Lien de réunion</Label>
+            <Input
+              id="em"
+              value={meetingUrl}
+              onChange={(e) => setMeetingUrl(e.target.value)}
+            />
+          </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={handleSave} disabled={saving}>
@@ -386,5 +589,49 @@ function EditDialog({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+}
+
+function FeedbackList({ workshopId, isCreator }: { workshopId: string; isCreator: boolean }) {
+  const [feedbacks, setFeedbacks] = useState<Array<{ id: string; rating: number; comment: string | null; user: { name: string } }>>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch(`/api/workshops/${workshopId}/feedback`)
+      .then((r) => r.ok ? r.json() : [])
+      .then((data) => setFeedbacks(data))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, [workshopId]);
+
+  if (loading) {
+    return <p className="text-sm text-muted-foreground">Chargement...</p>;
+  }
+
+  if (feedbacks.length === 0) {
+    return <p className="text-sm text-muted-foreground">Aucun feedback pour le moment.</p>;
+  }
+
+  const avg = Math.round(feedbacks.reduce((s, f) => s + f.rating, 0) / feedbacks.length);
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center gap-2">
+        <span className="text-sm font-medium">Note moyenne :</span>
+        <Badge variant="secondary">{avg}/5</Badge>
+        <span className="text-xs text-muted-foreground">({feedbacks.length} vote{feedbacks.length > 1 ? "s" : ""})</span>
+      </div>
+      <ul className="space-y-2">
+        {feedbacks.map((f) => (
+          <li key={f.id} className="rounded-lg border p-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">{f.user.name}</span>
+              <Badge variant="outline">{f.rating}/5</Badge>
+            </div>
+            {f.comment && <p className="mt-1 text-xs text-muted-foreground">{f.comment}</p>}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

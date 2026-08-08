@@ -31,8 +31,10 @@ model User {
   notifications    Notification[]
   notificationPreferences NotificationPreference[]
   joinRequests     GroupJoinRequest[]
+  workshopFeedbacks WorkshopFeedback[]
   weeklyValidations WeeklyValidation[]
   weekSnapshots     WeekSnapshot[]
+  waitlists        Waitlist[]
 
   @@map("user")
 }
@@ -213,19 +215,24 @@ model SlotSnapshot {
 }
 
 model Workshop {
-  id          String   @id @default(cuid())
+  id          String           @id @default(cuid())
   title       String
   description String?
   startAt     DateTime
   endAt       DateTime
+  capacity    Int?
+  location    String?
+  meetingUrl  String?
   createdBy   String
   seriesId    String?
-  creator     User     @relation(fields: [createdBy], references: [id], onDelete: Cascade)
-  series      WorkshopSeries? @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  series      WorkshopSeries?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   participants Participant[]
   attendance  Attendance[]
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  waitlist    Waitlist[]
+  feedbacks   WorkshopFeedback[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
 
   @@index([createdBy])
   @@index([startAt])
@@ -274,6 +281,36 @@ model Attendance {
   @@unique([workshopId, userId])
   @@index([userId])
   @@map("attendance")
+}
+
+// File d'attente pour les ateliers complets.
+model Waitlist {
+  id         String   @id @default(cuid())
+  workshopId String
+  userId     String
+  joinedAt   DateTime @default(now())
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workshopId, userId])
+  @@index([userId])
+  @@index([workshopId])
+}
+
+// Feedback post-atelier : note et commentaire laissés par un participant.
+model WorkshopFeedback {
+  id         String   @id @default(cuid())
+  workshopId String
+  userId     String
+  rating     Int // 1 à 5
+  comment    String?
+  createdAt  DateTime @default(now())
+  workshop   Workshop @relation(fields: [workshopId], references: [id], onDelete: Cascade)
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([workshopId, userId])
+  @@index([userId])
+  @@index([workshopId])
 }
 
 model Notification {

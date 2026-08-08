@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -15,7 +15,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Loader2Icon, CalendarDaysIcon, ArrowLeftIcon } from "lucide-react";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Loader2Icon, CalendarDaysIcon, ArrowLeftIcon, UsersIcon } from "lucide-react";
+import { authClient } from "@/lib/auth-client";
 
 // Convertit un ISO en valeur locale compatible <input type="datetime-local">.
 function toLocal(iso: string) {
@@ -28,20 +36,41 @@ function toLocal(iso: string) {
 export default function NewWorkshopPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { data } = authClient.useSession();
+  const user = data?.user;
   const presetStart = searchParams.get("start") ?? "";
   const presetEnd = searchParams.get("end") ?? "";
+
+  useEffect(() => {
+    if (user && user.role !== "admin") {
+      toast.error("Seul un administrateur peut créer un atelier");
+      router.push("/ateliers");
+    }
+  }, [user, router]);
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [startAt, setStartAt] = useState(presetStart ? toLocal(presetStart) : "");
   const [endAt, setEndAt] = useState(presetEnd ? toLocal(presetEnd) : "");
+  const [capacity, setCapacity] = useState("");
+  const [location, setLocation] = useState("");
+  const [meetingUrl, setMeetingUrl] = useState("");
+  const [seriesId, setSeriesId] = useState("");
   const [submitting, setSubmitting] = useState(false);
+  const [seriesOptions, setSeriesOptions] = useState<{ id: string; name: string }[]>([]);
 
   const valid =
     title.trim() &&
     startAt &&
     endAt &&
     new Date(endAt).getTime() > new Date(startAt).getTime();
+
+  useEffect(() => {
+    fetch("/api/series")
+      .then((r) => r.ok ? r.json() : Promise.resolve([]))
+      .then((data) => setSeriesOptions(Array.isArray(data) ? data : []))
+      .catch(() => setSeriesOptions([]));
+  }, []);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -58,6 +87,10 @@ export default function NewWorkshopPage() {
         description,
         startAt: new Date(startAt).toISOString(),
         endAt: new Date(endAt).toISOString(),
+        capacity: capacity ? Number(capacity) : null,
+        location: location || null,
+        meetingUrl: meetingUrl || null,
+        seriesId: seriesId || null,
       }),
     });
     setSubmitting(false);
@@ -134,6 +167,53 @@ export default function NewWorkshopPage() {
                     onChange={(e) => setEndAt(e.target.value)}
                   />
                 </div>
+               </div>
+               <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="capacity">Capacité (optionnel)</Label>
+                  <Input
+                    id="capacity"
+                    type="number"
+                    min={1}
+                    placeholder="Illimité"
+                    value={capacity}
+                    onChange={(e) => setCapacity(e.target.value)}
+                  />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <Label htmlFor="location">Lieu (optionnel)</Label>
+                  <Input
+                    id="location"
+                    placeholder="Ex. Salle A, En ligne..."
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
+                </div>
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label htmlFor="meetingUrl">Lien de réunion (optionnel)</Label>
+                <Input
+                  id="meetingUrl"
+                  placeholder="https://meet.example.com/..."
+                  value={meetingUrl}
+                  onChange={(e) => setMeetingUrl(e.target.value)}
+                />
+              </div>
+              <div className="flex flex-col gap-2">
+                <Label>Programme (optionnel)</Label>
+                <Select value={seriesId} onValueChange={(value) => setSeriesId(value ?? "")}>
+                  <SelectTrigger className="h-10 w-full">
+                    <SelectValue placeholder="Aucun programme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Aucun programme</SelectItem>
+                    {seriesOptions.map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
               <Button type="submit" disabled={submitting || !valid} className="mt-2">
                 {submitting ? <Loader2Icon className="animate-spin" /> : null}

@@ -9,7 +9,11 @@ export function formatDate(iso: string | Date) {
 
 export function formatTime(iso: string | Date) {
   const d = typeof iso === "string" ? new Date(iso) : iso;
-  return d.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
+  return d.toLocaleTimeString("fr-FR", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
 }
 
 export function toDatetimeLocal(iso: string) {

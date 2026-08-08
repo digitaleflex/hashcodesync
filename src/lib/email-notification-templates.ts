@@ -114,6 +114,14 @@ const templates: Record<string, { pref: PreferenceKey; build: (ctx: EmailContext
       text: `Bonjour,\n\nVos disponibilités ont été validées.\n\nHashCode Sync`,
     }),
   },
+
+  workshop_reminder: {
+    pref: "emailReminders",
+    build: (ctx) => ({
+      subject: `Rappel : ${ctx.workshopTitle ?? "atelier"}`,
+      text: `Bonjour,\n\nL'atelier "${ctx.workshopTitle ?? ""}" commence bientôt.\n\nHashCode Sync`,
+    }),
+  },
 };
 
 async function getUserPreference(userId: string, key: PreferenceKey): Promise<boolean> {

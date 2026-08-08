@@ -62,7 +62,6 @@ export function AppShell() {
     await authClient.signOut();
     toast.success("Déconnecté");
     router.push("/login");
-    router.refresh();
   }
 
   const initial = (user?.firstname?.[0] ?? user?.email?.[0] ?? "?").toUpperCase();

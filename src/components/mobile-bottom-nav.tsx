@@ -58,7 +58,6 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
     await authClient.signOut();
     toast.success("Déconnecté");
     router.push("/login");
-    router.refresh();
   }
 
   return (

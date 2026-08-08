@@ -12,7 +12,9 @@ const protectedRoutes = [
 
 // Routes nécessitant un rôle précis : vérification de session + rôle côté
 // serveur dans le proxy (défense en profondeur, l'authzone reste dans les pages).
+// /admin/groupes est ouvert aux mentors pour la gestion des groupes.
 const roleRestricted: Array<{ prefix: string; roles: string[] }> = [
+  { prefix: "/admin/groupes", roles: ["admin", "mentor"] },
   { prefix: "/admin", roles: ["admin"] },
   { prefix: "/mentor", roles: ["admin", "mentor"] },
 ];

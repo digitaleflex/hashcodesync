@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { currentWeekStart, isCurrentWeek } from "@/lib/timezone";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 // GET /api/availabilities/validate -> statut de verrouillage de la semaine courante.
 export async function GET() {
@@ -48,6 +49,8 @@ export async function POST(req: NextRequest) {
     });
     return NextResponse.json({ weekStart: weekStart.toISOString(), validated: false });
   }
+
+  await sendEmailForNotification([session.user.id], "availability_validation");
 
   // En cas de ré-validation, on garantit une seule ligne (upsert).
   await prisma.weeklyValidation.upsert({

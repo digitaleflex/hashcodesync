@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeMassHours } from "@/lib/masse-horaire";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 // Côté membre : lister les groupes disponibles + demander l'accès.
 export async function GET() {
@@ -125,6 +126,11 @@ export async function POST(req: NextRequest) {
       title: "Nouvelle demande d'accès",
       message: `Un utilisateur demande à rejoindre le groupe « ${group.name} ».`,
     },
+  });
+
+  await sendEmailForNotification([group.createdBy], "group_join_request", {
+    actorName: session.user.name,
+    groupName: group.name,
   });
 
   return NextResponse.json(request, { status: 201 });

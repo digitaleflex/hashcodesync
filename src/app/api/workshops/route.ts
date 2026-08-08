@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notifyMany } from "@/lib/notifications";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 const include = {
   creator: { select: { id: true, name: true, email: true } },
@@ -75,6 +76,11 @@ export async function POST(req: NextRequest) {
     type: "new_workshop",
     title: "Nouvel atelier",
     message: `${workshop.title} · ${workshop.startAt.toLocaleDateString("fr-FR")}`,
+  });
+
+  await sendEmailForNotification(others.map((u) => u.id), "new_workshop", {
+    actorName: session.user.name,
+    workshopTitle: workshop.title,
   });
 
   return NextResponse.json(workshop, { status: 201 });

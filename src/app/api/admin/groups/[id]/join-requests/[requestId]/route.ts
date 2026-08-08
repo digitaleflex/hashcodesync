@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { requireManager } from "../../../_shared";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 type Ctx = { params: Promise<{ id: string; requestId: string }> };
 
@@ -28,6 +29,11 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   if (!reqRow || reqRow.groupId !== id) {
     return NextResponse.json({ error: "Demande introuvable" }, { status: 404 });
   }
+
+  const group = await prisma.group.findUnique({
+    where: { id: reqRow.groupId },
+    select: { name: true },
+  });
 
   try {
     if (status === "accepted") {
@@ -60,6 +66,10 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
           message: `Votre demande d'accès au groupe a été acceptée.`,
         },
       });
+
+      await sendEmailForNotification([reqRow.userId], "group_join_accepted", {
+        groupName: group?.name,
+      });
     } else {
       await prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "rejected" } });
       await prisma.notification.create({
@@ -69,6 +79,10 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
           title: "Demande refusée",
           message: `Votre demande d'accès au groupe a été refusée.`,
         },
+      });
+
+      await sendEmailForNotification([reqRow.userId], "group_join_rejected", {
+        groupName: group?.name,
       });
     }
   } catch (err) {

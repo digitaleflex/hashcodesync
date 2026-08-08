@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notifyMany } from "@/lib/notifications";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 const include = {
   creator: { select: { id: true, name: true, email: true } },
@@ -100,6 +101,11 @@ export async function PATCH(
     message: `${updated.title}`,
   });
 
+  await sendEmailForNotification(participants.map((p) => p.userId), "workshop_update", {
+    actorName: session.user.name,
+    workshopTitle: updated.title,
+  });
+
   return NextResponse.json(updated);
 }
 
@@ -131,6 +137,11 @@ export async function DELETE(
     type: "workshop_cancelled",
     title: "Atelier annulé",
     message: `${workshop.title} a été annulé.`,
+  });
+
+  await sendEmailForNotification(participants.map((p) => p.userId), "workshop_cancelled", {
+    actorName: session.user.name,
+    workshopTitle: workshop.title,
   });
 
   return NextResponse.json({ success: true });

@@ -3,6 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notifyMany } from "@/lib/notifications";
+import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
 export async function POST(
   req: NextRequest,
@@ -35,6 +36,11 @@ export async function POST(
       type: "participant_joined",
       title: "Nouveau participant",
       message: `${session.user.name ?? "Un membre"} a rejoint "${workshop.title}".`,
+    });
+
+    await sendEmailForNotification([workshop.createdBy], "participant_joined", {
+      actorName: session.user.name,
+      workshopTitle: workshop.title,
     });
   }
 

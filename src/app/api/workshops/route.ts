@@ -131,6 +131,7 @@ export async function POST(req: NextRequest) {
     await sendEmailForNotification(others.map((u) => u.id), "new_workshop", {
       actorName: session.user.name,
       workshopTitle: workshop.title,
+      actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
     });
 
     return NextResponse.json(workshop, { status: 201 });

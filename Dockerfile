@@ -30,6 +30,7 @@ COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./package.json
+COPY --from=builder /app/docker-entrypoint.sh ./
 
 # Create non-root user
 RUN addgroup --system --gid 1001 nodejs && \
@@ -38,6 +39,8 @@ RUN addgroup --system --gid 1001 nodejs && \
 
 USER nextjs
 
+RUN chmod +x docker-entrypoint.sh
+
 EXPOSE 3000
 
-CMD ["node", "server.js"]
+CMD ["./docker-entrypoint.sh"]

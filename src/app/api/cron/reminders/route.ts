@@ -40,6 +40,7 @@ export async function POST(req: NextRequest) {
 
     await sendEmailForNotification(userIds, "workshop_reminder", {
       workshopTitle: workshop.title,
+      actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
     });
 
     totalNotified += userIds.length;

@@ -9,7 +9,7 @@ type Ctx = { params: Promise<{ id: string; userId: string }> };
 
 // POST /api/admin/workshops/:id/waitlist/:userId/promote
 // Promote un utilisateur de la waitlist vers participant.
-export async function POST(_req: NextRequest, { params }: Ctx) {
+export async function POST(req: NextRequest, { params }: Ctx) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
@@ -56,6 +56,7 @@ export async function POST(_req: NextRequest, { params }: Ctx) {
 
   await sendEmailForNotification([userId], "group_join_accepted", {
     groupName: workshop.title,
+    actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
   });
 
   return NextResponse.json({ success: true });

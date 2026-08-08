@@ -72,6 +72,7 @@ export async function POST(
       await sendEmailForNotification([workshop.createdBy], "participant_joined", {
         actorName: session.user.name,
         workshopTitle: workshop.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
       });
     }
 

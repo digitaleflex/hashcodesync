@@ -5,6 +5,7 @@ type EmailNotificationInput = {
   to: string;
   subject: string;
   text: string;
+  html?: string;
   type?: string;
 };
 
@@ -28,13 +29,13 @@ async function sendEmailNotification(input: EmailNotificationInput): Promise<voi
   }
 }
 
-export async function notifyByEmail(userId: string, data: { subject: string; text: string; type?: string }) {
+export async function notifyByEmail(userId: string, data: { subject: string; text: string; html?: string; type?: string }) {
   const email = await getUserEmail(userId);
   if (!email) return;
   await sendEmailNotification({ to: email, ...data });
 }
 
-export async function notifyManyByEmail(userIds: string[], data: { subject: string; text: string; type?: string }) {
+export async function notifyManyByEmail(userIds: string[], data: { subject: string; text: string; html?: string; type?: string }) {
   const uniqueIds = [...new Set(userIds)].filter(Boolean);
   if (uniqueIds.length === 0) return;
 
@@ -56,6 +57,7 @@ export async function notifyManyByEmail(userIds: string[], data: { subject: stri
         to: email,
         subject: data.subject,
         text: data.text,
+        html: data.html,
         type: data.type,
       })
     )

@@ -9,8 +9,9 @@ import { AuthCard } from "@/components/auth-card";
 import { getBrowserTimezone } from "@/lib/timezones";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
-import { User, Mail, Lock, ArrowRight, Loader2Icon } from "lucide-react";
+import { User, Mail, ArrowRight, Loader2Icon } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -112,21 +113,17 @@ export default function RegisterPage() {
           <Label htmlFor="password" className="text-sm font-medium text-[#A7B0C2] uppercase tracking-wider">
             Mot de passe
           </Label>
-          <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A7B0C2]/60" />
-            <Input
-              id="password"
-              type="password"
-              placeholder="8 caractères minimum"
-              autoComplete="new-password"
-              required
-              minLength={8}
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
-            />
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="8 caractères minimum"
+            autoComplete="new-password"
+            required
+            minLength={8}
+            className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+          />
           </div>
-        </div>
 
         {}
         <Button

@@ -8,8 +8,9 @@ import { authClient } from "@/lib/auth-client";
 import { AuthCard } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
-import { Mail, Lock, ArrowRight, Loader2Icon } from "lucide-react";
+import { Mail, ArrowRight, Loader2Icon } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -72,20 +73,16 @@ export default function LoginPage() {
               Mot de passe oublié ?
             </Link>
           </div>
-          <div className="relative">
-            <Lock className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A7B0C2]/60" />
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
-            />
+          <PasswordInput
+            id="password"
+            value={password}
+            onChange={setPassword}
+            placeholder="••••••••"
+            autoComplete="current-password"
+            required
+            className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+          />
           </div>
-        </div>
 
         {}
         <Button

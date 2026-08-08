@@ -131,6 +131,7 @@ export async function POST(req: NextRequest) {
   await sendEmailForNotification([group.createdBy], "group_join_request", {
     actorName: session.user.name,
     groupName: group.name,
+    actionUrl: `${req.nextUrl.origin}/admin/groupes`,
   });
 
   return NextResponse.json(request, { status: 201 });

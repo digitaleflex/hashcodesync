@@ -153,6 +153,7 @@ export async function PATCH(
     await sendEmailForNotification(participants.map((p) => p.userId), "workshop_update", {
       actorName: session.user.name,
       workshopTitle: updated.title,
+      actionUrl: `${req.nextUrl.origin}/ateliers/${updated.id}`,
     });
 
     return NextResponse.json(updated);
@@ -163,7 +164,7 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  _req: Request,
+  req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -196,6 +197,7 @@ export async function DELETE(
     await sendEmailForNotification(participants.map((p) => p.userId), "workshop_cancelled", {
       actorName: session.user.name,
       workshopTitle: workshop.title,
+      actionUrl: `${new URL(req.url).origin}/ateliers`,
     });
 
     return NextResponse.json({ success: true });

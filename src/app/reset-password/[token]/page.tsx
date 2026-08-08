@@ -6,7 +6,7 @@ import { useRouter, useParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
+import { PasswordInput } from "@/components/ui/password-input";
 import { Label } from "@/components/ui/label";
 import { Loader2Icon, KeyRoundIcon } from "lucide-react";
 
@@ -64,21 +64,20 @@ export default function ResetPasswordPage() {
       <div className="w-full space-y-4 rounded-lg border p-6">
         <div className="space-y-2">
           <Label htmlFor="password">Nouveau mot de passe</Label>
-          <Input
+          <PasswordInput
             id="password"
-            type="password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={setPassword}
             placeholder="8 caractères minimum"
           />
         </div>
         <div className="space-y-2">
           <Label htmlFor="confirm">Confirmer</Label>
-          <Input
+          <PasswordInput
             id="confirm"
-            type="password"
             value={confirm}
-            onChange={(e) => setConfirm(e.target.value)}
+            onChange={setConfirm}
+            placeholder="Répétez le mot de passe"
           />
         </div>
         <Button className="w-full" onClick={submit} disabled={submitting}>

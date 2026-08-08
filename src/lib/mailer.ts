@@ -7,6 +7,7 @@ type MailInput = {
   to: string;
   subject: string;
   text: string;
+  html?: string;
 };
 
 export async function sendMail(input: MailInput): Promise<void> {
@@ -16,6 +17,7 @@ export async function sendMail(input: MailInput): Promise<void> {
       to: input.to,
       subject: input.subject,
       text: input.text,
+      html: input.html,
     });
     return;
   }
@@ -45,6 +47,7 @@ export async function sendMail(input: MailInput): Promise<void> {
     to: input.to,
     subject: input.subject,
     text: input.text,
+    html: input.html,
   });
 }
 

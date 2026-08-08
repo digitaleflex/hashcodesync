@@ -69,6 +69,7 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 
       await sendEmailForNotification([reqRow.userId], "group_join_accepted", {
         groupName: group?.name,
+        actionUrl: `${req.nextUrl.origin}/groupes`,
       });
     } else {
       await prisma.groupJoinRequest.update({ where: { id: requestId }, data: { status: "rejected" } });
@@ -83,6 +84,7 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
 
       await sendEmailForNotification([reqRow.userId], "group_join_rejected", {
         groupName: group?.name,
+        actionUrl: `${req.nextUrl.origin}/groupes`,
       });
     }
   } catch (err) {

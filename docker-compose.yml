@@ -12,7 +12,7 @@ services:
     container_name: hashcodesync_app
     restart: unless-stopped
     environment:
-      - DATABASE_URL=postgresql://hcode_prod_usr:5ace782fb8dba068d5541b3029f9acec7705623246dabba3@db:5432/hashcode_sync_db
+      - DATABASE_URL=${DATABASE_URL}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_BETTER_AUTH_URL=${NEXT_PUBLIC_BETTER_AUTH_URL}
@@ -48,16 +48,16 @@ services:
       - "traefik.http.routers.hashcode-sync.tls.certresolver=letsencrypt"
       - "traefik.http.services.hashcode-sync.loadbalancer.server.port=3000"
 
-   db:
+  db:
     image: postgres:16-alpine
     container_name: hashcodesync_db
     restart: unless-stopped
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: hcode_prod_usr
-      POSTGRES_PASSWORD: 5ace782fb8dba068d5541b3029f9acec7705623246dabba3
-      POSTGRES_DB: hashcode_sync_db
+      POSTGRES_USER=${POSTGRES_USER:-hcode_prod_usr}
+      POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      POSTGRES_DB=${POSTGRES_DB:-hashcode_sync_db}
     volumes:
       - hashcodesync_postgres:/var/lib/postgresql/data
     healthcheck:
@@ -80,6 +80,9 @@ services:
     image: backblaze/b2:latest
     container_name: hashcodesync_backup
     restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
     environment:
       - B2_APPLICATION_KEY_ID=${B2_APPLICATION_KEY_ID}
       - B2_APPLICATION_KEY=${B2_APPLICATION_KEY}
@@ -87,17 +90,22 @@ services:
       - B2_ENDPOINT=${B2_ENDPOINT}
       - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS}
       - DATABASE_HOST=db
-      - DATABASE_USER=hcode_prod_usr
-      - DATABASE_PASSWORD=5ace782fb8dba068d5541b3029f9acec7705623246dabba3
-      - DATABASE_NAME=hashcode_sync_db
+      - DATABASE_USER=${POSTGRES_USER:-hcode_prod_usr}
+      - DATABASE_PASSWORD=${POSTGRES_PASSWORD}
+      - DATABASE_NAME=${POSTGRES_DB:-hashcode_sync_db}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM=${RESEND_FROM}
+      - BACKUP_NOTIFY_EMAIL=${BACKUP_NOTIFY_EMAIL}
+      - BACKUP_NOTIFY_DISCORD=${BACKUP_NOTIFY_DISCORD}
+      - BACKUP_NOTIFY_EMAIL_ON_SUCCESS=${BACKUP_NOTIFY_EMAIL_ON_SUCCESS}
+      - DISCORD_WEBHOOK_URL=${DISCORD_WEBHOOK_URL}
     volumes:
-      - hashcodesync_postgres:/backup/postgres:ro
       - hashcodesync_uploads:/backup/uploads:ro
       - ./backup/run.sh:/backup/run.sh:ro
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        apk add --no-cache postgresql-client cronie &&
+        apt-get update && apt-get install -y postgresql-client cron &&
         echo "0 2 * * * /backup/run.sh >> /var/log/backup.log 2>&1" | crontab - &&
         touch /var/log/backup.log &&
         crond -f -l 2

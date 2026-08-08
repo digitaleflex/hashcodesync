@@ -1,0 +1,53 @@
+version: "3.9"
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: hashcode-sync-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://hashcode:hashcode123@db:5432/hashcodesyncdb
+      - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
+      - BETTER_AUTH_URL=${BETTER_AUTH_URL}
+      - NEXT_PUBLIC_BETTER_AUTH_URL=${NEXT_PUBLIC_BETTER_AUTH_URL}
+      - RESEND_API_KEY=${RESEND_API_KEY}
+      - RESEND_FROM=${RESEND_FROM}
+      - CRON_SECRET=${CRON_SECRET}
+      - DEFAULT_TIMEZONE=${DEFAULT_TIMEZONE}
+      - TZ=${TZ}
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - hashcode-net
+
+  db:
+    image: postgres:16-alpine
+    container_name: hashcode-sync-db
+    restart: unless-stopped
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: hashcode
+      POSTGRES_PASSWORD: hashcode123
+      POSTGRES_DB: hashcodesyncdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hashcode -d hashcodesyncdb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - hashcode-net
+
+volumes:
+  postgres-data:
+
+networks:
+  hashcode-net:
+    driver: bridge

@@ -15,7 +15,7 @@ const securityHeaders = [
 
 const nextConfig = {
   poweredByHeader: false,
-  optimizePackageImports: ["lucide-react"],
+  output: "standalone",
   async headers() {
     return [
       {

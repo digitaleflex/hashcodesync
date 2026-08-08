@@ -39,7 +39,7 @@ services:
       - "traefik.enable=true"
       - "traefik.http.routers.hashcode-sync.rule=Host(`${NEXT_PUBLIC_APP_DOMAIN}`)"
       - "traefik.http.routers.hashcode-sync.entrypoints=websecure"
-      - "traefik.http.routers.hashcode-sync.tls.certresolver=myresolver"
+      - "traefik.http.routers.hashcode-sync.tls.certresolver=letsencrypt"
       - "traefik.http.services.hashcode-sync.loadbalancer.server.port=3000"
 
   db:

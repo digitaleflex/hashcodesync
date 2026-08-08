@@ -23,6 +23,7 @@ import {
   UserIcon,
   MoreHorizontalIcon,
 } from "lucide-react";
+import { LogoSymbol } from "@/components/ui/logo";
 
 type NavItem = {
   href: string;
@@ -43,8 +44,8 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
   const isActive = (path: string) => pathname === path || pathname.startsWith(path + "/");
 
   const secondary: NavItem[] = [
-    { href: "/profil", label: "Profil", icon: UserIcon, match: "/profil" },
     { href: "/groupes", label: "Groupes", icon: UsersIcon, match: "/groupes" },
+    { href: "/profil", label: "Profil", icon: UserIcon, match: "/profil" },
   ];
   if (userRole === "mentor" || userRole === "admin") {
     secondary.push({ href: "/mentor", label: "Mentorat", icon: ShieldCheckIcon, match: "/mentor" });
@@ -63,7 +64,7 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
   return (
     <nav
       aria-label="Navigation principale"
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-card pb-[max(0.25rem,env(safe-area-inset-bottom))] md:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-white/[0.08] bg-[#0B1023] pb-[max(0.25rem,env(safe-area-inset-bottom))] md:hidden"
     >
       <div className="grid h-14 grid-cols-5 items-stretch">
         {PRIMARY_TABS.map((item) => {
@@ -73,23 +74,23 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <item.icon
-                className={active ? "size-5 text-accent" : "size-5 text-muted-foreground"}
+                className={active ? "size-5 text-primary" : "size-5 text-[#A7B0C2]"}
               />
-              <span className={active ? "text-accent" : "text-muted-foreground"}>{item.label}</span>
+              <span className={active ? "text-primary" : "text-[#A7B0C2]"}>{item.label}</span>
             </Link>
           );
         })}
 
-        {/* Onglet Plus */}
+        {}
         <Sheet>
           <SheetTrigger
             render={
               <button
                 type="button"
-                className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium text-[#A7B0C2] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 aria-label="Plus d'options"
               >
                 <MoreHorizontalIcon className="size-5" />
@@ -97,9 +98,12 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
               </button>
             }
           />
-          <SheetContent side="bottom">
-            <SheetHeader>
-              <SheetTitle className="text-accent">Plus d&apos;options</SheetTitle>
+          <SheetContent side="bottom" className="bg-[#0B1023] border-white/[0.08]">
+            <SheetHeader className="border-b border-white/[0.08] px-4 pb-3">
+              <SheetTitle className="flex items-center gap-2 text-white">
+                <LogoSymbol size={18} />
+                <span>Plus d&apos;options</span>
+              </SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-1 p-2">
               {secondary.map((item) => {
@@ -112,7 +116,7 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
                         nativeButton={false}
                         render={<Link href={item.href} />}
                         variant="ghost"
-                        className={`justify-start text-base ${active ? "bg-muted" : ""}`}
+                        className={`justify-start text-base ${active ? "bg-white/[0.06] text-white" : "text-[#A7B0C2]"}`}
                       >
                         <item.icon />
                         {item.label}
@@ -122,8 +126,8 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
                 );
               })}
               <Button
-                variant="outline"
-                className="justify-start text-base"
+                variant="ghost"
+                className="justify-start text-base text-destructive hover:text-destructive"
                 onClick={() => void handleSignOut()}
               >
                 <LogOutIcon />
@@ -132,21 +136,6 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
             </nav>
           </SheetContent>
         </Sheet>
-
-        {/* Onglet Profil */}
-        {(() => {
-          const active = isActive("/profil");
-          return (
-            <Link
-              href="/profil"
-              aria-current={active ? "page" : undefined}
-              className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              <UserIcon className={active ? "size-5 text-accent" : "size-5 text-muted-foreground"} />
-              <span className={active ? "text-accent" : "text-muted-foreground"}>Profil</span>
-            </Link>
-          );
-        })()}
       </div>
     </nav>
   );

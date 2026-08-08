@@ -9,6 +9,10 @@ const geist = Geist({subsets:['latin'],variable:'--font-sans'});
 export const metadata: Metadata = {
   title: "HashCode Sync",
   description: "Scheduling & Cohort Coordination System",
+  icons: {
+    icon: "/brand/hashcode-sync-favicon.svg",
+    apple: "/icons/apple-touch-icon.svg",
+  },
 };
 
 export default function RootLayout({

@@ -4,8 +4,8 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { sendEmailForNotification } from "@/lib/email-notification-templates";
+import { withCache } from "@/lib/cache";
 
-// Côté membre : lister les groupes disponibles + demander l'accès.
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
@@ -13,36 +13,37 @@ export async function GET() {
   }
 
   const userId = session.user.id;
-  const groups = await prisma.group.findMany({
-    orderBy: { name: "asc" },
-    include: {
-      _count: { select: { members: true } },
-      members: {
-        where: { userId },
-        select: { role: true, hoursPerWeek: true, joinedAt: true },
+  const [groups, myMemberships] = await Promise.all([
+    prisma.group.findMany({
+      orderBy: { name: "asc" },
+      include: {
+        _count: { select: { members: true } },
+        members: {
+          where: { userId },
+          select: { role: true, hoursPerWeek: true, joinedAt: true },
+        },
+        joinRequests: {
+          where: { userId },
+          select: { status: true, createdAt: true },
+        },
       },
-      joinRequests: {
-        where: { userId },
-        select: { status: true, createdAt: true },
-      },
-    },
-  });
-
-  const myMemberships = await prisma.groupMember.findMany({
-    where: { userId },
-    include: {
-      group: {
-        include: {
-          activities: { orderBy: { createdAt: "asc" } },
-          _count: { select: { members: true } },
-          availabilities: {
-            where: { userId },
-            select: { day: true, startTime: true, endTime: true },
+    }),
+    prisma.groupMember.findMany({
+      where: { userId },
+      include: {
+        group: {
+          include: {
+            activities: { orderBy: { createdAt: "asc" } },
+            _count: { select: { members: true } },
+            availabilities: {
+              where: { userId },
+              select: { day: true, startTime: true, endTime: true },
+            },
           },
         },
       },
-    },
-  });
+    }),
+  ]);
 
   const memberships = myMemberships.map((m) => ({
     id: m.group.id,
@@ -55,7 +56,7 @@ export async function GET() {
     activities: m.group.activities,
   }));
 
-  return NextResponse.json({
+  return withCache({
     groups: groups.map((g) => ({
       id: g.id,
       name: g.name,
@@ -67,7 +68,7 @@ export async function GET() {
       joinStatus: g.joinRequests[0]?.status ?? null,
     })),
     myMemberships: memberships,
-  });
+  }, 30);
 }
 
 // Demander l'accès à un groupe.

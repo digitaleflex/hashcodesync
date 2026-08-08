@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,15 +13,6 @@ import {
 import { CalendarDaysIcon, UsersIcon } from "lucide-react";
 import Link from "next/link";
 
-export type UpcomingWorkshop = {
-  id: string;
-  title: string;
-  startAt: string;
-  endAt: string;
-  series?: { name: string } | null;
-  participantsCount?: number;
-};
-
 function fmtDate(iso: string): string {
   const d = new Date(iso);
   return new Intl.DateTimeFormat("fr-FR", {
@@ -32,7 +24,7 @@ function fmtDate(iso: string): string {
   }).format(d);
 }
 
-export function UpcomingWorkshopsCard({
+export const UpcomingWorkshopsCard = memo(function UpcomingWorkshopsCard({
   workshops,
   compact = false,
 }: {
@@ -95,4 +87,13 @@ export function UpcomingWorkshopsCard({
       </CardContent>
     </Card>
   );
-}
+});
+
+export type UpcomingWorkshop = {
+  id: string;
+  title: string;
+  startAt: string;
+  endAt: string;
+  series?: { name: string } | null;
+  participantsCount?: number;
+};

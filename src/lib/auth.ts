@@ -12,7 +12,7 @@ export const auth = betterAuth({
   baseURL: process.env.BETTER_AUTH_URL,
   trustedOrigins: process.env.BETTER_AUTH_TRUSTED_ORIGINS
     ? process.env.BETTER_AUTH_TRUSTED_ORIGINS.split(",").map((o) => o.trim()).filter(Boolean)
-    : [],
+    : [process.env.BETTER_AUTH_URL].filter(Boolean),
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 jours
   },

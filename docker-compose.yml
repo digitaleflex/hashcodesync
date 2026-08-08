@@ -5,12 +5,14 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_APP_URL: ${NEXT_PUBLIC_APP_URL}
+        NEXT_PUBLIC_APP_DOMAIN: ${NEXT_PUBLIC_APP_DOMAIN}
+        NEXT_PUBLIC_BETTER_AUTH_URL: ${NEXT_PUBLIC_BETTER_AUTH_URL}
     container_name: hashcodesync_app
     restart: unless-stopped
-    ports:
-      - "3000:3000"
     environment:
-      - DATABASE_URL=postgresql://hashcode:hashcode123@db:5432/hashcodesyncdb
+      - DATABASE_URL=postgresql://hcode_prod_usr:5ace782fb8dba068d5541b3029f9acec7705623246dabba3@db:5432/hashcode_sync_db
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_BETTER_AUTH_URL=${NEXT_PUBLIC_BETTER_AUTH_URL}
@@ -19,8 +21,10 @@ services:
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM=${RESEND_FROM}
       - CRON_SECRET=${CRON_SECRET}
-      - DEFAULT_TIMEZONE=${DEFAULT_TIMEZONE}
-      - TZ=${TZ}
+      - DEFAULT_TIMEZONE=${DEFAULT_TIMEZONE:-Africa/Porto-Novo}
+      - TZ=${TZ:-Africa/Porto-Novo}
+      - HOST=0.0.0.0
+      - HOSTNAME=0.0.0.0
     depends_on:
       db:
         condition: service_healthy
@@ -51,13 +55,13 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER: hashcode
-      POSTGRES_PASSWORD: hashcode123
-      POSTGRES_DB: hashcodesyncdb
+      POSTGRES_USER: hcode_prod_usr
+      POSTGRES_PASSWORD: 5ace782fb8dba068d5541b3029f9acec7705623246dabba3
+      POSTGRES_DB: hashcode_sync_db
     volumes:
       - hashcodesync_postgres:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U hashcode -d hashcodesyncdb"]
+      test: ["CMD-SHELL", "pg_isready -U hcode_prod_usr -d hashcode_sync_db"]
       interval: 10s
       timeout: 5s
       retries: 5

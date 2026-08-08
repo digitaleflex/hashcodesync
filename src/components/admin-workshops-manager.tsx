@@ -39,6 +39,19 @@ import {
 import { formatDate, formatTime } from "@/lib/format";
 import { PublicWorkshop } from "@/components/workshops-manager";
 
+const SkeletonCard = () => (
+  <Card>
+    <div className="h-28 animate-pulse rounded-t-xl bg-muted" />
+    <CardContent className="space-y-3 p-4">
+      <div className="h-4 w-20 animate-pulse rounded bg-muted" />
+      <div className="h-5 w-3/4 animate-pulse rounded bg-muted" />
+      <div className="h-6 w-32 animate-pulse rounded bg-muted" />
+      <div className="h-4 w-full animate-pulse rounded bg-muted" />
+      <div className="h-9 w-full animate-pulse rounded bg-muted" />
+    </CardContent>
+  </Card>
+);
+
 export function AdminWorkshopsManager() {
   const [workshops, setWorkshops] = useState<PublicWorkshop[]>([]);
   const [loading, setLoading] = useState(true);
@@ -150,21 +163,6 @@ export function AdminWorkshopsManager() {
     } else {
       toast.error("Suppression impossible");
     }
-  }
-
-  function SkeletonCard() {
-    return (
-      <Card>
-        <div className="h-28 animate-pulse rounded-t-xl bg-muted" />
-        <CardContent className="space-y-3 p-4">
-          <div className="h-4 w-20 animate-pulse rounded bg-muted" />
-          <div className="h-5 w-3/4 animate-pulse rounded bg-muted" />
-          <div className="h-6 w-32 animate-pulse rounded bg-muted" />
-          <div className="h-4 w-full animate-pulse rounded bg-muted" />
-          <div className="h-9 w-full animate-pulse rounded bg-muted" />
-        </CardContent>
-      </Card>
-    );
   }
 
   return (

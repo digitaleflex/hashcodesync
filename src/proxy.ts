@@ -10,14 +10,31 @@ const protectedRoutes = [
   "/profil",
 ];
 
-// Routes nécessitant un rôle précis : vérification de session + rôle côté
-// serveur dans le proxy (défense en profondeur, l'authzone reste dans les pages).
-// /admin/groupes est ouvert aux mentors pour la gestion des groupes.
 const roleRestricted: Array<{ prefix: string; roles: string[] }> = [
   { prefix: "/admin/groupes", roles: ["admin", "mentor"] },
   { prefix: "/admin", roles: ["admin"] },
   { prefix: "/mentor", roles: ["admin", "mentor"] },
 ];
+
+const SESSION_TTL_MS = 5 * 60 * 1000;
+
+interface CachedSession {
+  session: Awaited<ReturnType<typeof auth.api.getSession>>;
+  expiresAt: number;
+}
+
+const sessionCache = new Map<string, CachedSession>();
+
+async function getCachedSession(headers: Headers) {
+  const cookie = headers.get("cookie") ?? "";
+  const cached = sessionCache.get(cookie);
+  if (cached && cached.expiresAt > Date.now()) {
+    return cached.session;
+  }
+  const session = await auth.api.getSession({ headers });
+  sessionCache.set(cookie, { session, expiresAt: Date.now() + SESSION_TTL_MS });
+  return session;
+}
 
 export async function proxy(request: NextRequest) {
   const sessionCookie = getSessionCookie(request);
@@ -36,11 +53,8 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url);
   }
 
-if (isRoleRestricted && sessionCookie) {
-    // Validation réelle de la session + rôle (pas seulement la présence du cookie).
-    const session = await auth.api.getSession({
-      headers: new Headers(request.headers),
-    });
+  if (isRoleRestricted && sessionCookie) {
+    const session = await getCachedSession(request.headers);
     const required = roleRestricted.find((r) => pathname.startsWith(r.prefix));
     if (
       !session?.user ||

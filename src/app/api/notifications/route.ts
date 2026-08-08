@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
+import { withCache } from "@/lib/cache";
 
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -20,5 +21,5 @@ export async function GET() {
     }),
   ]);
 
-  return NextResponse.json({ notifications, unread });
+  return withCache({ notifications, unread }, 15);
 }

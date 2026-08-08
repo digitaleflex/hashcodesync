@@ -71,83 +71,29 @@ export default function DashboardPage() {
     let active = true;
     async function load() {
       const role = data?.user?.role;
-      const results = await Promise.allSettled([
-        fetch("/api/availabilities"),
-        fetch("/api/availabilities/validate"),
-        fetch("/api/workshops"),
-        fetch("/api/groups"),
-        fetch("/api/notifications"),
-        role === "mentor" || role === "admin"
-          ? fetch("/api/mentor/scheduling?window=2")
-          : Promise.resolve(null),
-      ]);
+      const res = await fetch("/api/dashboard");
       if (!active) return;
+      if (!res.ok) return;
 
-      const [avail, validation, ws, groups, notifs, scheduling] = results;
-
-      if (avail.status === "fulfilled" && avail.value.ok) {
-        const arr = await avail.value.json();
-        if (Array.isArray(arr)) {
-          setAvailCount(arr.length);
-          setMassHours(
-            computeMassHours(
-              arr.map((a: { day: number; startTime: string; endTime: string }) => ({
-                day: a.day,
-                startTime: a.startTime,
-                endTime: a.endTime,
-              }))
-            )
-          );
-        }
+      const d = await res.json();
+      setAvailCount(d.availCount ?? null);
+      setMassHours(d.massHours ?? null);
+      setWeekValidated(d.weekValidated ?? false);
+      setUpcoming(Array.isArray(d.upcoming) ? d.upcoming : []);
+      setHasWorkshops(Boolean(d.hasWorkshops));
+      setGroupCount(d.groupCount ?? null);
+      if (Array.isArray(d.activities)) {
+        setActivities(d.activities.slice(0, 6));
       }
-      if (validation.status === "fulfilled" && validation.value?.ok) {
-        const v = await validation.value.json();
-        if (v && typeof v.validated === "boolean") setWeekValidated(v.validated);
-      }
-      if (ws.status === "fulfilled" && ws.value.ok) {
-        const list = await ws.value.json();
-        if (Array.isArray(list)) {
-          const now = Date.now();
-          const future = list
-            .filter((w) => new Date(w.endAt).getTime() >= now)
-            .map((w) => ({
-              id: w.id,
-              title: w.title,
-              startAt: w.startAt,
-              endAt: w.endAt,
-              series: w.series ?? null,
-              participantCount: Array.isArray(w.participants)
-                ? w.participants.length
-                : 0,
-            }));
-          setUpcoming(future);
-          setHasWorkshops(list.length > 0);
-        }
-      }
-      if (groups.status === "fulfilled" && groups.value.ok) {
-        const g = await groups.value.json();
-        setGroupCount(
-          Array.isArray(g.groups)
-            ? g.groups.filter((x: { memberCount: number }) => x.memberCount > 0)
-                .length
-            : 0
-        );
-      }
-      if (notifs.status === "fulfilled" && notifs.value.ok) {
-        const n = await notifs.value.json();
-        if (Array.isArray(n.notifications))
-          setActivities(n.notifications.filter((x: any) => !x.read).slice(0, 6));
-      }
-      if (scheduling && scheduling.status === "fulfilled" && scheduling.value?.ok) {
-        const s = await scheduling.value.json();
+      if (d.cohort?.has) {
         setCohort({
           has: true,
-          heatmap: s.heatmap ?? [],
-          recommendation: s.recommendation ?? [],
-          minHour: s.minHour,
-          maxHour: s.maxHour,
-          totalMembers: s.totalMembers,
-          referenceTimezone: s.referenceTimezone,
+          heatmap: d.cohort.heatmap ?? [],
+          recommendation: d.cohort.recommendation ?? [],
+          minHour: d.cohort.minHour,
+          maxHour: d.cohort.maxHour,
+          totalMembers: d.cohort.totalMembers,
+          referenceTimezone: d.cohort.referenceTimezone,
         });
       }
     }

@@ -1,5 +1,6 @@
 "use client";
 
+import { memo } from "react";
 import {
   Card,
   CardContent,
@@ -8,15 +9,6 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ActivityIcon, BellIcon } from "lucide-react";
-
-export type ActivityItem = {
-  id: string;
-  type: string;
-  title: string;
-  message?: string | null;
-  read: boolean;
-  createdAt: string;
-};
 
 function fmtAgo(iso: string): string {
   const d = new Date(iso);
@@ -29,7 +21,7 @@ function fmtAgo(iso: string): string {
   return `il y a ${days} j`;
 }
 
-export function ActivityFeedCard({
+export const ActivityFeedCard = memo(function ActivityFeedCard({
   activities,
 }: {
   activities: ActivityItem[];
@@ -74,4 +66,13 @@ export function ActivityFeedCard({
       </CardContent>
     </Card>
   );
-}
+});
+
+export type ActivityItem = {
+  id: string;
+  type: string;
+  title: string;
+  message?: string | null;
+  read: boolean;
+  createdAt: string;
+};

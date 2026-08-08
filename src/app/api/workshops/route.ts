@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { notifyMany } from "@/lib/notifications";
 import { sendEmailForNotification } from "@/lib/email-notification-templates";
+import { withCache } from "@/lib/cache";
 
 const select = {
   id: true,
@@ -42,7 +43,7 @@ export async function GET() {
       select,
     });
 
-    return NextResponse.json(workshops);
+    return withCache(workshops, 30);
   } catch (e) {
     console.error("GET /api/workshops error", e);
     return NextResponse.json({ error: "Impossible de charger les ateliers" }, { status: 500 });

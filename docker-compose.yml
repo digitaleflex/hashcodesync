@@ -55,11 +55,13 @@ services:
     ports:
       - "5433:5432"
     environment:
-      POSTGRES_USER=${POSTGRES_USER:-hcode_prod_usr}
-      POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      POSTGRES_DB=${POSTGRES_DB:-hashcode_sync_db}
+      POSTGRES_USER: ${POSTGRES_USER:-hcode_prod_usr}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-hashcode_sync_db}
     volumes:
       - hashcodesync_postgres:/var/lib/postgresql/data
+      - ./postgres/postgresql-custom.conf:/etc/postgresql/postgresql-custom.conf:ro
+    command: ["postgres", "-c", "config_file=/etc/postgresql/postgresql-custom.conf"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U hcode_prod_usr -d hashcode_sync_db"]
       interval: 10s
@@ -77,7 +79,7 @@ services:
       - hashcodesync_net
 
   backup:
-    image: backblaze/b2:latest
+    image: python:3-slim
     container_name: hashcodesync_backup
     restart: unless-stopped
     depends_on:
@@ -102,13 +104,16 @@ services:
     volumes:
       - hashcodesync_uploads:/backup/uploads:ro
       - ./backup/run.sh:/backup/run.sh:ro
+      - ./backup/b2_upload.py:/backup/b2_upload.py:ro
+      - ./backup/b2_cleanup.py:/backup/b2_cleanup.py:ro
     entrypoint: ["/bin/sh", "-c"]
     command:
       - |
-        apt-get update && apt-get install -y postgresql-client cron &&
+        apt-get update && apt-get install -y postgresql-client cron curl &&
+        pip install --no-cache-dir b2sdk &&
         echo "0 2 * * * /backup/run.sh >> /var/log/backup.log 2>&1" | crontab - &&
         touch /var/log/backup.log &&
-        crond -f -l 2
+        cron -f
     networks:
       - hashcodesync_net
     deploy:

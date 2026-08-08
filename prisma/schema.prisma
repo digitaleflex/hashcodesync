@@ -29,6 +29,7 @@ model User {
   createdGroups    Group[]
   createdSeries    WorkshopSeries[]
   notifications    Notification[]
+  notificationPreferences NotificationPreference[]
   joinRequests     GroupJoinRequest[]
   weeklyValidations WeeklyValidation[]
   weekSnapshots     WeekSnapshot[]
@@ -287,4 +288,17 @@ model Notification {
 
   @@index([userId])
   @@index([read])
+}
+
+model NotificationPreference {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  emailWorkshops Boolean   @default(true)
+  emailGroups    Boolean   @default(true)
+  emailMentoring Boolean   @default(true)
+  emailSecurity  Boolean   @default(true)
+  emailReminders Boolean   @default(true)
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
 }

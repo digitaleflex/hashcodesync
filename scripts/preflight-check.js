@@ -24,6 +24,7 @@ check("Variables d'environnement", () => {
     "BETTER_AUTH_SECRET",
     "BETTER_AUTH_URL",
     "NEXT_PUBLIC_BETTER_AUTH_URL",
+    "CRON_SECRET",
   ];
 
   for (const key of required) {

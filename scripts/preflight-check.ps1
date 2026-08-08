@@ -13,7 +13,7 @@ if (-not (Test-Path ".env")) {
 }
 
 Get-Content ".env" | ForEach-Object {
-  if ($_ -match '^(DATABASE_URL|BETTER_AUTH_SECRET|BETTER_AUTH_URL|NEXT_PUBLIC_BETTER_AUTH_URL)=') {
+  if ($_ -match '^(DATABASE_URL|BETTER_AUTH_SECRET|BETTER_AUTH_URL|NEXT_PUBLIC_BETTER_AUTH_URL|CRON_SECRET)=') {
     $name = $_.Split('=')[0]
     $value = $_.Split('=')[1]
     if ([string]::IsNullOrWhiteSpace($value)) {

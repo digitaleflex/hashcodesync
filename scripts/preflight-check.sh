@@ -14,7 +14,7 @@ fi
 source .env
 
 MISSING=0
-for var in DATABASE_URL BETTER_AUTH_SECRET BETTER_AUTH_URL NEXT_PUBLIC_BETTER_AUTH_URL; do
+for var in DATABASE_URL BETTER_AUTH_SECRET BETTER_AUTH_URL NEXT_PUBLIC_BETTER_AUTH_URL CRON_SECRET; do
   if [ -z "${!var:-}" ]; then
     echo "❌ $var manquant dans .env"
     MISSING=1

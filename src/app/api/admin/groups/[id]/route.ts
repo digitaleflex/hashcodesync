@@ -53,7 +53,11 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   }
 
   const coverImage = typeof body.coverImage === "string" ? body.coverImage.trim() : null;
-  if (coverImage !== null && !coverImage.startsWith("/uploads/")) {
+  // Seul un nom de fichier simple sous /uploads/ est accepté (anti-traversal).
+  if (
+    coverImage !== null &&
+    !/^\/uploads\/[A-Za-z0-9._-]+$/.test(coverImage)
+  ) {
     return NextResponse.json({ error: "Chemin d'image invalide" }, { status: 400 });
   }
 

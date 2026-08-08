@@ -38,6 +38,18 @@ export async function POST(req: NextRequest, { params }: Ctx) {
   if (!user) {
     return NextResponse.json({ error: "Utilisateur introuvable" }, { status: 404 });
   }
+  // La présence ne doit concerner qu'un participant réel de cet atelier,
+  // sinon un créateur pourrait poller la fiabilité bayésienne d'un compte tiers.
+  const isParticipant = await prisma.participant.findUnique({
+    where: { workshopId_userId: { workshopId: id, userId } },
+    select: { id: true },
+  });
+  if (!isParticipant) {
+    return NextResponse.json(
+      { error: "Cet utilisateur ne participe pas à l'atelier" },
+      { status: 400 }
+    );
+  }
 
   await prisma.attendance.upsert({
     where: { workshopId_userId: { workshopId: id, userId } },

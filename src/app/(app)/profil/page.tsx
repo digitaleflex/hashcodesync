@@ -34,6 +34,7 @@ import {
   SaveIcon,
   KeyRoundIcon,
   UserCircle2Icon,
+  BellIcon,
 } from "lucide-react";
 
 const roleLabels: Record<string, string> = {
@@ -277,6 +278,23 @@ export default function ProfilPage() {
               <KeyRoundIcon className="size-4" />
             )}
             Modifier le mot de passe
+          </Button>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <BellIcon className="size-4 text-accent" />
+            Notifications
+          </CardTitle>
+          <CardDescription>
+            Gérez vos préférences de notifications et d'e-mails.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Button variant="outline" onClick={() => router.push("/profil/notifications")}>
+            Préférences de notifications
           </Button>
         </CardContent>
       </Card>

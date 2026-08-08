@@ -21,7 +21,7 @@ export function StatCard({
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <p className="font-heading text-3xl font-semibold">{value}</p>
+        <div className="font-heading text-3xl font-semibold">{value}</div>
         {footnote && <p className="text-xs text-muted-foreground">{footnote}</p>}
       </CardContent>
     </Card>

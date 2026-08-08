@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -66,6 +66,7 @@ function hasOverlaps(slots: Availability[]): boolean {
 export function AvailabilityManager() {
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [locked, setLocked] = useState(false);
@@ -76,6 +77,7 @@ export function AvailabilityManager() {
   const [groups, setGroups] = useState<GroupOption[]>([]);
   const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
   const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const initialLoadRef = useRef(true);
 
   const canValidate = availabilities.length > 0 && !hasOverlaps(availabilities);
 
@@ -90,10 +92,14 @@ export function AvailabilityManager() {
   );
 
   const load = useCallback(async () => {
-    setLoading(true);
+    if (initialLoadRef.current) {
+      setLoading(true);
+    } else {
+      setRefreshing(true);
+    }
     try {
       const [avRes, valRes, groupsRes] = await Promise.all([
-        fetch(`/api/availabilities?groupId=${selectedGroup}&activityId=${selectedActivity}`),
+        fetch(`/api/availabilities?groupId=${selectedGroup ?? ""}&activityId=${selectedActivity ?? ""}`),
         fetch("/api/availabilities/validate"),
         fetch("/api/groups"),
       ]);
@@ -121,7 +127,12 @@ export function AvailabilityManager() {
     } catch {
       toast.error("Erreur réseau : impossible de charger vos disponibilités");
     } finally {
-      setLoading(false);
+      if (initialLoadRef.current) {
+        setLoading(false);
+        initialLoadRef.current = false;
+      } else {
+        setRefreshing(false);
+      }
     }
   }, [selectedGroup, selectedActivity]);
 
@@ -268,6 +279,12 @@ export function AvailabilityManager() {
 
   return (
     <div className="flex flex-col gap-6 pb-20 sm:pb-0">
+      {refreshing && (
+        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Loader2Icon className="size-3.5 animate-spin text-accent" />
+          Mise à jour des disponibilités...
+        </div>
+      )}
       <PageHeader
         weekStart={weekStart}
         locked={locked}

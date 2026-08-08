@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none" aria-label="HashCode Sync" role="img">
+  <title>HashCode Sync</title>
+  <desc>Symbole officiel HashCode Sync</desc>
+  <rect x="6" y="6" width="5" height="20" rx="2.5" fill="currentColor"/>
+  <rect x="21" y="6" width="5" height="20" rx="2.5" fill="currentColor"/>
+  <path d="M16 11 L21 16 L16 21 L11 16 Z" fill="currentColor"/>
+</svg>

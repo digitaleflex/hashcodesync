@@ -34,6 +34,7 @@ model User {
   workshopFeedbacks WorkshopFeedback[]
   weeklyValidations WeeklyValidation[]
   weekSnapshots     WeekSnapshot[]
+  weekValidationLogs WeekValidationLog[]
   waitlists        Waitlist[]
 
   @@map("user")
@@ -184,6 +185,21 @@ model WeeklyValidation {
   @@unique([userId, weekStart])
   @@index([userId])
   @@map("weekly_validation")
+}
+
+// Historique des actions de validation/dévalidation pour compter les modifications
+// par semaine et appliquer la limite de 3 modifications par semaine.
+model WeekValidationLog {
+  id         String    @id @default(cuid())
+  userId     String
+  weekStart  DateTime  // lundi 00:00 (fuseau de référence)
+  action     String    // "validate" | "unvalidate"
+  createdAt  DateTime  @default(now())
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, weekStart])
+  @@index([userId])
+  @@map("week_validation_log")
 }
 
 // Historique des disponibilités : copie figée des créneaux de l'utilisateur

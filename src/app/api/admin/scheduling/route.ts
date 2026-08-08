@@ -19,7 +19,9 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
   const slots = massScope
     ? u.availabilities
     : u.availabilities.filter(
-        (a) => a.groupId === groupScope && (!activityId || a.activityId === activityId)
+        (a) =>
+          (a.groupId === groupScope || a.groupId === null) &&
+          (!activityId || a.activityId === activityId || a.activityId === null)
       );
   if (slots.length === 0) return [];
   const mass = computeMassHours(slots.map((s) => ({ day: s.day, startTime: s.startTime, endTime: s.endTime })));

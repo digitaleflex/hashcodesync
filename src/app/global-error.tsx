@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 
 export default function GlobalError({
   error,
@@ -22,12 +23,17 @@ export default function GlobalError({
         <p className="max-w-sm text-sm text-muted-foreground">
           L&apos;application a rencontré une erreur inattendue.
         </p>
-        <button
-          onClick={reset}
-          className="h-9 rounded-lg bg-accent px-4 text-sm font-medium text-white transition-all hover:bg-accent/80"
-        >
-          Réessayer
-        </button>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <button
+            onClick={reset}
+            className="h-9 rounded-lg bg-accent px-4 text-sm font-medium text-white transition-all hover:bg-accent/80"
+          >
+            Réessayer
+          </button>
+          <Link href="/" className="h-9 rounded-lg border px-4 text-sm font-medium transition-colors hover:bg-muted">
+            Retour à l&apos;accueil
+          </Link>
+        </div>
       </body>
     </html>
   );

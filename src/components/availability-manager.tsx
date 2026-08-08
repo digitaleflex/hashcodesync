@@ -5,6 +5,13 @@ import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Loader2Icon, CalendarDaysIcon, ShieldCheckIcon, LockIcon, HistoryIcon } from "lucide-react";
 import type { Availability } from "@/components/availability/shared";
 import { computeStats } from "@/components/availability/shared";
@@ -34,8 +41,26 @@ const HistorySection = dynamic(
   }
 );
 
+type GroupOption = { id: string; name: string; activities: { id: string; name: string }[] };
+
 function compare(a: Availability, b: Availability) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
+}
+
+function hasOverlaps(slots: Availability[]): boolean {
+  const byDay = new Map<number, { start: string; end: string }[]>();
+  for (const s of slots) {
+    const arr = byDay.get(s.day) ?? [];
+    arr.push({ start: s.startTime, end: s.endTime });
+    byDay.set(s.day, arr);
+  }
+  for (const arr of byDay.values()) {
+    arr.sort((a, b) => a.start.localeCompare(b.start));
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i].start < arr[i - 1].end) return true;
+    }
+  }
+  return false;
 }
 
 export function AvailabilityManager() {
@@ -48,13 +73,29 @@ export function AvailabilityManager() {
   const [day, setDay] = useState<number | null>(null);
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+  const [groups, setGroups] = useState<GroupOption[]>([]);
+  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
+  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+
+  const canValidate = availabilities.length > 0 && !hasOverlaps(availabilities);
+
+  const selectedGroupOption = useMemo(
+    () => groups.find((g) => g.id === selectedGroup) ?? null,
+    [groups, selectedGroup]
+  );
+
+  const availableActivities = useMemo(
+    () => selectedGroupOption?.activities ?? [],
+    [selectedGroupOption]
+  );
 
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const [avRes, valRes] = await Promise.all([
-        fetch("/api/availabilities"),
+      const [avRes, valRes, groupsRes] = await Promise.all([
+        fetch(`/api/availabilities?groupId=${selectedGroup}&activityId=${selectedActivity}`),
         fetch("/api/availabilities/validate"),
+        fetch("/api/groups"),
       ]);
       if (avRes.ok) {
         setAvailabilities(await avRes.json());
@@ -66,12 +107,23 @@ export function AvailabilityManager() {
         setLocked(val.validated);
         setWeekStart(val.weekStart ?? null);
       }
+      if (groupsRes.ok) {
+        const data = await groupsRes.json();
+        const myGroups: GroupOption[] = (data.myMemberships ?? []).map(
+          (m: { id: string; name: string; activities: { id: string; name: string }[] }) => ({
+            id: m.id,
+            name: m.name,
+            activities: m.activities ?? [],
+          })
+        );
+        setGroups(myGroups);
+      }
     } catch {
       toast.error("Erreur réseau : impossible de charger vos disponibilités");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [selectedGroup, selectedActivity]);
 
   useEffect(() => {
     load();
@@ -89,7 +141,8 @@ export function AvailabilityManager() {
         setLocked(true);
         toast.success("Semaine validée : vos disponibilités sont maintenant figées");
       } else {
-        toast.error("Impossible de valider la semaine");
+        const err = await res.json().catch(() => ({ error: "Erreur" }));
+        toast.error(err.error ?? "Impossible de valider la semaine");
       }
     } catch {
       toast.error("Erreur réseau : impossible de valider la semaine");
@@ -110,7 +163,8 @@ export function AvailabilityManager() {
         setLocked(false);
         toast.success("Semaine dévalidée : vous pouvez à nouveau modifier");
       } else {
-        toast.error("Impossible de dévalider la semaine");
+        const err = await res.json().catch(() => ({ error: "Erreur" }));
+        toast.error(err.error ?? "Impossible de dévalider la semaine");
       }
     } catch {
       toast.error("Erreur réseau : impossible de dévalider la semaine");
@@ -154,10 +208,14 @@ export function AvailabilityManager() {
     }
     setSubmitting(true);
     try {
+      const body: Record<string, unknown> = { day, startTime, endTime };
+      if (selectedGroup) body.groupId = selectedGroup;
+      if (selectedActivity) body.activityId = selectedActivity;
+
       const res = await fetch("/api/availabilities", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ day, startTime, endTime }),
+        body: JSON.stringify(body),
       });
 
       if (!res.ok) {
@@ -177,7 +235,7 @@ export function AvailabilityManager() {
     } finally {
       setSubmitting(false);
     }
-  }, [locked, day, startTime, endTime]);
+  }, [locked, day, startTime, endTime, selectedGroup, selectedActivity]);
 
   const handleDelete = useCallback(
     async (id: string) => {
@@ -216,7 +274,7 @@ export function AvailabilityManager() {
         onValidate={handleValidate}
         onUnvalidate={handleUnvalidate}
         validating={validating}
-        canValidate={availabilities.length > 0}
+        canValidate={canValidate}
       />
 
       {locked && weekStart && <LockBanner weekStart={weekStart} />}
@@ -266,22 +324,77 @@ export function AvailabilityManager() {
           <CardHeader>
             <CardTitle className="text-lg">Ajouter un créneau</CardTitle>
             <CardDescription>
-              Choisissez un jour, un horaire de début et de fin, puis ajoutez.
+              Choisissez un contexte, un jour, un horaire de début et de fin, puis ajoutez.
             </CardDescription>
           </CardHeader>
           <CardContent className={locked ? "pointer-events-none opacity-60" : ""}>
-            <AddAvailabilityForm
-              day={day}
-              onSelectDay={setDay}
-              hoursPerDay={hoursPerDay}
-              startTime={startTime}
-              endTime={endTime}
-              onStartTime={setStartTime}
-              onEndTime={setEndTime}
-              onSubmit={() => void onAdd()}
-              submitting={submitting}
-              disabled={locked}
-            />
+            <div className="flex flex-col gap-4">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-muted-foreground">Groupe</label>
+                  <Select
+                    value={selectedGroup ?? ""}
+                    onValueChange={(v) => {
+                      setSelectedGroup(v || null);
+                      setSelectedActivity(null);
+                    }}
+                    disabled={locked}
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Disponibilités générales" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Disponibilités générales</SelectItem>
+                      {groups.map((g) => (
+                        <SelectItem key={g.id} value={g.id}>
+                          {g.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-muted-foreground">
+                    Les disponibilités générales sont visibles par tous. Les disponibilités par groupe aident à planifier des ateliers spécifiques.
+                  </p>
+                </div>
+                {selectedGroup && (
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium text-muted-foreground">Activité</label>
+                    <Select
+                      value={selectedActivity ?? ""}
+                      onValueChange={setSelectedActivity}
+                      disabled={locked || availableActivities.length === 0}
+                    >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Toutes les activités" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="">Toutes les activités</SelectItem>
+                        {availableActivities.map((a) => (
+                          <SelectItem key={a.id} value={a.id}>
+                            {a.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">
+                      Laissez vide pour appliquer ce créneau à toutes les activités du groupe.
+                    </p>
+                  </div>
+                )}
+              </div>
+              <AddAvailabilityForm
+                day={day}
+                onSelectDay={setDay}
+                hoursPerDay={hoursPerDay}
+                startTime={startTime}
+                endTime={endTime}
+                onStartTime={setStartTime}
+                onEndTime={setEndTime}
+                onSubmit={() => void onAdd()}
+                submitting={submitting}
+                disabled={locked}
+              />
+            </div>
           </CardContent>
         </Card>
       </div>
@@ -319,7 +432,7 @@ export function AvailabilityManager() {
           validating={validating}
           onValidate={handleValidate}
           onUnvalidate={handleUnvalidate}
-          canValidate={availabilities.length > 0}
+          canValidate={canValidate}
         />
       </div>
 

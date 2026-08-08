@@ -5,6 +5,8 @@ import { auth } from "@/lib/auth";
 import { currentWeekStart, isCurrentWeek } from "@/lib/timezone";
 import { sendEmailForNotification } from "@/lib/email-notification-templates";
 
+const MAX_VALIDATIONS_PER_WEEK = 3;
+
 // GET /api/availabilities/validate -> statut de verrouillage de la semaine courante.
 export async function GET() {
   const session = await auth.api.getSession({ headers: await headers() });
@@ -27,6 +29,7 @@ export async function GET() {
 // POST /api/availabilities/validate  { validated: boolean }
 //   validated=true  -> engage la semaine courante (bloque les ajouts/suppressions)
 //   validated=false -> « dévalide » (retour en arrière dans la semaine).
+// Règle : maximum 3 modifications (validate/unvalidate) par semaine.
 export async function POST(req: NextRequest) {
   const session = await auth.api.getSession({ headers: await headers() });
   if (!session?.user?.id) {
@@ -43,14 +46,49 @@ export async function POST(req: NextRequest) {
   const validated = Boolean(body.validated);
   const weekStart = currentWeekStart();
 
+  // Garde : on ne peut valider/dévalider que la semaine en cours.
+  if (!isCurrentWeek(weekStart)) {
+    return NextResponse.json(
+      { error: "Vous ne pouvez valider/dévalider que la semaine en cours." },
+      { status: 403 }
+    );
+  }
+
+  // Compter les modifications précédentes cette semaine.
+  const modificationCount = await prisma.weekValidationLog.count({
+    where: { userId: session.user.id, weekStart },
+  });
+
+  if (modificationCount >= MAX_VALIDATIONS_PER_WEEK) {
+    return NextResponse.json(
+      {
+        error: `Limite atteinte : vous ne pouvez modifier la validation que ${MAX_VALIDATIONS_PER_WEEK} fois par semaine.`,
+      },
+      { status: 429 }
+    );
+  }
+
+  // Journaliser l'action (avant l'exécution pour pouvoir compter même en cas d'erreur).
+  await prisma.weekValidationLog.create({
+    data: { userId: session.user.id, weekStart, action: validated ? "validate" : "unvalidate" },
+  });
+
   if (!validated) {
-    await prisma.weeklyValidation.deleteMany({
-      where: { userId: session.user.id, weekStart },
-    });
+    // Dévalidation : supprimer le verrou ET l'historique (snapshot).
+    await prisma.$transaction([
+      prisma.weeklyValidation.deleteMany({
+        where: { userId: session.user.id, weekStart },
+      }),
+      prisma.weekSnapshot.deleteMany({
+        where: { userId: session.user.id, weekStart },
+      }),
+    ]);
     return NextResponse.json({ weekStart: weekStart.toISOString(), validated: false });
   }
 
-  await sendEmailForNotification([session.user.id], "availability_validation");
+  await sendEmailForNotification([session.user.id], "availability_validation").catch(
+    () => {}
+  );
 
   // En cas de ré-validation, on garantit une seule ligne (upsert).
   await prisma.weeklyValidation.upsert({

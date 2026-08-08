@@ -29,8 +29,14 @@ export async function GET(req: NextRequest) {
     include: { slots: { select: { day: true, startTime: true, endTime: true } } },
   });
 
-  const hasMore = snaps.length > limit;
-  const items = hasMore ? snaps.slice(0, limit) : snaps;
+  // Ne garder que les semaines qui ont encore une validation active.
+  const weekStarts = snaps.map((s) => s.weekStart);
+  const activeValidations = await prisma.weeklyValidation.findMany({
+    where: { userId: session.user.id, weekStart: { in: weekStarts } },
+    select: { weekStart: true },
+  });
+  const activeSet = new Set(activeValidations.map((v) => v.weekStart.toISOString()));
+  const items = snaps.filter((s) => activeSet.has(s.weekStart.toISOString()));
 
   const payload = items.map((s) => ({
     id: s.id,
@@ -39,9 +45,11 @@ export async function GET(req: NextRequest) {
     slots: s.slots,
   }));
 
+  const hasMore = items.length > limit;
+
   return NextResponse.json({
-    items: payload,
+    items: hasMore ? payload.slice(0, limit) : payload,
     hasMore,
-    nextCursor: hasMore ? items[items.length - 1].weekStart.toISOString() : null,
+    nextCursor: hasMore ? items[limit - 1].weekStart.toISOString() : null,
   });
 }

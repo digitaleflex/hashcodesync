@@ -5,6 +5,8 @@ export type Availability = {
   day: number;
   startTime: string;
   endTime: string;
+  group?: { id: string; name: string } | null;
+  activity?: { id: string; name: string } | null;
 };
 
 export type SlotInput = {

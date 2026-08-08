@@ -64,7 +64,7 @@ export async function GET() {
     let totalHours = 0;
     const members = g.members.map((m) => {
       const slots = m.user.availabilities
-        .filter((a) => a.groupId === g.id)
+        .filter((a) => a.groupId === g.id || a.groupId === null)
         .map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }));
       const hoursPerWeek = computeMassHours(slots);
       const present = m.user.attendances.filter((x) => x.status === "present").length;

@@ -28,6 +28,7 @@ import {
 } from "@/components/dashboard/activity-feed";
 import { PersonalSummaryCard } from "@/components/dashboard/personal-summary";
 import { WeekValidationBanner } from "@/components/dashboard/week-banner";
+import { OnboardingBanner } from "@/components/dashboard/onboarding-banner";
 
 const roleLabels: Record<string, string> = {
   member: "Membre",
@@ -61,6 +62,7 @@ export default function DashboardPage() {
   const [massHours, setMassHours] = useState<number | null>(null);
   const [weekValidated, setWeekValidated] = useState(false);
   const [upcoming, setUpcoming] = useState<UpcomingWorkshop[]>([]);
+  const [hasWorkshops, setHasWorkshops] = useState(false);
   const [groupCount, setGroupCount] = useState<number | null>(null);
   const [activities, setActivities] = useState<ActivityItem[]>([]);
   const [cohort, setCohort] = useState<CohortData & { has: boolean } | null>(null);
@@ -119,6 +121,7 @@ export default function DashboardPage() {
                 : 0,
             }));
           setUpcoming(future);
+          setHasWorkshops(list.length > 0);
         }
       }
       if (groups.status === "fulfilled" && groups.value.ok) {
@@ -199,6 +202,8 @@ export default function DashboardPage() {
       </div>
 
       <WeekValidationBanner weekValidated={weekValidated} availCount={availCount ?? 0} />
+
+      <OnboardingBanner hasAvailabilities={(availCount ?? 0) > 0} hasWorkshops={hasWorkshops} />
 
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <StatCard

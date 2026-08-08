@@ -144,8 +144,8 @@ export async function GET(req: NextRequest) {
       .map((mem) => {
         const applicable = mem.user.availabilities.filter(
           (a) =>
-            a.groupId === groupId &&
-            (!activityId || a.activityId === activityId)
+            (a.groupId === groupId || a.groupId === null) &&
+            (!activityId || a.activityId === activityId || a.activityId === null)
         );
         const mass = computeMassHours(
           applicable.map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }))

@@ -92,6 +92,11 @@ export type Availability = Prisma.AvailabilityModel
  */
 export type WeeklyValidation = Prisma.WeeklyValidationModel
 /**
+ * Model WeekValidationLog
+ * 
+ */
+export type WeekValidationLog = Prisma.WeekValidationLogModel
+/**
  * Model WeekSnapshot
  * 
  */

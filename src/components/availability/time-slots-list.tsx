@@ -32,8 +32,8 @@ export const TimeSlotsList = memo(function TimeSlotsList({
   return (
     <ul className="divide-y divide-border">
       {slots.map((s) => (
-        <li key={s.id} className="flex items-center justify-between gap-3 py-2.5">
-          <div className="flex items-center gap-3">
+        <li key={s.id} className="flex flex-col gap-1 py-2.5 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
+          <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="w-14 justify-center">
               {DAY_SHORT[s.day]}
             </Badge>
@@ -43,6 +43,16 @@ export const TimeSlotsList = memo(function TimeSlotsList({
                 {durationLabel(s.startTime, s.endTime)}
               </span>
             </p>
+            {s.group && (
+              <Badge variant="outline" className="text-xs">
+                {s.group.name}
+              </Badge>
+            )}
+            {s.activity && (
+              <Badge variant="outline" className="text-xs">
+                {s.activity.name}
+              </Badge>
+            )}
           </div>
           <button
             type="button"

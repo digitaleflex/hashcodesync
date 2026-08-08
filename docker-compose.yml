@@ -14,6 +14,8 @@ services:
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_BETTER_AUTH_URL=${NEXT_PUBLIC_BETTER_AUTH_URL}
+      - NEXT_PUBLIC_APP_DOMAIN=${NEXT_PUBLIC_APP_DOMAIN}
+      - NEXT_PUBLIC_APP_URL=${NEXT_PUBLIC_APP_URL}
       - RESEND_API_KEY=${RESEND_API_KEY}
       - RESEND_FROM=${RESEND_FROM}
       - CRON_SECRET=${CRON_SECRET}
@@ -22,8 +24,23 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 512M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
     networks:
       - hashcode-net
+      - proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.hashcode-sync.rule=Host(`${NEXT_PUBLIC_APP_DOMAIN}`)"
+      - "traefik.http.routers.hashcode-sync.entrypoints=websecure"
+      - "traefik.http.routers.hashcode-sync.tls.certresolver=myresolver"
+      - "traefik.http.services.hashcode-sync.loadbalancer.server.port=3000"
 
   db:
     image: postgres:16-alpine
@@ -42,6 +59,14 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: "1"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
     networks:
       - hashcode-net
 
@@ -51,3 +76,5 @@ volumes:
 networks:
   hashcode-net:
     driver: bridge
+  proxy:
+    external: true

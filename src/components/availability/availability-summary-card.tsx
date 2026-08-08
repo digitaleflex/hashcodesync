@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { SunIcon, TrendingUpIcon, TimerIcon } from "lucide-react";
 import type { AvailabilityStats } from "@/components/availability/shared";
 import { DAY_NAMES } from "@/components/availability/constants";
 
-export function AvailabilitySummaryCard({ stats }: { stats: AvailabilityStats }) {
+export const AvailabilitySummaryCard = memo(function AvailabilitySummaryCard({ stats }: { stats: AvailabilityStats }) {
   const items = [
     {
       icon: <TimerIcon className="size-4 text-accent" />,
@@ -31,4 +32,4 @@ export function AvailabilitySummaryCard({ stats }: { stats: AvailabilityStats })
       ))}
     </ul>
   );
-}
+});

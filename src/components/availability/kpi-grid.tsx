@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { StatCard } from "@/components/ui/stat-card";
 import { ClockIcon, CalendarDaysIcon, ListChecksIcon, SparklesIcon } from "lucide-react";
 import type { AvailabilityStats } from "@/components/availability/shared";
 
-export function KpiGrid({ stats }: { stats: AvailabilityStats }) {
+export const KpiGrid = memo(function KpiGrid({ stats }: { stats: AvailabilityStats }) {
   const hoursLabel = stats.hours ? stats.hours.toFixed(1).replace(".0", "") : "0";
   const workshops = Math.floor(stats.minutes / 90);
   const cards = [
@@ -46,4 +47,4 @@ export function KpiGrid({ stats }: { stats: AvailabilityStats }) {
       ))}
     </div>
   );
-}
+});

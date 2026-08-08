@@ -1,3 +1,4 @@
+import { memo } from "react";
 import { Trash2Icon } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import type { Availability } from "@/components/availability/shared";
@@ -16,7 +17,7 @@ function durationLabel(start: string, end: string): string {
   return m === 0 ? `${h} h` : `${h} h ${m.toString().padStart(2, "0")} min`;
 }
 
-export function TimeSlotsList({
+export const TimeSlotsList = memo(function TimeSlotsList({
   slots,
   onDelete,
   disabled,
@@ -56,4 +57,4 @@ export function TimeSlotsList({
       ))}
     </ul>
   );
-}
+});

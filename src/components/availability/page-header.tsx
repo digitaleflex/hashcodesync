@@ -1,11 +1,12 @@
 "use client";
 
+import { memo } from "react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarRangeIcon } from "lucide-react";
 import { formatWeekRange } from "@/components/availability/date";
 
-export function PageHeader({
+export const PageHeader = memo(function PageHeader({
   weekStart,
   locked,
   onValidate,
@@ -49,4 +50,4 @@ export function PageHeader({
       </div>
     </div>
   );
-}
+});

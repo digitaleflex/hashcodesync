@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { SlotInput } from "@/components/availability/shared";
 import { DAY_SHORT } from "@/components/availability/constants";
 import { cn } from "@/lib/utils";
@@ -7,7 +8,7 @@ function toMinutes(time: string): number {
   return h * 60 + m;
 }
 
-export function WeeklyOverview({ grouped }: { grouped: Record<number, SlotInput[]> }) {
+export const WeeklyOverview = memo(function WeeklyOverview({ grouped }: { grouped: Record<number, SlotInput[]> }) {
   const hours = Array.from({ length: 11 }, (_, i) => 8 + i); // 8h..18h
   return (
     <div className="overflow-x-auto">
@@ -66,4 +67,4 @@ export function WeeklyOverview({ grouped }: { grouped: Record<number, SlotInput[
       </table>
     </div>
   );
-}
+});

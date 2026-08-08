@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
+import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,21 @@ import { ValidateBar } from "@/components/availability/validate-bar";
 import { LockBanner } from "@/components/availability/lock-banner";
 import { EmptyState } from "@/components/availability/empty-state";
 import { MobileWeeklyTimeline } from "@/components/availability/mobile-weekly-timeline";
-import { HistorySection } from "@/components/availability/history-section";
+
+const HistorySection = dynamic(
+  () =>
+    import("@/components/availability/history-section").then(
+      (m) => m.HistorySection
+    ),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center py-8">
+        <Loader2Icon className="size-5 animate-spin text-accent" />
+      </div>
+    ),
+  }
+);
 
 function compare(a: Availability, b: Availability) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
@@ -62,7 +77,7 @@ export function AvailabilityManager() {
     load();
   }, [load]);
 
-  async function handleValidate() {
+  const handleValidate = useCallback(async () => {
     setValidating(true);
     try {
       const res = await fetch("/api/availabilities/validate", {
@@ -81,9 +96,9 @@ export function AvailabilityManager() {
     } finally {
       setValidating(false);
     }
-  }
+  }, []);
 
-  async function handleUnvalidate() {
+  const handleUnvalidate = useCallback(async () => {
     setValidating(true);
     try {
       const res = await fetch("/api/availabilities/validate", {
@@ -102,7 +117,7 @@ export function AvailabilityManager() {
     } finally {
       setValidating(false);
     }
-  }
+  }, []);
 
   const grouped = useMemo<Record<number, Availability[]>>(() => {
     const g: Record<number, Availability[]> = {};
@@ -164,23 +179,26 @@ export function AvailabilityManager() {
     }
   }, [locked, day, startTime, endTime]);
 
-  async function handleDelete(id: string) {
-    if (locked) {
-      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
-      return;
-    }
-    try {
-      const res = await fetch(`/api/availabilities/${id}`, { method: "DELETE" });
-      if (res.ok) {
-        setAvailabilities((prev) => prev.filter((a) => a.id !== id));
-        toast.success("Disponibilité supprimée");
-      } else {
-        toast.error("Suppression impossible");
+  const handleDelete = useCallback(
+    async (id: string) => {
+      if (locked) {
+        toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+        return;
       }
-    } catch {
-      toast.error("Erreur réseau : suppression impossible");
-    }
-  }
+      try {
+        const res = await fetch(`/api/availabilities/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          setAvailabilities((prev) => prev.filter((a) => a.id !== id));
+          toast.success("Disponibilité supprimée");
+        } else {
+          toast.error("Suppression impossible");
+        }
+      } catch {
+        toast.error("Erreur réseau : suppression impossible");
+      }
+    },
+    [locked]
+  );
 
   if (loading) {
     return (
@@ -195,8 +213,8 @@ export function AvailabilityManager() {
       <PageHeader
         weekStart={weekStart}
         locked={locked}
-        onValidate={() => void handleValidate()}
-        onUnvalidate={() => void handleUnvalidate()}
+        onValidate={handleValidate}
+        onUnvalidate={handleUnvalidate}
         validating={validating}
         canValidate={availabilities.length > 0}
       />
@@ -299,8 +317,8 @@ export function AvailabilityManager() {
         <ValidateBar
           locked={locked}
           validating={validating}
-          onValidate={() => void handleValidate()}
-          onUnvalidate={() => void handleUnvalidate()}
+          onValidate={handleValidate}
+          onUnvalidate={handleUnvalidate}
           canValidate={availabilities.length > 0}
         />
       </div>

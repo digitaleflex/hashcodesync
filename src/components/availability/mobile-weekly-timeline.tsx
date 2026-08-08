@@ -1,3 +1,4 @@
+import { memo } from "react";
 import type { SlotInput } from "@/components/availability/shared";
 import { DAY_NAMES } from "@/components/availability/constants";
 import { CircleIcon } from "lucide-react";
@@ -15,7 +16,7 @@ function durationLabel(start: string, end: string): string {
   return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }
 
-export function MobileWeeklyTimeline({
+export const MobileWeeklyTimeline = memo(function MobileWeeklyTimeline({
   grouped,
 }: {
   grouped: Record<number, SlotInput[]>;
@@ -57,4 +58,4 @@ export function MobileWeeklyTimeline({
       })}
     </ul>
   );
-}
+});

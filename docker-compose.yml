@@ -48,7 +48,7 @@ services:
       - "traefik.http.routers.hashcode-sync.tls.certresolver=letsencrypt"
       - "traefik.http.services.hashcode-sync.loadbalancer.server.port=3000"
 
-  db:
+   db:
     image: postgres:16-alpine
     container_name: hashcodesync_db
     restart: unless-stopped
@@ -75,6 +75,42 @@ services:
           memory: 512M
     networks:
       - hashcodesync_net
+
+  backup:
+    image: backblaze/b2:latest
+    container_name: hashcodesync_backup
+    restart: unless-stopped
+    environment:
+      - B2_APPLICATION_KEY_ID=${B2_APPLICATION_KEY_ID}
+      - B2_APPLICATION_KEY=${B2_APPLICATION_KEY}
+      - B2_BUCKET=${B2_BUCKET}
+      - B2_ENDPOINT=${B2_ENDPOINT}
+      - BACKUP_RETENTION_DAYS=${BACKUP_RETENTION_DAYS}
+      - DATABASE_HOST=db
+      - DATABASE_USER=hcode_prod_usr
+      - DATABASE_PASSWORD=5ace782fb8dba068d5541b3029f9acec7705623246dabba3
+      - DATABASE_NAME=hashcode_sync_db
+    volumes:
+      - hashcodesync_postgres:/backup/postgres:ro
+      - hashcodesync_uploads:/backup/uploads:ro
+      - ./backup/run.sh:/backup/run.sh:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache postgresql-client cronie &&
+        echo "0 2 * * * /backup/run.sh >> /var/log/backup.log 2>&1" | crontab - &&
+        touch /var/log/backup.log &&
+        crond -f -l 2
+    networks:
+      - hashcodesync_net
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 256M
+        reservations:
+          cpus: "0.1"
+          memory: 128M
 
 volumes:
   hashcodesync_postgres:

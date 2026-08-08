@@ -12,7 +12,7 @@ services:
     container_name: hashcodesync_app
     restart: unless-stopped
     environment:
-      - DATABASE_URL=${DATABASE_URL}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-hcode_prod_usr}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB:-hashcode_sync_db}
       - BETTER_AUTH_SECRET=${BETTER_AUTH_SECRET}
       - BETTER_AUTH_URL=${BETTER_AUTH_URL}
       - NEXT_PUBLIC_BETTER_AUTH_URL=${NEXT_PUBLIC_BETTER_AUTH_URL}

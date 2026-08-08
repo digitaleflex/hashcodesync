@@ -1,10 +1,16 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Select,
   SelectContent,
@@ -12,10 +18,22 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Loader2Icon, SparklesIcon, UsersIcon, CalendarRangeIcon } from "lucide-react";
+import {
+  Loader2Icon,
+  UsersIcon,
+  CalendarRangeIcon,
+  CalendarPlusIcon,
+} from "lucide-react";
 import { DAY_NAMES_FULL, HeatmapCard, RecommendationCard } from "@/components/scheduling-views";
 import { StatCard } from "@/components/ui/stat-card";
 import { AttendanceNudgeCard } from "@/components/dashboard/attendance-nudge";
+import {
+  BestRecommendationHero,
+  InsightsList,
+  MetricDonut,
+  type BestSlot,
+} from "@/components/admin/cockpit";
+import { useAdminInsights, type AdminGroup } from "@/components/admin/use-admin-insights";
 
 type Rec = {
   day: number;
@@ -40,12 +58,17 @@ type Data = {
   groups?: GroupOption[];
 };
 
+const DEFAULT_GROUP_ID = "";
+const DEFAULT_WINDOW = 2;
+
 export function SchedulingDashboard() {
   const router = useRouter();
   const [data, setData] = useState<Data | null>(null);
+  const [groupsData, setGroupsData] = useState<AdminGroup[]>([]);
   const [loading, setLoading] = useState(true);
-  const [windowHours, setWindowHours] = useState(2);
-  const [groupId, setGroupId] = useState("");
+  const [windowHours, setWindowHours] = useState(DEFAULT_WINDOW);
+  const [groupId, setGroupId] = useState(DEFAULT_GROUP_ID);
+  const [selectedCell, setSelectedCell] = useState<{ day: number; hour: number } | null>(null);
 
   const load = useCallback(async (window: number, gid: string) => {
     setLoading(true);
@@ -57,18 +80,54 @@ export function SchedulingDashboard() {
     setLoading(false);
   }, []);
 
+  // Second appel lecture seule : membres/groupes pour le nudge d'insights.
+  useEffect(() => {
+    let active = true;
+    fetch("/api/admin/groups")
+      .then((r) => (r.ok ? r.json() : []))
+      .then((list) => {
+        if (active && Array.isArray(list)) setGroupsData(list);
+      })
+      .catch(() => {});
+    return () => {
+      active = false;
+    };
+  }, []);
+
   useEffect(() => {
     load(windowHours, groupId);
   }, [load, windowHours, groupId]);
 
-  const best = data?.recommendation[0];
+  const best: BestSlot | null = data?.recommendation[0]
+    ? {
+        day: data.recommendation[0].day,
+        startTime: data.recommendation[0].startTime,
+        endTime: data.recommendation[0].endTime,
+        available: data.recommendation[0].available,
+        percent: data.recommendation[0].percent,
+      }
+    : null;
   const groups = data?.groups ?? [];
   const selectedGroupName = data?.groupName ?? null;
+
+  const coveragePercent = useMemo(() => {
+    const total = data?.totalMembers ?? 0;
+    const avail = data?.totalAvailabilities ?? 0;
+    if (!total) return 0;
+    return (avail / (total * 40)) * 100;
+  }, [data]);
+
+  const insights = useAdminInsights({
+    totalMembers: data?.totalMembers ?? 0,
+    totalAvailabilities: data?.totalAvailabilities ?? 0,
+    coveragePercent,
+    groups: groupsData,
+  });
 
   function nextOccurrence(day: number, time: string) {
     const [h, m] = time.split(":").map(Number);
     const now = new Date();
-    const diff = (day - (now.getDay() + 6) % 7 + 7) % 7;
+    const diff = (day - ((now.getDay() + 6) % 7) + 7) % 7;
     const start = new Date(now.getFullYear(), now.getMonth(), now.getDate() + diff, h, m);
     if (start.getTime() <= Date.now()) start.setDate(start.getDate() + 7);
     return start;
@@ -79,17 +138,18 @@ export function SchedulingDashboard() {
     const r = data.recommendation.find((x) => x.startTime === time && x.day === day);
     if (!r) return;
     const start = nextOccurrence(day, time);
-    const end = new Date(start.getTime() + data.windowHours * 3600000);
-    const q = new URLSearchParams({
-      start: start.toISOString(),
-      end: end.toISOString(),
-    });
+    const end = new Date(start.getTime() + (data.windowHours || DEFAULT_WINDOW) * 3600000);
+    const q = new URLSearchParams({ start: start.toISOString(), end: end.toISOString() });
     router.push(`/ateliers/nouveau?${q}`);
   }
 
-  const highlightCell = best
-    ? { day: best.day, hour: Number(best.startTime.split(":")[0]) }
-    : null;
+  // Interaction heatmap : sélectionner une cellule → propose de planifier à ce créneau.
+  function handleCellSelect(day: number, hour: number) {
+    setSelectedCell(day === selectedCell?.day && hour === selectedCell?.hour ? null : { day, hour });
+  }
+
+  const highlightCell =
+    selectedCell ?? (best ? { day: best.day, hour: Number(best.startTime.split(":")[0]) } : null);
 
   return (
     <div className="space-y-6">
@@ -107,7 +167,10 @@ export function SchedulingDashboard() {
             </p>
             <Select
               value={groupId}
-              onValueChange={(v) => setGroupId(v ?? "")}
+              onValueChange={(v) => {
+                setGroupId(v ?? "");
+                setSelectedCell(null);
+              }}
             >
               <SelectTrigger className="w-64">
                 <SelectValue placeholder="Filtrer par groupe" />
@@ -123,50 +186,42 @@ export function SchedulingDashboard() {
             </Select>
           </div>
 
-          <AttendanceNudgeCard />
+          {/* 1. Décision principale : meilleur créneau */}
+          {best ? (
+            <BestRecommendationHero best={best} totalMembers={data.totalMembers} onPlan={handlePlan} />
+          ) : (
+            <AttendanceNudgeCard />
+          )}
 
-          <div className="grid gap-4 sm:grid-cols-3">
+          {/* 2. KPI décisionnels (4 max) */}
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               icon={<UsersIcon className="size-4 text-accent" />}
-              label="Membres actifs"
+              label="Membres"
               value={data.totalMembers}
+              footnote="inscrits à la cohorte"
             />
             <StatCard
               icon={<CalendarRangeIcon className="size-4 text-accent" />}
-              label="Créneaux renseignés"
-              value={data.totalAvailabilities}
+              label="Cohorte couverte"
+              value={<MetricDonut value={coveragePercent} tone="success" label="couverture" size={64} />}
+              footnote={`${data.totalAvailabilities} créneaux renseignés`}
             />
-            <Card className={best ? "ring-accent/40" : ""}>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <SparklesIcon className="size-4 text-accent" />
-                  Meilleur créneau
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                {best ? (
-                  <>
-                    <div className="space-y-1">
-                      <p className="font-heading text-lg font-semibold">
-                        {DAY_NAMES_FULL[best.day]} · {best.startTime}–{best.endTime}
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        ≈ {best.available} présent attendu{best.available > 1 ? "s" : ""} ·
-                        {best.percent}% (assiduité des membres comptée)
-                      </p>
-                    </div>
-                    <Button size="sm" onClick={() => handlePlan(best.startTime, best.day)}>
-                      <SparklesIcon className="size-3.5" />
-                      Planifier
-                    </Button>
-                  </>
-                ) : (
-                  <p className="text-sm text-muted-foreground">—</p>
-                )}
-              </CardContent>
-            </Card>
+            <StatCard
+              icon={<UsersIcon className="size-4 text-accent" />}
+              label="Groupes affichés"
+              value={groups.length}
+              footnote={`${groups.filter((g) => g.memberCount > 0).length} avec membres`}
+            />
+            <StatCard
+              icon={<CalendarPlusIcon className="size-4 text-accent" />}
+              label="Fenêtre"
+              value={`${data.windowHours ?? DEFAULT_WINDOW}h`}
+              footnote="durée des créneaux"
+            />
           </div>
 
+          {/* 3. Heatmap interactive (cœur) + fenêtre */}
           <HeatmapCard
             heatmap={data.heatmap}
             minHour={data.minHour}
@@ -174,8 +229,18 @@ export function SchedulingDashboard() {
             totalMembers={data.totalMembers}
             refLabel={data.referenceTimezone}
             highlightCell={highlightCell}
+            onCellSelect={handleCellSelect}
+            description={
+              selectedCell
+                ? `${DAY_NAMES_FULL[selectedCell.day]} ${selectedCell.hour}:00 → ${selectedCell.hour + 1}:00 · créez un atelier ici. Le meilleur créneau est en surbrillance.`
+                : "Une couleur par jour, l'intensité = part de la cohorte disponible. Cliquez une cellule pour planifier à ce créneau."
+            }
           />
 
+          {/* 5. Insights (décisionnels, proposent des actions) */}
+          {insights.length > 0 && <InsightsList insights={insights} />}
+
+          {/* 6. Recommandations (classement complet) */}
           <RecommendationCard
             recommendation={data.recommendation}
             totalMembers={data.totalMembers}

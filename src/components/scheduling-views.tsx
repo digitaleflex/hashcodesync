@@ -10,6 +10,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { FlameIcon, SparklesIcon, CalendarPlusIcon } from "lucide-react";
+import { MiniProgress } from "@/components/admin/cockpit";
 
 export const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
 export const DAY_NAMES_FULL = [
@@ -61,6 +62,7 @@ export function HeatmapCard({
   highlightCell,
   title,
   description,
+  onCellSelect,
 }: {
   heatmap: HeatCell[];
   minHour: number;
@@ -70,6 +72,7 @@ export function HeatmapCard({
   highlightCell?: { day: number; hour: number } | null;
   title?: string;
   description?: string;
+  onCellSelect?: (day: number, hour: number) => void;
 }) {
   const index = new Map<string, HeatCell>();
   for (const c of heatmap) index.set(`${c.day}:${c.hour}`, c);
@@ -130,22 +133,38 @@ export function HeatmapCard({
                     const ratio = cell ? cell.count / totalMembers : 0;
                     const style = cellStyle(day, ratio);
                     const hl = isHighlight(day, hour);
+                    const label = cell
+                      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.count} membre${cell.count > 1 ? "s" : ""} · ${Math.round(ratio * 100)}% de la cohorte`
+                      : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+                    const interactive = !!onCellSelect;
+                    const content = (
+                      <span className="hidden md:inline">
+                        {ratio > 0 ? Math.round(ratio * 100) : ""}
+                      </span>
+                    );
                     return (
                       <td
                         key={hour}
-                        title={
-                          cell
-                            ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.count} membre${cell.count > 1 ? "s" : ""} · ${Math.round(ratio * 100)}%`
-                            : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`
-                        }
                         className={`h-8 min-w-8 rounded-md text-center text-[11px] font-semibold ${
                           hl ? "shadow-[inset_0_0_0_2px_#e94560]" : ""
                         }`}
                         style={style}
                       >
-                        <span className="hidden md:inline">
-                          {ratio > 0 ? Math.round(ratio * 100) : ""}
-                        </span>
+                        {interactive ? (
+                          <button
+                            type="button"
+                            aria-label={label}
+                            title={label}
+                            onClick={() => onCellSelect(day, hour)}
+                            className="flex h-full min-h-8 w-full min-w-8 cursor-pointer items-center justify-center rounded-md text-[11px] font-semibold transition-transform hover:scale-[1.03]"
+                          >
+                            {content}
+                          </button>
+                        ) : (
+                          <span title={label} aria-label={label}>
+                            {content}
+                          </span>
+                        )}
                       </td>
                     );
                   })}
@@ -200,6 +219,15 @@ export function RecommendationCard({
   actions?: React.ReactNode;
   onPlan?: (time: string, day: number) => void;
 }) {
+  // Score de confiance déduit côté client (aucune modif API) : la disponibilité
+  // pondérée rapportée à la cohorte, bornée 0-100.
+  const scoreOf = (r: Rec): number =>
+    Math.max(0, Math.min(100, Math.round(r.percent)));
+  const durationOf = (r: Rec): number => {
+    const [sh, sm] = r.startTime.split(":").map(Number);
+    const [eh, em] = r.endTime.split(":").map(Number);
+    return (eh * 60 + em - (sh * 60 + sm)) / 60;
+  };
   return (
     <Card>
       <CardHeader>
@@ -220,30 +248,38 @@ export function RecommendationCard({
             Pas assez de données pour recommander un créneau.
           </p>
         ) : (
-          <ul className="space-y-3">
+          <ol className="space-y-3">
             {recommendation.map((r, i) => (
               <li
                 key={`${r.day}-${r.startTime}`}
-                className={`space-y-1.5 rounded-lg p-2 ${
+                className={`space-y-2 rounded-lg p-2.5 ${
                   i === 0 ? "bg-accent/10 ring-1 ring-accent/30" : ""
                 }`}
               >
-                <div className="flex items-center justify-between gap-2 text-sm">
-                  <span className="font-medium">
-                    <Badge variant={i === 0 ? "default" : "secondary"} className="mr-2">
-                      {i + 1}
+                <div className="flex flex-wrap items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Badge variant={i === 0 ? "default" : "secondary"}>
+                      #{i + 1}
                     </Badge>
-                    {DAY_NAMES_FULL[r.day]} · {r.startTime}–{r.endTime}
-                  </span>
-                  <span className="text-muted-foreground">
-                    ≈ {r.available} présent·es attendus · {r.percent} %
+                    <span className="font-medium">
+                      {DAY_NAMES_FULL[r.day]} · {r.startTime}–{r.endTime}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      · {durationOf(r)} h
+                    </span>
+                  </div>
+                  <span className="font-medium">
+                    {Math.round(r.percent)}%
+                    <span className="ml-1 text-xs font-normal text-muted-foreground">
+                      · ≈ {Math.round(r.available)} dispo
+                    </span>
                   </span>
                 </div>
-                <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
-                  <div
-                    className="h-full rounded-full bg-accent"
-                    style={{ width: `${r.percent}%` }}
-                  />
+                <div className="flex items-center gap-2">
+                  <MiniProgress value={scoreOf(r)} tone="accent" className="h-2" />
+                  <span className="shrink-0 text-[11px] text-muted-foreground">
+                    {scoreOf(r)}/100
+                  </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                   {i === 0 ? (
@@ -267,7 +303,7 @@ export function RecommendationCard({
                 </div>
               </li>
             ))}
-          </ul>
+          </ol>
         )}
       </CardContent>
     </Card>

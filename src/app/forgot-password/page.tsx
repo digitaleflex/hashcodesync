@@ -1,89 +1,119 @@
 "use client";
 
-import { useState } from "react";
+import * as React from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { authClient } from "@/lib/auth-client";
+import { AuthCard } from "@/components/auth-card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Loader2Icon, MailIcon, ArrowLeftIcon } from "lucide-react";
+import { Mail, ArrowRight, Loader2Icon } from "lucide-react";
 
 export default function ForgotPasswordPage() {
-  const [email, setEmail] = useState("");
-  const [submitting, setSubmitting] = useState(false);
-  const [sent, setSent] = useState(false);
+  const router = useRouter();
+  const [email, setEmail] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
+  const [sent, setSent] = React.useState(false);
 
-  const requestReset = async () => {
-    if (!email.includes("@")) {
-      toast.error("Entrez une adresse email valide");
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await authClient.requestPasswordReset({
+      email,
+      redirectTo: "/reset-password",
+    });
+    setLoading(false);
+
+    if (error) {
+      toast.error(error.message ?? "Impossible d'envoyer le lien");
       return;
     }
-    setSubmitting(true);
-    try {
-      await authClient.requestPasswordReset({ email });
-      setSent(true);
-    } catch {
-      toast.error("Échec de la demande de réinitialisation");
-    } finally {
-      setSubmitting(false);
-    }
-  };
+
+    setSent(true);
+    toast.success("Si un compte existe, un e-mail a été envoyé");
+  }
 
   if (sent) {
     return (
-      <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center gap-4 px-4 text-center">
-        <div className="flex size-12 items-center justify-center rounded-full bg-accent/10">
-          <MailIcon className="size-6 text-accent" />
+      <AuthCard
+        title="E-mail envoyé"
+        description="Vérifiez votre boîte de réception et vos spams."
+      >
+        <div className="flex flex-col gap-4 text-sm text-muted-foreground">
+          <p>
+            Si l&apos;adresse <span className="font-medium text-foreground">{email}</span> est
+            associée à un compte, vous recevrez un lien de réinitialisation.
+          </p>
+          <p>Le lien expire dans 1 heure.</p>
         </div>
-        <h1 className="font-heading text-2xl font-semibold">Email envoyé</h1>
-        <p className="text-sm text-muted-foreground">
-          Si un compte existe pour <span className="font-medium">{email}</span>,
-          vous recevrez un lien pour réinitialiser votre mot de passe. En
-          développement, le lien est affiché dans la console du serveur.
-        </p>
-        <Button nativeButton={false} render={<Link href="/login" />} variant="outline">
-          <ArrowLeftIcon className="size-4" /> Retour à la connexion
+        <Button
+          variant="outline"
+          className="w-full"
+          onClick={() => {
+            setSent(false);
+            setEmail("");
+          }}
+        >
+          Envoyer un autre lien
         </Button>
-      </div>
+        <p className="text-center text-sm text-muted-foreground">
+          <Link href="/login" className="text-primary hover:underline">
+            Revenir à la connexion
+          </Link>
+        </p>
+      </AuthCard>
     );
   }
 
   return (
-    <div className="mx-auto flex min-h-[70vh] max-w-md flex-col items-center justify-center gap-6 px-4">
-      <div className="space-y-1 text-center">
-        <h1 className="font-heading text-2xl font-semibold">
-          Mot de passe oublié
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Saisissez votre email pour recevoir un lien de réinitialisation.
-        </p>
-      </div>
-      <div className="w-full space-y-4 rounded-lg border p-6">
+    <AuthCard
+      title="Mot de passe oublié"
+      description="Entrez votre e-mail pour recevoir un lien de réinitialisation."
+    >
+      <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="vous@exemple.com"
-          />
+          <Label htmlFor="email" className="text-sm font-medium text-[#A7B0C2] uppercase tracking-wider">
+            Email
+          </Label>
+          <div className="relative">
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A7B0C2]/60" />
+            <Input
+              id="email"
+              type="email"
+              placeholder="vous@exemple.com"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+            />
+          </div>
         </div>
-        <Button className="w-full" onClick={requestReset} disabled={submitting}>
-          {submitting ? (
-            <Loader2Icon className="size-4 animate-spin" />
+
+        <Button
+          type="submit"
+          size="lg"
+          disabled={loading}
+          className="h-[52px] w-full bg-primary hover:bg-primary/90 text-white font-medium shadow-lg shadow-primary/25 transition-all active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          {loading ? (
+            <Loader2Icon className="h-5 w-5 animate-spin" />
           ) : (
-            <MailIcon className="size-4" />
+            <>
+              Envoyer le lien
+              <ArrowRight className="h-4 w-4 ml-2" />
+            </>
           )}
-          Envoyer le lien
         </Button>
-      </div>
-      <p className="text-sm text-muted-foreground">
-        <Link href="/login" className="text-accent hover:underline">
+      </form>
+
+      <p className="text-center text-sm text-[#A7B0C2]">
+        <Link href="/login" className="text-primary hover:underline">
           Revenir à la connexion
         </Link>
       </p>
-    </div>
+    </AuthCard>
   );
 }

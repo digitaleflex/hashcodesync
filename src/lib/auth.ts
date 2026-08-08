@@ -1,6 +1,7 @@
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { prisma } from "./prisma";
+import { sendMail } from "./mailer";
 
 export const auth = betterAuth({
   appName: "HashCode Sync",
@@ -20,15 +21,27 @@ export const auth = betterAuth({
   },
   emailAndPassword: {
     enabled: true,
+    requireEmailVerification: true,
     sendResetPassword: async ({ user, url }) => {
-      // Dev : pas de SMTP configuré, on logue le lien pour récupération locale.
-      // IMPORTANT : à remplacer par un vrai envoi d'e-mail (SMTP) en production.
-      if (process.env.NODE_ENV !== "production") {
-        console.log(
-          `[HashCode Sync] Lien de réinitialisation pour ${user.email} : ${url}`
-        );
-      }
+      await sendMail({
+        to: user.email,
+        subject: "Réinitialisation de votre mot de passe",
+        text: `Bonjour ${user.name},\n\nVous avez demandé la réinitialisation de votre mot de passe HashCode Sync.\n\nCliquez sur ce lien (valable 1 heure) : ${url}\n\nSi vous n'êtes pas à l'origine de cette demande, ignorez cet e-mail.`,
+      });
     },
+  },
+  emailVerification: {
+    enabled: true,
+    sendOnSignUp: true,
+    sendVerificationEmail: async ({ user, url }) => {
+      await sendMail({
+        to: user.email,
+        subject: "Vérifiez votre adresse e-mail",
+        text: `Bonjour ${user.name},\n\nMerci de vous être inscrit sur HashCode Sync.\n\nCliquez sur ce lien pour vérifier votre adresse e-mail (valable 24h) : ${url}\n\nSi vous n'êtes pas à l'origine de cette inscription, ignorez cet e-mail.`,
+      });
+    },
+    autoSignInAfterVerification: true,
+    expiresIn: 60 * 60 * 24,
   },
   user: {
     additionalFields: {

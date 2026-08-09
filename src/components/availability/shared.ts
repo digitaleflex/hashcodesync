@@ -80,4 +80,75 @@ export function compareSlots(a: SlotInput, b: SlotInput) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
 }
 
+export type ScopeCorrelation = {
+  totalHours: number;
+  activityHours: number;
+  marginHours: number;
+  activityPercent: number;
+};
+
+function addInterval(
+  map: Map<number, [number, number][]>,
+  day: number,
+  start: number,
+  end: number
+) {
+  const arr = map.get(day) ?? [];
+  arr.push([start, end]);
+  map.set(day, arr);
+}
+
+function mergedMinutes(map: Map<number, [number, number][]>): number {
+  let totalMin = 0;
+  for (const intervals of map.values()) {
+    intervals.sort((a, b) => a[0] - b[0] || b[1] - a[1]);
+    const merged: [number, number][] = [];
+    for (const [s, e] of intervals) {
+      const last = merged[merged.length - 1];
+      if (last && s <= last[1]) {
+        if (e > last[1]) last[1] = e;
+      } else {
+        merged.push([s, e]);
+      }
+    }
+    for (const [s, e] of merged) totalMin += e - s;
+  }
+  return totalMin;
+}
+
+const roundHalfHour = (minutes: number) => Math.round((minutes / 60) * 2) / 2;
+
+// Corrélation des portées : la masse horaire liée à des groupes/activités
+// doit rester dans la masse totale déclarée. On fusionne les chevauchements
+// par jour pour ne pas compter deux fois la même fenêtre.
+export function computeScopeCorrelation(
+  list: (SlotInput & {
+    group?: { id: string } | null;
+    activity?: { id: string } | null;
+  })[]
+): ScopeCorrelation {
+  const all = new Map<number, [number, number][]>();
+  const scoped = new Map<number, [number, number][]>();
+  for (const a of list) {
+    const start = toMinutes(a.startTime);
+    const end = toMinutes(a.endTime);
+    if (!Number.isFinite(start) || !Number.isFinite(end) || end <= start) continue;
+    addInterval(all, a.day, start, end);
+    if (a.group != null || a.activity != null) {
+      addInterval(scoped, a.day, start, end);
+    }
+  }
+  const totalMin = mergedMinutes(all);
+  const activityMin = mergedMinutes(scoped);
+  const totalHours = roundHalfHour(totalMin);
+  const activityHours = roundHalfHour(activityMin);
+  return {
+    totalHours,
+    activityHours,
+    marginHours: roundHalfHour(totalMin - activityMin),
+    activityPercent:
+      totalHours > 0 ? Math.min(100, Math.round((activityHours / totalHours) * 100)) : 0,
+  };
+}
+
 export { DAY_NAMES, DAY_SHORT };

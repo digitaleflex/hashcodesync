@@ -8,8 +8,10 @@ import { Loader2Icon, ShieldCheckIcon, LockIcon, HistoryIcon } from "lucide-reac
 import dynamic from "next/dynamic";
 import type { Availability } from "@/components/availability/shared";
 import { computeStats } from "@/components/availability/shared";
+import { computeScopeCorrelation } from "@/components/availability/shared";
 import { PageHeader } from "@/components/availability/page-header";
 import { KpiGrid } from "@/components/availability/kpi-grid";
+import { ScopeCorrelation } from "@/components/availability/scope-correlation";
 import { WeeklyCalendar } from "@/components/availability/weekly-calendar";
 import { MobileWeekView } from "@/components/availability/mobile-week-view";
 import { TimeSlotsList } from "@/components/availability/time-slots-list";
@@ -100,6 +102,8 @@ export function AvailabilityManager() {
   const sorted = useMemo(() => [...availabilities].sort(compare), [availabilities]);
 
   const stats = useMemo(() => computeStats(availabilities), [availabilities]);
+
+  const correlation = useMemo(() => computeScopeCorrelation(availabilities), [availabilities]);
 
   const load = useCallback(async () => {
     if (initialLoadRef.current) {
@@ -355,6 +359,8 @@ export function AvailabilityManager() {
       )}
 
       <KpiGrid stats={stats} />
+
+      <ScopeCorrelation correlation={correlation} />
 
       {/* Weekly Calendar */}
       <Card>

@@ -3,19 +3,19 @@
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Loader2Icon, HistoryIcon } from "lucide-react";
+import { Loader2Icon, HistoryIcon, CopyIcon } from "lucide-react";
 import type { SlotInput } from "@/components/availability/shared";
 import { HistoryWeek } from "@/components/availability/history-item";
 
-type HistoryEntry = {
+export type WeekHistoryEntry = {
   id: string;
   weekStart: string;
   validatedAt: string;
   slots: SlotInput[];
 };
 
-export function HistorySection() {
-  const [items, setItems] = useState<HistoryEntry[]>([]);
+export function HistorySection({ onCopyWeek }: { onCopyWeek?: (snapshotId: string) => void }) {
+  const [items, setItems] = useState<WeekHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
@@ -71,6 +71,7 @@ export function HistorySection() {
               weekStart={s.weekStart}
               validatedAt={s.validatedAt}
               slots={s.slots}
+              onCopy={() => onCopyWeek?.(s.id)}
             />
           ))}
         </ul>

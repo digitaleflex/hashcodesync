@@ -1,47 +1,44 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import dynamic from "next/dynamic";
 import { toast } from "sonner";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Loader2Icon, CalendarDaysIcon, ShieldCheckIcon, LockIcon, HistoryIcon } from "lucide-react";
+import { Loader2Icon, ShieldCheckIcon, LockIcon, HistoryIcon } from "lucide-react";
+import dynamic from "next/dynamic";
 import type { Availability } from "@/components/availability/shared";
 import { computeStats } from "@/components/availability/shared";
 import { PageHeader } from "@/components/availability/page-header";
 import { KpiGrid } from "@/components/availability/kpi-grid";
-import { WeeklyOverview } from "@/components/availability/weekly-overview";
+import { WeeklyCalendar } from "@/components/availability/weekly-calendar";
+import { MobileWeekView } from "@/components/availability/mobile-week-view";
 import { TimeSlotsList } from "@/components/availability/time-slots-list";
-import { AddAvailabilityForm } from "@/components/availability/add-availability-form";
-import { AvailabilitySummaryCard } from "@/components/availability/availability-summary-card";
-import { ValidateBar } from "@/components/availability/validate-bar";
+import { SlotFormModal } from "@/components/availability/slot-form-modal";
+import { CompatibilitySection } from "@/components/availability/compatibility-section";
 import { LockBanner } from "@/components/availability/lock-banner";
 import { EmptyState } from "@/components/availability/empty-state";
-import { MobileWeeklyTimeline } from "@/components/availability/mobile-weekly-timeline";
+import { CopyDialog } from "@/components/availability/copy-dialog";
 
-const HistorySection = dynamic(
+const HISTORY_SECTION = dynamic(
   () =>
     import("@/components/availability/history-section").then(
       (m) => m.HistorySection
     ),
-  {
-    ssr: false,
-    loading: () => (
-      <div className="flex items-center justify-center py-8">
-        <Loader2Icon className="size-5 animate-spin text-accent" />
-      </div>
-    ),
-  }
+  { ssr: false, loading: () => null }
 );
 
-type GroupOption = { id: string; name: string; activities: { id: string; name: string }[] };
+type GroupOption = {
+  id: string;
+  name: string;
+  activities: { id: string; name: string }[];
+};
+
+type WeekHistoryEntry = {
+  id: string;
+  weekStart: string;
+  validatedAt: string;
+  slots: { day: number; startTime: string; endTime: string }[];
+};
 
 function compare(a: Availability, b: Availability) {
   return a.day - b.day || a.startTime.localeCompare(b.startTime);
@@ -67,29 +64,42 @@ export function AvailabilityManager() {
   const [availabilities, setAvailabilities] = useState<Availability[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [submitting, setSubmitting] = useState(false);
   const [validating, setValidating] = useState(false);
   const [locked, setLocked] = useState(false);
   const [weekStart, setWeekStart] = useState<string | null>(null);
-  const [day, setDay] = useState<number | null>(null);
-  const [startTime, setStartTime] = useState("");
-  const [endTime, setEndTime] = useState("");
   const [groups, setGroups] = useState<GroupOption[]>([]);
-  const [selectedGroup, setSelectedGroup] = useState<string | null>(null);
-  const [selectedActivity, setSelectedActivity] = useState<string | null>(null);
+  const [addModalOpen, setAddModalOpen] = useState(false);
+  const [editingSlot, setEditingSlot] = useState<Availability | null>(null);
+  const [copyingSlot, setCopyingSlot] = useState<Availability | null>(null);
+  const [preselectDay, setPreselectDay] = useState<number | null>(null);
+  const [historyWeek, setHistoryWeek] = useState<WeekHistoryEntry | null>(null);
   const initialLoadRef = useRef(true);
 
   const canValidate = availabilities.length > 0 && !hasOverlaps(availabilities);
 
   const selectedGroupOption = useMemo(
-    () => groups.find((g) => g.id === selectedGroup) ?? null,
-    [groups, selectedGroup]
+    () => groups.find((g) => g.id === editingSlot?.group?.id) ?? null,
+    [groups, editingSlot]
   );
 
   const availableActivities = useMemo(
     () => selectedGroupOption?.activities ?? [],
     [selectedGroupOption]
   );
+
+  const grouped = useMemo<Record<number, Availability[]>>(() => {
+    const g: Record<number, Availability[]> = {};
+    for (let i = 0; i < 7; i++) g[i] = [];
+    availabilities.forEach((a) => {
+      if (g[a.day]) g[a.day].push(a);
+    });
+    Object.values(g).forEach((arr) => arr.sort(compare));
+    return g;
+  }, [availabilities]);
+
+  const sorted = useMemo(() => [...availabilities].sort(compare), [availabilities]);
+
+  const stats = useMemo(() => computeStats(availabilities), [availabilities]);
 
   const load = useCallback(async () => {
     if (initialLoadRef.current) {
@@ -99,7 +109,7 @@ export function AvailabilityManager() {
     }
     try {
       const [avRes, valRes, groupsRes] = await Promise.all([
-        fetch(`/api/availabilities?groupId=${selectedGroup ?? ""}&activityId=${selectedActivity ?? ""}`),
+        fetch("/api/availabilities"),
         fetch("/api/availabilities/validate"),
         fetch("/api/groups"),
       ]);
@@ -134,7 +144,7 @@ export function AvailabilityManager() {
         setRefreshing(false);
       }
     }
-  }, [selectedGroup, selectedActivity]);
+  }, []);
 
   useEffect(() => {
     load();
@@ -184,70 +194,6 @@ export function AvailabilityManager() {
     }
   }, []);
 
-  const grouped = useMemo<Record<number, Availability[]>>(() => {
-    const g: Record<number, Availability[]> = {};
-    for (let i = 0; i < 7; i++) g[i] = [];
-    availabilities.forEach((a) => {
-      if (g[a.day]) g[a.day].push(a);
-    });
-    Object.values(g).forEach((arr) => arr.sort(compare));
-    return g;
-  }, [availabilities]);
-
-  const sorted = useMemo(() => [...availabilities].sort(compare), [availabilities]);
-
-  const stats = useMemo(() => computeStats(availabilities), [availabilities]);
-
-  const hoursPerDay = useMemo(() => {
-    const per = new Array(7).fill(0);
-    availabilities.forEach((a) => {
-      const sh = Number(a.startTime.slice(0, 2));
-      const eh = Number(a.endTime.slice(0, 2));
-      per[a.day] += Math.max(0, eh - sh);
-    });
-    return per;
-  }, [availabilities]);
-
-  const onAdd = useCallback(async () => {
-    if (locked) {
-      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
-      return;
-    }
-    if (day === null) {
-      toast.error("Choisissez un jour");
-      return;
-    }
-    setSubmitting(true);
-    try {
-      const body: Record<string, unknown> = { day, startTime, endTime };
-      if (selectedGroup) body.groupId = selectedGroup;
-      if (selectedActivity) body.activityId = selectedActivity;
-
-      const res = await fetch("/api/availabilities", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({ error: "Erreur" }));
-        toast.error(err.error ?? "Erreur lors de l'ajout");
-        return;
-      }
-      const created = await res.json();
-      setAvailabilities((prev) =>
-        [...prev, created].sort((x, y) => x.day - y.day || x.startTime.localeCompare(y.startTime))
-      );
-      setStartTime("");
-      setEndTime("");
-      toast.success("Disponibilité ajoutée");
-    } catch {
-      toast.error("Erreur réseau : impossible d'ajouter la disponibilité");
-    } finally {
-      setSubmitting(false);
-    }
-  }, [locked, day, startTime, endTime, selectedGroup, selectedActivity]);
-
   const handleDelete = useCallback(
     async (id: string) => {
       if (locked) {
@@ -260,7 +206,8 @@ export function AvailabilityManager() {
           setAvailabilities((prev) => prev.filter((a) => a.id !== id));
           toast.success("Disponibilité supprimée");
         } else {
-          toast.error("Suppression impossible");
+          const err = await res.json().catch(() => ({ error: "Erreur" }));
+          toast.error(err.error ?? "Suppression impossible");
         }
       } catch {
         toast.error("Erreur réseau : suppression impossible");
@@ -268,6 +215,80 @@ export function AvailabilityManager() {
     },
     [locked]
   );
+
+  const handleEdit = useCallback((slot: Availability) => {
+    if (locked) {
+      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+      return;
+    }
+    setEditingSlot(slot);
+    setAddModalOpen(true);
+  }, [locked]);
+
+  const handleOpenDay = useCallback(
+    (day: number) => {
+      if (locked) {
+        toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+        return;
+      }
+      setEditingSlot(null);
+      setPreselectDay(day);
+      setAddModalOpen(true);
+    },
+    [locked]
+  );
+
+  const handleDuplicate = useCallback((slot: Availability) => {
+    if (locked) {
+      toast.error("Semaine validée : vous ne pouvez plus modifier vos disponibilités");
+      return;
+    }
+    setCopyingSlot(slot);
+  }, [locked]);
+
+  const handlePrevWeek = useCallback(async () => {
+    // Show the most recent validated week from history.
+    try {
+      const res = await fetch("/api/availabilities/history?limit=1");
+      if (res.ok) {
+        const data = await res.json();
+        if (data.items && data.items.length > 0) {
+          setHistoryWeek(data.items[0]);
+        } else {
+          toast.info("Aucune semaine validée dans l'historique");
+        }
+      }
+    } catch {
+      toast.error("Impossible de charger l'historique");
+    }
+  }, []);
+
+  const handleNextWeek = useCallback(() => {
+    // Reset to current week view.
+    setHistoryWeek(null);
+    toast.info("Navigation vers la semaine en cours");
+  }, []);
+
+  const handleHistoryCopy = useCallback(async (snapshotId: string) => {
+    try {
+      const res = await fetch("/api/availabilities/copy", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ snapshotId }),
+      });
+      if (res.ok) {
+        const created = await res.json();
+        setAvailabilities((prev) => [...prev, ...created].sort(compare));
+        toast.success("Semaine copiée dans vos disponibilités actuelles");
+        setHistoryWeek(null);
+      } else {
+        const err = await res.json().catch(() => ({ error: "Erreur" }));
+        toast.error(err.error ?? "Impossible de copier la semaine");
+      }
+    } catch {
+      toast.error("Erreur réseau");
+    }
+  }, []);
 
   if (loading) {
     return (
@@ -278,13 +299,14 @@ export function AvailabilityManager() {
   }
 
   return (
-    <div className="flex flex-col gap-6 pb-20 sm:pb-0">
+    <div className="flex flex-col gap-6 pb-24 sm:pb-0">
       {refreshing && (
         <div className="flex items-center gap-2 text-xs text-muted-foreground">
           <Loader2Icon className="size-3.5 animate-spin text-accent" />
           Mise à jour des disponibilités...
         </div>
       )}
+
       <PageHeader
         weekStart={weekStart}
         locked={locked}
@@ -292,142 +314,107 @@ export function AvailabilityManager() {
         onUnvalidate={handleUnvalidate}
         validating={validating}
         canValidate={canValidate}
+        onPrevWeek={handlePrevWeek}
+        onNextWeek={handleNextWeek}
       />
 
       {locked && weekStart && <LockBanner weekStart={weekStart} />}
 
+      {/* History overlay */}
+      {historyWeek && (
+        <Card className="border-accent/30 bg-accent/5">
+          <CardHeader>
+            <div className="flex items-center justify-between">
+              <CardTitle className="text-lg">
+                Semaine du {historyWeek.weekStart ? new Date(historyWeek.weekStart).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" }) : ""}
+              </CardTitle>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setHistoryWeek(null)}
+              >
+                Fermer
+              </Button>
+            </div>
+            <CardDescription>
+              Cette semaine a été validée. Vous pouvez la consulter ou la copier.
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="mb-4">
+              <MobileWeekView grouped={groupSlots(historyWeek.slots)} />
+            </div>
+            <Button
+              onClick={() => handleHistoryCopy(historyWeek.id)}
+              className="w-full sm:w-auto"
+            >
+              Copier cette semaine dans mes disponibilités actuelles
+            </Button>
+          </CardContent>
+        </Card>
+      )}
+
       <KpiGrid stats={stats} />
 
+      {/* Weekly Calendar */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <CalendarDaysIcon className="size-5 text-accent" />
-            Visuel hebdomadaire
+            <span>Vue hebdomadaire</span>
           </CardTitle>
           <CardDescription>
-            Un aperçu jour par jour de vos créneaux libres.
+            Un aperçu visuel jour par jour de vos créneaux disponibles.
           </CardDescription>
         </CardHeader>
         <CardContent>
           {availabilities.length === 0 ? (
-            <EmptyState />
+            <EmptyState onAdd={() => setAddModalOpen(true)} />
           ) : (
             <>
               <div className="sm:hidden">
-                <MobileWeeklyTimeline grouped={grouped} />
+                <MobileWeekView grouped={grouped} />
               </div>
               <div className="hidden sm:block">
-                <WeeklyOverview grouped={grouped} />
+                <WeeklyCalendar grouped={grouped} onOpenDay={handleOpenDay} onEditSlot={handleEdit} />
               </div>
             </>
           )}
         </CardContent>
       </Card>
 
-      <div className="grid gap-6 md:grid-cols-2">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-lg">Créneaux définis</CardTitle>
-            <CardDescription>
-              {stats.slots} créneau{stats.slots > 1 ? "x" : ""} · {stats.daysCount} jour{stats.daysCount > 1 ? "s" : ""}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <TimeSlotsList slots={sorted} onDelete={handleDelete} disabled={locked} />
-          </CardContent>
-        </Card>
-
-        <Card className={locked ? "bg-warning/5" : ""}>
-          <CardHeader>
-            <CardTitle className="text-lg">Ajouter un créneau</CardTitle>
-            <CardDescription>
-              Choisissez un contexte, un jour, un horaire de début et de fin, puis ajoutez.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className={locked ? "pointer-events-none opacity-60" : ""}>
-            <div className="flex flex-col gap-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-muted-foreground">Groupe</label>
-                  <Select
-                    value={selectedGroup ?? ""}
-                    onValueChange={(v) => {
-                      setSelectedGroup(v || null);
-                      setSelectedActivity(null);
-                    }}
-                    disabled={locked}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder="Disponibilités générales" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="">Disponibilités générales</SelectItem>
-                      {groups.map((g) => (
-                        <SelectItem key={g.id} value={g.id}>
-                          {g.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <p className="text-xs text-muted-foreground">
-                    Les disponibilités générales sont visibles par tous. Les disponibilités par groupe aident à planifier des ateliers spécifiques.
-                  </p>
-                </div>
-                {selectedGroup && (
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-muted-foreground">Activité</label>
-                    <Select
-                      value={selectedActivity ?? ""}
-                      onValueChange={setSelectedActivity}
-                      disabled={locked || availableActivities.length === 0}
-                    >
-                      <SelectTrigger>
-                        <SelectValue placeholder="Toutes les activités" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="">Toutes les activités</SelectItem>
-                        {availableActivities.map((a) => (
-                          <SelectItem key={a.id} value={a.id}>
-                            {a.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">
-                      Laissez vide pour appliquer ce créneau à toutes les activités du groupe.
-                    </p>
-                  </div>
-                )}
-              </div>
-              <AddAvailabilityForm
-                day={day}
-                onSelectDay={setDay}
-                hoursPerDay={hoursPerDay}
-                startTime={startTime}
-                endTime={endTime}
-                onStartTime={setStartTime}
-                onEndTime={setEndTime}
-                onSubmit={() => void onAdd()}
-                submitting={submitting}
-                disabled={locked}
-              />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
+      {/* Slots List */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg">Résumé — mon profil de disponibilité</CardTitle>
-          <CardDescription>
-            Comment se répartit votre temps disponible cette semaine.
-          </CardDescription>
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-lg">Créneaux définis</CardTitle>
+              <CardDescription>
+                {stats.slots} créneau{stats.slots > 1 ? "x" : ""} · {stats.daysCount} jour{stats.daysCount > 1 ? "s" : ""}
+              </CardDescription>
+            </div>
+            {!locked && (
+              <Button size="sm" onClick={() => { setEditingSlot(null); setPreselectDay(null); setAddModalOpen(true); }}>
+                + Ajouter
+              </Button>
+            )}
+          </div>
         </CardHeader>
         <CardContent>
-          <AvailabilitySummaryCard stats={stats} />
+          <TimeSlotsList
+            slots={sorted}
+            onDelete={handleDelete}
+            onEdit={handleEdit}
+            onDuplicate={handleDuplicate}
+            disabled={locked}
+            groups={groups}
+          />
         </CardContent>
       </Card>
 
+      {/* Compatibility */}
+      <CompatibilitySection />
+
+      {/* History */}
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
@@ -439,20 +426,33 @@ export function AvailabilityManager() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <HistorySection />
+          <HISTORY_SECTION onCopyWeek={handleHistoryCopy} />
         </CardContent>
       </Card>
 
+      {/* Desktop validate bar (kept for desktop users) */}
       <div className="hidden rounded-xl ring-1 ring-foreground/10 sm:block">
-        <ValidateBar
-          locked={locked}
-          validating={validating}
-          onValidate={handleValidate}
-          onUnvalidate={handleUnvalidate}
-          canValidate={canValidate}
-        />
+        <div className="flex items-center justify-between gap-3 border-t border-border bg-card p-4">
+          <p className="text-sm text-muted-foreground">
+            {locked
+              ? "Vos disponibilités sont engagées pour cette semaine."
+              : "Une fois validé, vos disponibilités seront figées pour la semaine."}
+          </p>
+          {locked ? (
+            <Button variant="outline" size="sm" onClick={handleUnvalidate} disabled={validating} className="border-warning/50 text-warning hover:text-warning">
+              {validating ? <Loader2Icon className="size-4 animate-spin" /> : <LockIcon className="size-4" />}
+              Dévalider la semaine
+            </Button>
+          ) : (
+            <Button size="sm" onClick={handleValidate} disabled={validating || !canValidate}>
+              {validating ? <Loader2Icon className="size-4 animate-spin" /> : <ShieldCheckIcon className="size-4" />}
+              Valider la semaine
+            </Button>
+          )}
+        </div>
       </div>
 
+      {/* Mobile sticky action bar */}
       {locked ? (
         <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:hidden">
           <Button
@@ -477,6 +477,39 @@ export function AvailabilityManager() {
           </Button>
         </div>
       )}
+
+      {/* Modals */}
+      <SlotFormModal
+        open={addModalOpen}
+        onOpenChange={(v) => {
+          setAddModalOpen(v);
+          if (!v) setPreselectDay(null);
+        }}
+        groups={groups}
+        editing={editingSlot}
+        defaultDay={preselectDay}
+        onSaved={() => {
+          setEditingSlot(null);
+          setPreselectDay(null);
+          load();
+        }}
+      />
+
+      <CopyDialog
+        open={!!copyingSlot}
+        onOpenChange={(v) => setCopyingSlot(v ? copyingSlot : null)}
+        slot={copyingSlot}
+        onCopied={load}
+      />
     </div>
   );
+}
+
+function groupSlots(slots: { day: number; startTime: string; endTime: string }[]) {
+  const g: Record<number, { day: number; startTime: string; endTime: string }[]> = {};
+  for (let i = 0; i < 7; i++) g[i] = [];
+  slots.forEach((s) => {
+    if (g[s.day]) g[s.day].push(s);
+  });
+  return g;
 }

@@ -5,11 +5,10 @@ import type { AvailabilityStats } from "@/components/availability/shared";
 
 export const KpiGrid = memo(function KpiGrid({ stats }: { stats: AvailabilityStats }) {
   const hoursLabel = stats.hours ? stats.hours.toFixed(1).replace(".0", "") : "0";
-  const workshops = Math.floor(stats.minutes / 90);
   const cards = [
     {
       icon: <ClockIcon className="size-4 text-accent" />,
-      label: "Disponibilité",
+      label: "Disponibles",
       value: `${hoursLabel} h`,
       footnote: "par semaine",
     },
@@ -32,9 +31,9 @@ export const KpiGrid = memo(function KpiGrid({ stats }: { stats: AvailabilitySta
     },
     {
       icon: <SparklesIcon className="size-4 text-accent" />,
-      label: "Ateliers",
-      value: `≈ ${workshops}`,
-      footnote: "de 1 h 30 chacun",
+      label: "Ateliers compatibles",
+      value: "—",
+      footnote: "calcul en cours",
     },
   ];
 

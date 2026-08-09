@@ -7,6 +7,7 @@ export type Availability = {
   endTime: string;
   group?: { id: string; name: string } | null;
   activity?: { id: string; name: string } | null;
+  recurring?: boolean;
 };
 
 export type SlotInput = {

@@ -1,25 +1,28 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDownIcon } from "lucide-react";
+import { ChevronDownIcon, CopyIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import type { SlotInput } from "@/components/availability/shared";
 import { computeStats, groupSlots } from "@/components/availability/shared";
 import { formatDateFr, formatWeekRange } from "@/components/availability/date";
-import { MobileWeeklyTimeline } from "@/components/availability/mobile-weekly-timeline";
-import { WeeklyOverview } from "@/components/availability/weekly-overview";
+import { MobileWeekView } from "@/components/availability/mobile-week-view";
+import { WeeklyCalendar } from "@/components/availability/weekly-calendar";
 
 export function HistoryWeek({
   id,
   weekStart,
   validatedAt,
   slots,
+  onCopy,
 }: {
   id: string;
   weekStart: string;
   validatedAt: string;
   slots: SlotInput[];
+  onCopy?: () => void;
 }) {
   const [open, setOpen] = useState(false);
   const stats = computeStats(slots);
@@ -53,6 +56,19 @@ export function HistoryWeek({
           <Badge variant="secondary" className="hidden sm:inline-flex">
             Validée le {formatDateFr(validatedAt)}
           </Badge>
+          {onCopy && (
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              onClick={(e) => {
+                e.stopPropagation();
+                onCopy();
+              }}
+              aria-label="Copier cette semaine"
+            >
+              <CopyIcon className="size-3.5" />
+            </Button>
+          )}
           <ChevronDownIcon
             className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")}
           />
@@ -71,10 +87,10 @@ export function HistoryWeek({
           ) : (
             <>
               <div className="sm:hidden">
-                <MobileWeeklyTimeline grouped={grouped} />
+                <MobileWeekView grouped={grouped} />
               </div>
               <div className="hidden sm:block">
-                <WeeklyOverview grouped={grouped} />
+                <WeeklyCalendar grouped={grouped} />
               </div>
             </>
           )}

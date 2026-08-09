@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -84,7 +85,7 @@ export function AppShell() {
                 <Button
                   key={item.href}
                   nativeButton={false}
-                  render={<Link href={item.href} />}
+                  render={<Link href={item.href as Route} />}
                   variant="ghost"
                   aria-current={active ? "page" : undefined}
                   className={cn(
@@ -212,7 +213,7 @@ export function AppShell() {
                       <Button
                         key={item.href}
                         nativeButton={false}
-                        render={<Link href={item.href} />}
+                        render={<Link href={item.href as Route} />}
                         variant="ghost"
                         className={cn(
                           "justify-start gap-2 h-10",

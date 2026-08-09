@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import type { Route } from "next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -267,7 +268,7 @@ export function NotificationItem({
     <li className={cn("rounded-lg", unread && "bg-muted/40")}>
       <div className="flex min-h-11 items-center gap-2 px-2 py-1.5">
         {href ? (
-          <Link href={href} onClick={() => onOpen(notification.id)} className={linkClasses}>
+          <Link href={href as Route} onClick={() => onOpen(notification.id)} className={linkClasses}>
             {body}
           </Link>
         ) : (

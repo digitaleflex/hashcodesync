@@ -23,9 +23,9 @@ const nextConfig = {
     removeConsole: process.env.NODE_ENV === "production" ? { exclude: ["error", "warn"] } : false,
   },
   experimental: {
-    typedRoutes: true,
     optimizePackageImports: ["lucide-react", "date-fns", "lodash-es", "ramda", "antd", "react-bootstrap", "ahooks", "@ant-design/icons", "@headlessui/react", "@headlessui-float/react", "@heroicons/react", "recharts", "react-use", "@effect/sql", "@effect/sql-pg"],
   },
+  typedRoutes: true,
   async headers() {
     return [
       {

@@ -4,6 +4,7 @@ import { RocketIcon, ArrowRightIcon } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
+import type { Route } from "next";
 
 export function OnboardingBanner({ hasAvailabilities, hasWorkshops }: { hasAvailabilities: boolean; hasWorkshops: boolean }) {
   if (hasAvailabilities && hasWorkshops) return null;
@@ -30,7 +31,7 @@ export function OnboardingBanner({ hasAvailabilities, hasWorkshops }: { hasAvail
           {missing.map((item) => (
             <li key={item.href} className="flex items-center justify-between gap-3 rounded-lg border border-border/60 bg-background/60 p-3">
               <p className="text-sm font-medium">{item.label}</p>
-              <Button nativeButton={false} render={<Link href={item.href} />} size="sm" variant="ghost" className="shrink-0">
+              <Button nativeButton={false} render={<Link href={item.href as Route} />} size="sm" variant="ghost" className="shrink-0">
                 Y aller <ArrowRightIcon className="size-3.5 ml-1" />
               </Button>
             </li>

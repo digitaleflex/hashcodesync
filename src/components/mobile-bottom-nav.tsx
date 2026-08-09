@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import type { Route } from "next";
 import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { authClient } from "@/lib/auth-client";
@@ -71,7 +72,7 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
           return (
             <Link
               key={item.href}
-              href={item.href}
+              href={item.href as Route}
               aria-current={active ? "page" : undefined}
               className="flex min-h-11 flex-col items-center justify-center gap-0.5 text-[11px] font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
@@ -113,7 +114,7 @@ export function MobileBottomNav({ userRole }: { userRole?: string }) {
                     render={
                       <Button
                         nativeButton={false}
-                        render={<Link href={item.href} />}
+                        render={<Link href={item.href as Route} />}
                         variant="ghost"
                         className={`justify-start text-base ${active ? "bg-white/[0.06] text-white" : "text-[#A7B0C2]"}`}
                       >

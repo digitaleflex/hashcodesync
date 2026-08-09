@@ -67,7 +67,7 @@ export async function GET(req: NextRequest) {
         _count: { select: { members: true } },
         members: {
           where: { userId: session.user.id },
-          select: { role: true, hoursPerWeek: true, joinedAt: true },
+          select: { userId: true, role: true, hoursPerWeek: true, joinedAt: true },
         },
         joinRequests: {
           where: { userId: session.user.id },
@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
             COUNT(*) AS count
           FROM "Availability" a
           WHERE a."userId" != ${session.user.id}
-          GROUP BY day, hour
+          GROUP BY EXTRACT(DOW FROM a."startTime"::time)::int, EXTRACT(HOUR FROM a."startTime"::time)::int
           ORDER BY day, hour
         `
       : Promise.resolve([]),

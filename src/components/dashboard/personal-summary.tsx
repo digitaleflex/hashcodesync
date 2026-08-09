@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card";
 import { CheckCircle2Icon, ListChecksIcon } from "lucide-react";
 import Link from "next/link";
+import type { Route } from "next";
 
 export function PersonalSummaryCard({
   availCount,
@@ -64,7 +65,7 @@ export function PersonalSummaryCard({
               {!it.done && (
                 <Button
                   nativeButton={false}
-                  render={<Link href={it.href} />}
+                  render={<Link href={it.href as Route} />}
                   size="sm"
                   variant="outline"
                 >

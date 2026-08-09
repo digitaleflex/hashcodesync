@@ -17,9 +17,6 @@ const include = {
   attendance: {
     select: { id: true, userId: true, status: true },
   },
-  capacity: true,
-  location: true,
-  meetingUrl: true,
 };
 
 // POST /api/workshops/[id]/duplicate

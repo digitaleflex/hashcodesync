@@ -17,6 +17,7 @@ import {
   InfoIcon,
 } from "lucide-react";
 import Link from "next/link";
+import type { Route } from "next";
 import { cn } from "@/lib/utils";
 
 // Barre de progression simple (valeurs 0→100).
@@ -137,7 +138,6 @@ export function BestRecommendationHero({
   totalMembers: number;
   onPlan: (time: string, day: number) => void;
 }) {
-  const conf = best.confidence ?? best.percent;
   const duration = (() => {
     const [sh, sm] = best.startTime.split(":").map(Number);
     const [eh, em] = best.endTime.split(":").map(Number);
@@ -151,9 +151,6 @@ export function BestRecommendationHero({
             <SparklesIcon className="size-5 text-accent" />
             Meilleur créneau
           </CardTitle>
-          <CardDescription>
-            Le meilleur compromis entre disponibilité et assiduité de la cohorte.
-          </CardDescription>
         </div>
         <Badge
           className="bg-primary text-primary-foreground"
@@ -184,37 +181,16 @@ export function BestRecommendationHero({
             </div>
             <div className="text-center">
               <p className="font-heading text-xl font-semibold">
-                {Math.round(conf)}/100
-              </p>
-              <p className="text-[11px] text-muted-foreground">
-                confiance
-              </p>
-            </div>
-            <div className="text-center">
-              <p className="font-heading text-xl font-semibold">
                 {duration} h
               </p>
               <p className="text-[11px] text-muted-foreground">durée</p>
             </div>
           </div>
         </div>
-        <div className="space-y-1.5">
-          <div className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">
-              Disponibilité de la cohorte
-            </span>
-            <span className="font-medium">{Math.round(best.percent)}%</span>
-          </div>
-          <MiniProgress value={best.percent} tone="accent" />
-        </div>
         <div className="flex flex-wrap gap-2">
           <Button onClick={() => onPlan(best.startTime, best.day)}>
             <CalendarPlusIcon className="size-4" />
-            Créer un atelier à ce créneau
-          </Button>
-          <Button variant="ghost" onClick={() => onPlan(best.startTime, best.day)}>
-            <InfoIcon className="size-4" />
-            Détails
+            Planifier
           </Button>
         </div>
       </CardContent>
@@ -275,7 +251,7 @@ export function InsightRow({ insight }: { insight: Insight }) {
           size="sm"
           variant="outline"
           nativeButton={false}
-          render={<Link href={insight.action.href} />}
+          render={<Link href={insight.action.href as Route} />}
           className="shrink-0"
         >
           {insight.action.label}

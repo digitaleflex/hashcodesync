@@ -7,9 +7,6 @@ import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
 } from "@/components/ui/card";
 import {
   Select,
@@ -20,20 +17,24 @@ import {
 } from "@/components/ui/select";
 import {
   Loader2Icon,
+  PanelRightCloseIcon,
+  PanelRightOpenIcon,
   UsersIcon,
   CalendarRangeIcon,
   CalendarPlusIcon,
 } from "lucide-react";
 import { DAY_NAMES_FULL, HeatmapCard, RecommendationCard } from "@/components/scheduling-views";
 import { StatCard } from "@/components/ui/stat-card";
-import { AttendanceNudgeCard } from "@/components/dashboard/attendance-nudge";
 import {
   BestRecommendationHero,
   InsightsList,
-  MetricDonut,
   type BestSlot,
 } from "@/components/admin/cockpit";
 import { useAdminInsights, type AdminGroup } from "@/components/admin/use-admin-insights";
+import { CoverageTrend } from "@/components/admin/coverage-trend";
+import { CellDrillDown } from "@/components/admin/cell-drilldown";
+import { GapTimeline } from "@/components/admin/gap-timeline";
+import { AdminExportBar } from "@/components/admin/admin-export";
 
 type Rec = {
   day: number;
@@ -52,10 +53,19 @@ type Data = {
   minHour: number;
   maxHour: number;
   heatmap: { day: number; hour: number; count: number }[];
+  heatmapSmoothed?: { day: number; hour: number; count: number }[];
   recommendation: Rec[];
   referenceTimezone?: string;
   groupName?: string;
   groups?: GroupOption[];
+};
+
+type GapData = {
+  gaps: { day: number; dayName: string; gaps: { startHour: number; endHour: number; duration: number }[] }[];
+  minHour: number;
+  maxHour: number;
+  totalMembers: number;
+  totalAvailabilities: number;
 };
 
 const DEFAULT_GROUP_ID = "";
@@ -65,14 +75,19 @@ export function SchedulingDashboard() {
   const router = useRouter();
   const [data, setData] = useState<Data | null>(null);
   const [groupsData, setGroupsData] = useState<AdminGroup[]>([]);
+  const [gapsData, setGapsData] = useState<GapData | null>(null);
   const [loading, setLoading] = useState(true);
+  const [gapsLoading, setGapsLoading] = useState(true);
   const [windowHours, setWindowHours] = useState(DEFAULT_WINDOW);
   const [groupId, setGroupId] = useState(DEFAULT_GROUP_ID);
   const [selectedCell, setSelectedCell] = useState<{ day: number; hour: number } | null>(null);
+  const [showSmoothed, setShowSmoothed] = useState(false);
+  const [showGaps, setShowGaps] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   const load = useCallback(async (window: number, gid: string) => {
     setLoading(true);
-    const params = new URLSearchParams({ window: String(window) });
+    const params = new URLSearchParams({ window: String(window), smooth: "true" });
     if (gid) params.set("groupId", gid);
     const res = await fetch(`/api/admin/scheduling?${params}`);
     if (res.ok) setData(await res.json());
@@ -80,7 +95,15 @@ export function SchedulingDashboard() {
     setLoading(false);
   }, []);
 
-  // Second appel lecture seule : membres/groupes pour le nudge d'insights.
+  const loadGaps = useCallback(async (window: number, gid: string) => {
+    setGapsLoading(true);
+    const params = new URLSearchParams({ window: String(window) });
+    if (gid) params.set("groupId", gid);
+    const res = await fetch(`/api/admin/scheduling/gaps?${params}`);
+    if (res.ok) setGapsData(await res.json());
+    setGapsLoading(false);
+  }, []);
+
   useEffect(() => {
     let active = true;
     fetch("/api/admin/groups")
@@ -97,6 +120,10 @@ export function SchedulingDashboard() {
   useEffect(() => {
     load(windowHours, groupId);
   }, [load, windowHours, groupId]);
+
+  useEffect(() => {
+    loadGaps(windowHours, groupId);
+  }, [loadGaps, windowHours, groupId]);
 
   const best: BestSlot | null = data?.recommendation[0]
     ? {
@@ -136,14 +163,13 @@ export function SchedulingDashboard() {
   function handlePlan(time: string, day: number) {
     if (!data) return;
     const r = data.recommendation.find((x) => x.startTime === time && x.day === day);
-    if (!r) return;
+    const windowHours = r ? data.windowHours ?? DEFAULT_WINDOW : DEFAULT_WINDOW;
     const start = nextOccurrence(day, time);
-    const end = new Date(start.getTime() + (data.windowHours || DEFAULT_WINDOW) * 3600000);
+    const end = new Date(start.getTime() + windowHours * 3600000);
     const q = new URLSearchParams({ start: start.toISOString(), end: end.toISOString() });
     router.push(`/ateliers/nouveau?${q}`);
   }
 
-  // Interaction heatmap : sélectionner une cellule → propose de planifier à ce créneau.
   function handleCellSelect(day: number, hour: number) {
     setSelectedCell(day === selectedCell?.day && hour === selectedCell?.hour ? null : { day, hour });
   }
@@ -151,117 +177,195 @@ export function SchedulingDashboard() {
   const highlightCell =
     selectedCell ?? (best ? { day: best.day, hour: Number(best.startTime.split(":")[0]) } : null);
 
+  if (loading || !data) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2Icon className="size-8 animate-spin text-accent" />
+      </div>
+    );
+  }
+
+  const hasNoAvailabilities = data.totalAvailabilities === 0;
+
   return (
     <div className="space-y-6">
-      {loading || !data ? (
-        <div className="flex items-center justify-center py-16">
-          <Loader2Icon className="size-8 animate-spin text-accent" />
-        </div>
-      ) : (
-        <>
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <p className="text-sm text-muted-foreground">
-              {selectedGroupName
-                ? `Groupe affiché : ${selectedGroupName}`
-                : "Toutes les cohortes"}
+      {hasNoAvailabilities && (
+        <Card className="border-dashed">
+          <CardContent className="flex flex-col items-center justify-center py-12 text-center">
+            <p className="text-lg font-medium">Aucune disponibilité renseignée</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Les données apparaîtront lorsque les membres auront rempli leurs créneaux.
             </p>
-            <Select
-              value={groupId}
-              onValueChange={(v) => {
-                setGroupId(v ?? "");
-                setSelectedCell(null);
-              }}
-            >
-              <SelectTrigger className="w-64">
-                <SelectValue placeholder="Filtrer par groupe" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="">Tous les groupes</SelectItem>
-                {groups.map((g) => (
-                  <SelectItem key={g.id} value={g.id}>
-                    {g.name} ({g.memberCount} membre{g.memberCount > 1 ? "s" : ""})
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
+          </CardContent>
+        </Card>
+      )}
 
-          {/* 1. Décision principale : meilleur créneau */}
-          {best ? (
-            <BestRecommendationHero best={best} totalMembers={data.totalMembers} onPlan={handlePlan} />
-          ) : (
-            <AttendanceNudgeCard />
-          )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-muted-foreground">
+          {selectedGroupName
+            ? `Groupe affiché : ${selectedGroupName}`
+            : "Toutes les cohortes"}
+        </p>
+        <div className="flex items-center gap-2">
+          <Select
+            value={groupId}
+            onValueChange={(v) => {
+              setGroupId(v ?? "");
+              setSelectedCell(null);
+            }}
+          >
+            <SelectTrigger className="w-48 sm:w-64">
+              <SelectValue placeholder="Filtrer par groupe" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="">Tous les groupes</SelectItem>
+              {groups.map((g) => (
+                <SelectItem key={g.id} value={g.id}>
+                  {g.name} ({g.memberCount} membre{g.memberCount > 1 ? "s" : ""})
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            title={sidebarOpen ? "Masquer les outils" : "Afficher les outils"}
+            className="hidden sm:flex"
+          >
+            {sidebarOpen ? <PanelRightCloseIcon className="size-4" /> : <PanelRightOpenIcon className="size-4" />}
+          </Button>
+        </div>
+      </div>
 
-          {/* 2. KPI décisionnels (4 max) */}
+      {!hasNoAvailabilities && (
+        <>
           <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
             <StatCard
               icon={<UsersIcon className="size-4 text-accent" />}
-              label="Membres"
+              label="Membres actifs"
               value={data.totalMembers}
               footnote="inscrits à la cohorte"
             />
             <StatCard
               icon={<CalendarRangeIcon className="size-4 text-accent" />}
-              label="Cohorte couverte"
-              value={<MetricDonut value={coveragePercent} tone="success" label="couverture" size={64} />}
-              footnote={`${data.totalAvailabilities} créneaux renseignés`}
+              label="Couverture"
+              value={`${Math.round(coveragePercent)}%`}
+              footnote={`${data.totalAvailabilities} créneaux remplis`}
             />
             <StatCard
-              icon={<UsersIcon className="size-4 text-accent" />}
-              label="Groupes affichés"
-              value={groups.length}
-              footnote={`${groups.filter((g) => g.memberCount > 0).length} avec membres`}
+              icon={<CalendarRangeIcon className="size-4 text-accent" />}
+              label="Créneaux renseignés"
+              value={data.totalAvailabilities}
+              footnote="créneaux cette semaine"
             />
             <StatCard
               icon={<CalendarPlusIcon className="size-4 text-accent" />}
-              label="Fenêtre"
+              label="Durée cible"
               value={`${data.windowHours ?? DEFAULT_WINDOW}h`}
-              footnote="durée des créneaux"
+              footnote="par créneau"
             />
           </div>
 
-          {/* 3. Heatmap interactive (cœur) + fenêtre */}
-          <HeatmapCard
-            heatmap={data.heatmap}
-            minHour={data.minHour}
-            maxHour={data.maxHour}
-            totalMembers={data.totalMembers}
-            refLabel={data.referenceTimezone}
-            highlightCell={highlightCell}
-            onCellSelect={handleCellSelect}
-            description={
-              selectedCell
-                ? `${DAY_NAMES_FULL[selectedCell.day]} ${selectedCell.hour}:00 → ${selectedCell.hour + 1}:00 · créez un atelier ici. Le meilleur créneau est en surbrillance.`
-                : "Une couleur par jour, l'intensité = part de la cohorte disponible. Cliquez une cellule pour planifier à ce créneau."
-            }
-          />
+          <div className="grid gap-6 lg:grid-cols-3">
+            <div className={sidebarOpen ? "lg:col-span-2 space-y-4" : "lg:col-span-3 space-y-4"}>
+              <HeatmapCard
+                heatmap={data.heatmap}
+                minHour={data.minHour}
+                maxHour={data.maxHour}
+                totalMembers={data.totalMembers}
+                refLabel={data.referenceTimezone}
+                highlightCell={highlightCell}
+                onCellSelect={handleCellSelect}
+                heatmapSmoothed={data.heatmapSmoothed}
+                showSmoothed={showSmoothed}
+                gaps={gapsData?.gaps}
+                showGaps={showGaps}
+                description={
+                  selectedCell
+                    ? `${DAY_NAMES_FULL[selectedCell.day]} ${selectedCell.hour}:00 → ${selectedCell.hour + 1}:00 · créez un atelier ici. Le meilleur créneau est en surbrillance.`
+                    : "Une couleur par jour, l'intensité = part de la cohorte disponible. Cliquez une cellule pour planifier à ce créneau."
+                }
+                title={
+                  <div className="flex items-center gap-2">
+                    <span>Heatmap des disponibilités</span>
+                    {data.heatmapSmoothed && (
+                      <Button
+                        variant={showSmoothed ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setShowSmoothed(!showSmoothed)}
+                      >
+                        Lissage
+                      </Button>
+                    )}
+                    {gapsData && gapsData.gaps.length > 0 && (
+                      <Button
+                        variant={showGaps ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setShowGaps(!showGaps)}
+                      >
+                        Zones creuses
+                      </Button>
+                    )}
+                  </div>
+                }
+              />
 
-          {/* 5. Insights (décisionnels, proposent des actions) */}
-          {insights.length > 0 && <InsightsList insights={insights} />}
+              {best && (
+                <BestRecommendationHero best={best} totalMembers={data.totalMembers} onPlan={handlePlan} />
+              )}
 
-          {/* 6. Recommandations (classement complet) */}
-          <RecommendationCard
-            recommendation={data.recommendation}
-            totalMembers={data.totalMembers}
-            onPlan={handlePlan}
-            actions={
-              <div className="flex gap-1.5">
-                {[1, 2, 3, 4].map((w) => (
-                  <Button
-                    key={w}
-                    size="sm"
-                    variant={windowHours === w ? "default" : "outline"}
-                    onClick={() => setWindowHours(w)}
-                  >
-                    {w}h
-                  </Button>
-                ))}
+              <RecommendationCard
+                recommendation={data.recommendation.slice(0, 5)}
+                totalMembers={data.totalMembers}
+                onPlan={handlePlan}
+                actions={
+                  <div className="flex gap-1.5">
+                    {[1, 2, 3, 4].map((w) => (
+                      <Button
+                        key={w}
+                        size="sm"
+                        variant={windowHours === w ? "default" : "outline"}
+                        onClick={() => setWindowHours(w)}
+                      >
+                        {w}h
+                      </Button>
+                    ))}
+                  </div>
+                }
+              />
+            </div>
+
+            {sidebarOpen && (
+              <div className="space-y-4">
+                <div className="hidden md:block">
+                  <CoverageTrend groupId={groupId || undefined} />
+                </div>
+                {gapsData && !gapsLoading && (
+                  <GapTimeline gaps={gapsData.gaps} minHour={gapsData.minHour} maxHour={gapsData.maxHour} />
+                )}
+                <AdminExportBar
+                  heatmap={data.heatmap}
+                  minHour={data.minHour}
+                  maxHour={data.maxHour}
+                  totalMembers={data.totalMembers}
+                  groupName={selectedGroupName ?? undefined}
+                  recommendation={data.recommendation}
+                />
               </div>
-            }
-          />
+            )}
+          </div>
+
+          {insights.length > 0 && <InsightsList insights={insights} />}
         </>
       )}
+
+      <CellDrillDown
+        cell={selectedCell}
+        totalMembers={data.totalMembers}
+        onClose={() => setSelectedCell(null)}
+        onPlan={handlePlan}
+      />
     </div>
   );
 }

@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeScheduling, SlotAvail } from "@/lib/scheduling";
-import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
+import { convertToReference } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
 
@@ -34,14 +34,52 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
   }));
 }
 
-const CACHE_TTL_MS = 4000;
-const cache = new Map<
-  string,
-  { payload: Record<string, unknown>; expires: number }
->();
+function detectGaps(
+  heatmap: { day: number; hour: number; count: number }[],
+  minHour: number,
+  maxHour: number,
+  threshold = 0.15
+): { day: number; dayName: string; gaps: { startHour: number; endHour: number; duration: number }[] }[] {
+  const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
+  const DAY_NAMES_FULL = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
+  const byDay = new Map<number, Map<number, number>>();
+  for (const c of heatmap) {
+    const dayMap = byDay.get(c.day) ?? new Map<number, number>();
+    dayMap.set(c.hour, c.count);
+    byDay.set(c.day, dayMap);
+  }
 
-function cacheKey(args: { windowHours: number; groupId: string | null; activityId: string | null }) {
-  return `${args.windowHours}|${args.groupId ?? ""}|${args.activityId ?? ""}`;
+  const results: { day: number; dayName: string; gaps: { startHour: number; endHour: number; duration: number }[] }[] = [];
+
+  for (let day = 0; day < 7; day++) {
+    const dayMap = byDay.get(day) ?? new Map<number, number>();
+    const gaps: { startHour: number; endHour: number; duration: number }[] = [];
+    let inGap = false;
+    let gapStart = minHour;
+
+    for (let h = minHour; h < maxHour; h++) {
+      const count = dayMap.get(h) ?? 0;
+      const isEmpty = count === 0;
+      if (isEmpty && !inGap) {
+        inGap = true;
+        gapStart = h;
+      } else if (!isEmpty && inGap) {
+        inGap = false;
+        gaps.push({ startHour: gapStart, endHour: h, duration: h - gapStart });
+      }
+    }
+    if (inGap) {
+      gaps.push({ startHour: gapStart, endHour: maxHour, duration: maxHour - gapStart });
+    }
+
+    results.push({
+      day,
+      dayName: DAY_NAMES_FULL[day],
+      gaps,
+    });
+  }
+
+  return results;
 }
 
 export async function GET(req: NextRequest) {
@@ -53,49 +91,14 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
   }
 
-  const windowHours = Math.max(
-    1,
-    Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2))
-  );
+  const windowHours = Math.max(1, Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2)));
   const groupId = req.nextUrl.searchParams.get("groupId") || null;
   const activityId = req.nextUrl.searchParams.get("activityId") || null;
-  const smooth = req.nextUrl.searchParams.get("smooth") !== "false";
 
-  const groups = await prisma.group.findMany({
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      _count: { select: { activities: true, members: true } },
-    },
-  });
-
-  const key = cacheKey({ windowHours, groupId, activityId });
-  const hit = cache.get(key);
-  const now = Date.now();
-  if (hit && hit.expires > now) {
-    return NextResponse.json({
-      ...hit.payload,
-      groups: groups.map((g) => ({
-        id: g.id,
-        name: g.name,
-        activityCount: g._count.activities,
-        memberCount: g._count.members,
-      })),
-    });
-  }
-
-  let totalMembers: number;
-  let groupName: string | null = null;
-  let users: UserSlots[];
+  let totalMembers = 0;
+  let users: UserSlots[] = [];
 
   if (groupId) {
-    const group = await prisma.group.findUnique({
-      where: { id: groupId },
-      select: { id: true, name: true },
-    });
-    groupName = group?.name ?? null;
-
     const members = await prisma.groupMember.findMany({
       where: { groupId },
       include: {
@@ -121,7 +124,7 @@ export async function GET(req: NextRequest) {
     users = members.map((m) => ({
       id: m.user.id,
       timezone: m.user.timezone,
-      attendance: countAttendance(m.user.attendances),
+      attendance: { present: 0, absent: 0 },
       availabilities: m.user.availabilities,
     }));
   } else {
@@ -146,46 +149,28 @@ export async function GET(req: NextRequest) {
     users = all.map((u) => ({
       id: u.id,
       timezone: u.timezone,
-      attendance: countAttendance(u.attendances),
+      attendance: { present: 0, absent: 0 },
       availabilities: u.availabilities,
     }));
   }
 
   const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
-
   const availabilities = convertToReference(rows);
 
   const scheduling = computeScheduling(
-    availabilities.map(
-      (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })
-    ),
+    availabilities.map((a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })),
     Math.max(totalMembers, 1),
     windowHours,
-    { smooth, smoothSigma: 1.2 }
+    { smooth: true, smoothSigma: 1.2 }
   );
 
-  const payload: Record<string, unknown> = {
-    ...scheduling,
-    referenceTimezone: REFERENCE_TIMEZONE,
-    groupId: groupId ?? undefined,
-    groupName,
-  };
-  cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
+  const gaps = detectGaps(scheduling.heatmap, scheduling.minHour, scheduling.maxHour);
 
   return NextResponse.json({
-    ...payload,
-    groups: groups.map((g) => ({
-      id: g.id,
-      name: g.name,
-      activityCount: g._count.activities,
-      memberCount: g._count.members,
-    })),
+    gaps,
+    minHour: scheduling.minHour,
+    maxHour: scheduling.maxHour,
+    totalMembers: scheduling.totalMembers,
+    totalAvailabilities: scheduling.totalAvailabilities,
   });
-}
-
-function countAttendance(rows: { status: string }[]) {
-  return {
-    present: rows.filter((r) => r.status === "present").length,
-    absent: rows.filter((r) => r.status === "absent").length,
-  };
 }

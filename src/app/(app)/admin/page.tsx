@@ -23,7 +23,7 @@ export default async function AdminPage() {
       <div className="mx-auto max-w-6xl space-y-6 px-4 py-8">
         <PageTitle
           title="Dashboard Administrateur"
-          subtitle="Vue de la cohorte, heatmap et créneaux recommandés."
+          subtitle="Planification et disponibilités de la cohorte."
           actions={
             <div className="flex items-center gap-2">
               <Button

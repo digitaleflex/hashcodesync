@@ -60,6 +60,7 @@ export async function POST(req: NextRequest) {
     endTime?: unknown;
     groupId?: unknown;
     activityId?: unknown;
+    recurring?: unknown;
   };
   try {
     body = await req.json();
@@ -75,6 +76,7 @@ export async function POST(req: NextRequest) {
   const endTime = String(body.endTime ?? "");
   const groupId = body.groupId ? String(body.groupId) : null;
   const activityId = body.activityId ? String(body.activityId) : null;
+  const recurring = Boolean(body.recurring);
 
   if (!DAYS.includes(day)) {
     return NextResponse.json({ error: "Jour invalide" }, { status: 400 });
@@ -114,13 +116,22 @@ export async function POST(req: NextRequest) {
     }
   }
 
+  // Vérifier les chevauchements dans le même périmètre.
+  const overlapWhere: Record<string, unknown> = {
+    userId: session.user.id,
+    day,
+  };
+  if (groupId) {
+    overlapWhere.groupId = groupId;
+    overlapWhere.activityId = activityId ?? undefined;
+  } else {
+    // Disponibilités générales : vérifier uniquement contre d'autres générales.
+    overlapWhere.groupId = null;
+    overlapWhere.activityId = null;
+  }
+
   const existing = await prisma.availability.findMany({
-    where: {
-      userId: session.user.id,
-      day,
-      groupId: groupId ?? undefined,
-      activityId: activityId ?? undefined,
-    },
+    where: overlapWhere,
   });
   const overlaps = existing.some(
     (a) => startTime < a.endTime && endTime > a.startTime
@@ -140,6 +151,7 @@ export async function POST(req: NextRequest) {
       endTime,
       groupId,
       activityId,
+      recurring,
     },
     include: {
       group: { select: { id: true, name: true } },

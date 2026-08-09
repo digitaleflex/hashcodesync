@@ -42,6 +42,7 @@ export type AvailabilityMinAggregateOutputType = {
   day: number | null
   startTime: string | null
   endTime: string | null
+  recurring: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -54,6 +55,7 @@ export type AvailabilityMaxAggregateOutputType = {
   day: number | null
   startTime: string | null
   endTime: string | null
+  recurring: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -66,6 +68,7 @@ export type AvailabilityCountAggregateOutputType = {
   day: number
   startTime: number
   endTime: number
+  recurring: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -88,6 +91,7 @@ export type AvailabilityMinAggregateInputType = {
   day?: true
   startTime?: true
   endTime?: true
+  recurring?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -100,6 +104,7 @@ export type AvailabilityMaxAggregateInputType = {
   day?: true
   startTime?: true
   endTime?: true
+  recurring?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -112,6 +117,7 @@ export type AvailabilityCountAggregateInputType = {
   day?: true
   startTime?: true
   endTime?: true
+  recurring?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -211,6 +217,7 @@ export type AvailabilityGroupByOutputType = {
   day: number
   startTime: string
   endTime: string
+  recurring: boolean
   createdAt: Date
   updatedAt: Date
   _count: AvailabilityCountAggregateOutputType | null
@@ -246,6 +253,7 @@ export type AvailabilityWhereInput = {
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
+  recurring?: Prisma.BoolFilter<"Availability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -261,6 +269,7 @@ export type AvailabilityOrderByWithRelationInput = {
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  recurring?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -279,6 +288,7 @@ export type AvailabilityWhereUniqueInput = Prisma.AtLeast<{
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
+  recurring?: Prisma.BoolFilter<"Availability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -294,6 +304,7 @@ export type AvailabilityOrderByWithAggregationInput = {
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  recurring?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.AvailabilityCountOrderByAggregateInput
@@ -314,6 +325,7 @@ export type AvailabilityScalarWhereWithAggregatesInput = {
   day?: Prisma.IntWithAggregatesFilter<"Availability"> | number
   startTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
   endTime?: Prisma.StringWithAggregatesFilter<"Availability"> | string
+  recurring?: Prisma.BoolWithAggregatesFilter<"Availability"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Availability"> | Date | string
 }
@@ -323,6 +335,7 @@ export type AvailabilityCreateInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
@@ -338,6 +351,7 @@ export type AvailabilityUncheckedCreateInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -347,6 +361,7 @@ export type AvailabilityUpdateInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
@@ -362,6 +377,7 @@ export type AvailabilityUncheckedUpdateInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -374,6 +390,7 @@ export type AvailabilityCreateManyInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -383,6 +400,7 @@ export type AvailabilityUpdateManyMutationInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -395,6 +413,7 @@ export type AvailabilityUncheckedUpdateManyInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -417,6 +436,7 @@ export type AvailabilityCountOrderByAggregateInput = {
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  recurring?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -433,6 +453,7 @@ export type AvailabilityMaxOrderByAggregateInput = {
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  recurring?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -445,6 +466,7 @@ export type AvailabilityMinOrderByAggregateInput = {
   day?: Prisma.SortOrder
   startTime?: Prisma.SortOrder
   endTime?: Prisma.SortOrder
+  recurring?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -584,6 +606,7 @@ export type AvailabilityCreateWithoutUserInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   group?: Prisma.GroupCreateNestedOneWithoutAvailabilitiesInput
@@ -597,6 +620,7 @@ export type AvailabilityUncheckedCreateWithoutUserInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -638,6 +662,7 @@ export type AvailabilityScalarWhereInput = {
   day?: Prisma.IntFilter<"Availability"> | number
   startTime?: Prisma.StringFilter<"Availability"> | string
   endTime?: Prisma.StringFilter<"Availability"> | string
+  recurring?: Prisma.BoolFilter<"Availability"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Availability"> | Date | string
 }
@@ -647,6 +672,7 @@ export type AvailabilityCreateWithoutGroupInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
@@ -660,6 +686,7 @@ export type AvailabilityUncheckedCreateWithoutGroupInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -695,6 +722,7 @@ export type AvailabilityCreateWithoutActivityInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   user: Prisma.UserCreateNestedOneWithoutAvailabilitiesInput
@@ -708,6 +736,7 @@ export type AvailabilityUncheckedCreateWithoutActivityInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -745,6 +774,7 @@ export type AvailabilityCreateManyUserInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -754,6 +784,7 @@ export type AvailabilityUpdateWithoutUserInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneWithoutAvailabilitiesNestedInput
@@ -767,6 +798,7 @@ export type AvailabilityUncheckedUpdateWithoutUserInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -778,6 +810,7 @@ export type AvailabilityUncheckedUpdateManyWithoutUserInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -789,6 +822,7 @@ export type AvailabilityCreateManyGroupInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -798,6 +832,7 @@ export type AvailabilityUpdateWithoutGroupInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
@@ -811,6 +846,7 @@ export type AvailabilityUncheckedUpdateWithoutGroupInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -822,6 +858,7 @@ export type AvailabilityUncheckedUpdateManyWithoutGroupInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -833,6 +870,7 @@ export type AvailabilityCreateManyActivityInput = {
   day: number
   startTime: string
   endTime: string
+  recurring?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -842,6 +880,7 @@ export type AvailabilityUpdateWithoutActivityInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   user?: Prisma.UserUpdateOneRequiredWithoutAvailabilitiesNestedInput
@@ -855,6 +894,7 @@ export type AvailabilityUncheckedUpdateWithoutActivityInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -866,6 +906,7 @@ export type AvailabilityUncheckedUpdateManyWithoutActivityInput = {
   day?: Prisma.IntFieldUpdateOperationsInput | number
   startTime?: Prisma.StringFieldUpdateOperationsInput | string
   endTime?: Prisma.StringFieldUpdateOperationsInput | string
+  recurring?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -880,6 +921,7 @@ export type AvailabilitySelect<ExtArgs extends runtime.Types.Extensions.Internal
   day?: boolean
   startTime?: boolean
   endTime?: boolean
+  recurring?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -895,6 +937,7 @@ export type AvailabilitySelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   day?: boolean
   startTime?: boolean
   endTime?: boolean
+  recurring?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -910,6 +953,7 @@ export type AvailabilitySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.
   day?: boolean
   startTime?: boolean
   endTime?: boolean
+  recurring?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -925,11 +969,12 @@ export type AvailabilitySelectScalar = {
   day?: boolean
   startTime?: boolean
   endTime?: boolean
+  recurring?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "groupId" | "activityId" | "day" | "startTime" | "endTime" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
+export type AvailabilityOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "groupId" | "activityId" | "day" | "startTime" | "endTime" | "recurring" | "createdAt" | "updatedAt", ExtArgs["result"]["availability"]>
 export type AvailabilityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   group?: boolean | Prisma.Availability$groupArgs<ExtArgs>
@@ -961,6 +1006,7 @@ export type $AvailabilityPayload<ExtArgs extends runtime.Types.Extensions.Intern
     day: number
     startTime: string
     endTime: string
+    recurring: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["availability"]>
@@ -1396,6 +1442,7 @@ export interface AvailabilityFieldRefs {
   readonly day: Prisma.FieldRef<"Availability", 'Int'>
   readonly startTime: Prisma.FieldRef<"Availability", 'String'>
   readonly endTime: Prisma.FieldRef<"Availability", 'String'>
+  readonly recurring: Prisma.FieldRef<"Availability", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Availability", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Availability", 'DateTime'>
 }

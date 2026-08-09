@@ -23,6 +23,7 @@ import {
 import {
   Loader2Icon,
   PlusIcon,
+  SparklesIcon,
   Trash2Icon,
 } from "lucide-react";
 import { DAY_NAMES } from "@/components/availability/constants";
@@ -61,6 +62,7 @@ export function SlotFormModal({
   ]);
   const [recurring, setRecurring] = useState(false);
   const [submitting, setSubmitting] = useState(false);
+  const [suggesting, setSuggesting] = useState(false);
 
   const selectedGroupOption = useMemo(
     () => groups.find((g) => g.id === selectedGroup) ?? null,
@@ -98,6 +100,95 @@ export function SlotFormModal({
     setSelectedDays((prev) =>
       prev.includes(day) ? prev.filter((d) => d !== day) : [...prev, day]
     );
+  }, []);
+
+  const selectAllDays = useCallback(() => {
+    setSelectedDays([0, 1, 2, 3, 4, 5, 6]);
+  }, []);
+
+  const selectWorkdays = useCallback(() => {
+    setSelectedDays([0, 1, 2, 3, 4]);
+  }, []);
+
+  const invertDays = useCallback(() => {
+    setSelectedDays((prev) => [0, 1, 2, 3, 4, 5, 6].filter((d) => !prev.includes(d)));
+  }, []);
+
+  const daysLabel = useMemo(() => {
+    if (selectedDays.length === 7) return "Tous les jours";
+    if (
+      selectedDays.length === 5 &&
+      selectedDays.every((d) => d < 5)
+    )
+      return "Jours ouvrés (lun–ven)";
+    if (selectedDays.length === 0) return "Aucun jour sélectionné";
+    return selectedDays
+      .slice()
+      .sort((a, b) => a - b)
+      .map((d) => DAY_NAMES[d].slice(0, 3))
+      .join(" · ");
+  }, [selectedDays]);
+
+  const suggestFromHistory = useCallback(async () => {
+    setSuggesting(true);
+    try {
+      const res = await fetch("/api/availabilities/history?limit=4");
+      if (!res.ok) throw new Error();
+      const data = await res.json();
+      const weeks: {
+        slots: { day: number; startTime: string; endTime: string }[];
+      }[] = data.items ?? [];
+      if (weeks.length === 0) {
+        toast.info("Pas encore d'historique : validez une semaine pour activer la suggestion");
+        return;
+      }
+
+      const rangeCount = new Map<string, number>();
+      const dayRangeCount = new Map<number, Set<string>>();
+      for (const week of weeks) {
+        for (const s of week.slots) {
+          const key = `${s.startTime}-${s.endTime}`;
+          rangeCount.set(key, (rangeCount.get(key) ?? 0) + 1);
+          const set = dayRangeCount.get(s.day) ?? new Set<string>();
+          set.add(key);
+          dayRangeCount.set(s.day, set);
+        }
+      }
+
+      const dominant = [...rangeCount.entries()]
+        .filter(([, c]) => c >= 2)
+        .sort((a, b) => b[1] - a[1])
+        .map(([k]) => k);
+      if (dominant.length === 0) {
+        toast.info("Pas de plage horaire assez récurrente pour une suggestion fiable");
+        return;
+      }
+
+      const suggestedDays = [...dayRangeCount.entries()]
+        .filter(([, ranges]) => [...ranges].some((r) => dominant.includes(r)))
+        .map(([day]) => day)
+        .sort((a, b) => a - b);
+      const suggestedSlots = dominant
+        .sort()
+        .map((key) => {
+          const [startTime, endTime] = key.split("-");
+          return { day: suggestedDays[0] ?? 0, startTime, endTime };
+        });
+
+      setScope("general");
+      setSelectedGroup("");
+      setSelectedActivity("");
+      setSelectedDays(suggestedDays);
+      setSlots(suggestedSlots);
+      setRecurring(true);
+      toast.success(
+        `Horaires habituels suggérés : ${suggestedDays.length} jour${suggestedDays.length > 1 ? "s" : ""}`
+      );
+    } catch {
+      toast.error("Impossible de charger l'historique");
+    } finally {
+      setSuggesting(false);
+    }
   }, []);
 
   const addSlot = useCallback(() => {
@@ -319,7 +410,45 @@ export function SlotFormModal({
 
           {/* Days */}
           <div className="space-y-2.5">
+            {!editing && (
+              <button
+                type="button"
+                onClick={suggestFromHistory}
+                disabled={suggesting}
+                className="flex w-full items-center justify-center gap-2 rounded-lg border border-dashed border-accent/40 bg-accent/5 px-3 py-2 text-sm font-medium text-accent transition-colors hover:bg-accent/10 disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {suggesting ? (
+                  <Loader2Icon className="size-4 animate-spin" />
+                ) : (
+                  <SparklesIcon className="size-4" />
+                )}
+                Suggérer mes horaires habituels
+              </button>
+            )}
             <Label className="text-sm font-medium">Jours</Label>
+            <div className="flex flex-wrap items-center gap-1.5">
+              <button
+                type="button"
+                onClick={selectAllDays}
+                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+              >
+                Tous les jours
+              </button>
+              <button
+                type="button"
+                onClick={selectWorkdays}
+                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+              >
+                Jours ouvrés
+              </button>
+              <button
+                type="button"
+                onClick={invertDays}
+                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+              >
+                Tous sauf… (inverser)
+              </button>
+            </div>
             <div className="flex flex-wrap gap-2">
               {DAY_NAMES.map((name, i) => {
                 const active = selectedDays.includes(i);
@@ -340,6 +469,7 @@ export function SlotFormModal({
                 );
               })}
             </div>
+            <p className="text-xs text-muted-foreground">{daysLabel}</p>
           </div>
 
           {/* Time slots */}

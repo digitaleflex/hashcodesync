@@ -16,6 +16,7 @@ export default async function AteliersPage() {
     include: {
       creator: { select: { id: true, name: true, email: true } },
       series: { select: { id: true, name: true } },
+      mentee: { select: { id: true, name: true, email: true, firstname: true, lastname: true } },
       participants: {
         select: {
           id: true,
@@ -38,9 +39,9 @@ export default async function AteliersPage() {
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">
         <PageTitle
           title="Ateliers"
-          subtitle="Planifiez, rejoignez et suivez les sessions de la cohorte."
+          subtitle="Planifiez, rejoignez et suivez les ateliers et sessions de mentorat de la cohorte."
           actions={
-            session?.user && session.user.role === "admin" ? (
+            session?.user && ["admin", "mentor"].includes(session.user.role) ? (
               <Button nativeButton={false} render={<Link href="/ateliers/nouveau" />}>
                 <PlusIcon /> Nouvel atelier
               </Button>

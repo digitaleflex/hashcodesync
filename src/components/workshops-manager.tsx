@@ -51,6 +51,9 @@ export type PublicWorkshop = {
   startAt: string;
   endAt: string;
   createdBy: string;
+  type: string;
+  menteeId?: string | null;
+  mentee?: { id: string; name: string; email: string; firstname?: string; lastname?: string } | null;
   series?: { id: string; name: string } | null;
   creator: { id: string; name: string; email: string };
   participants: {
@@ -217,6 +220,9 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
     const isPast = new Date(w.endAt).getTime() < Date.now();
     const isFull = w.capacity ? w.participants.length >= w.capacity : false;
 
+    const isMentorship = w.type === "mentorship_session";
+    const menteeName = w.mentee ? `${w.mentee.firstname ?? w.mentee.name}` : null;
+
     return (
       <Card className="flex flex-col transition-colors hover:bg-muted/30">
         <CardHeader className="space-y-3">
@@ -226,6 +232,11 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
                 <Badge variant="secondary" className="text-[10px] font-medium">
                   <CalendarDaysIcon className="mr-1 size-3" />
                   {w.series.name}
+                </Badge>
+              )}
+              {isMentorship && (
+                <Badge variant="outline" className="text-[10px] font-medium">
+                  Mentorat
                 </Badge>
               )}
             </div>
@@ -247,6 +258,11 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
           <CardTitle className="text-base leading-snug">
             {w.title}
           </CardTitle>
+          {isMentorship && menteeName && (
+            <p className="text-xs text-muted-foreground">
+              Avec {menteeName}
+            </p>
+          )}
           <div className="space-y-1">
             <p className="font-heading text-sm font-semibold uppercase tracking-wider text-muted-foreground">
               {dayName} {dayNum} {month}

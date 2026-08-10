@@ -213,12 +213,22 @@ export default function WorkshopDetailPage() {
                   <CalendarDaysIcon className="size-5 text-accent" />
                   {workshop.title}
                 </CardTitle>
-                {workshop.series && (
-                  <Badge variant="secondary">
-                    <CalendarDaysIcon className="mr-1 size-3" />
-                    Programme : {workshop.series.name}
-                  </Badge>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {workshop.type === "mentorship_session" && (
+                    <Badge variant="outline">Session de mentorat</Badge>
+                  )}
+                  {workshop.series && (
+                    <Badge variant="secondary">
+                      <CalendarDaysIcon className="mr-1 size-3" />
+                      Programme : {workshop.series.name}
+                    </Badge>
+                  )}
+                  {workshop.type === "mentorship_session" && workshop.mentee && (
+                    <span className="text-xs text-muted-foreground">
+                      Avec {workshop.mentee.firstname} {workshop.mentee.lastname}
+                    </span>
+                  )}
+                </div>
                 <CardDescription>
                   {formatDate(workshop.startAt)} · {formatTime(workshop.startAt)} –
                   {formatTime(workshop.endAt)}

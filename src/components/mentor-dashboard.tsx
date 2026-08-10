@@ -55,6 +55,8 @@ type Workshop = {
   title: string;
   startAt: string;
   _count: { participants: number };
+  type?: string;
+  mentee?: { firstname: string; lastname: string } | null;
 };
 
 type GroupOption = { id: string; name: string; activityCount: number; memberCount: number };
@@ -225,7 +227,7 @@ export function MentorDashboard() {
           <div className="flex justify-end">
             <Button nativeButton={false} render={<Link href="/ateliers/nouveau" />}>
               <CalendarPlusIcon className="size-4" />
-              Planifier un atelier
+              Planifier
             </Button>
           </div>
 
@@ -251,14 +253,25 @@ export function MentorDashboard() {
                         className="flex items-center justify-between gap-3 rounded-lg border p-3"
                       >
                         <div className="min-w-0">
-                          <p className="truncate font-medium">{w.title}</p>
+                          <div className="flex items-center gap-2">
+                            <p className="truncate font-medium">{w.title}</p>
+                            {w.type === "mentorship_session" && (
+                              <Badge variant="outline" className="text-[10px] font-medium">
+                                Mentorat
+                              </Badge>
+                            )}
+                          </div>
+                          {w.type === "mentorship_session" && w.mentee && (
+                            <p className="text-xs text-muted-foreground">
+                              Avec {w.mentee.firstname} {w.mentee.lastname}
+                            </p>
+                          )}
                           <p className="text-xs text-muted-foreground">
                             {fmtDate(w.startAt)}
                           </p>
                         </div>
                         <Badge variant="secondary" className="shrink-0">
-                          {w._count.participants} inscrit
-                          {w._count.participants > 1 ? "s" : ""}
+                          {w._count.participants} inscrit{w._count.participants > 1 ? "s" : ""}
                         </Badge>
                       </li>
                     ))}

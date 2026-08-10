@@ -4,7 +4,6 @@ import { useState } from "react";
 import { ChevronDownIcon, CopyIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import type { SlotInput } from "@/components/availability/shared";
 import { computeStats, groupSlots } from "@/components/availability/shared";
 import { formatDateFr, formatWeekRange } from "@/components/availability/date";
@@ -57,17 +56,24 @@ export function HistoryWeek({
             Validée le {formatDateFr(validatedAt)}
           </Badge>
           {onCopy && (
-            <Button
-              variant="ghost"
-              size="icon-xs"
+            <div
+              role="button"
+              tabIndex={0}
               onClick={(e) => {
                 e.stopPropagation();
                 onCopy();
               }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  onCopy();
+                }
+              }}
               aria-label="Copier cette semaine"
+              className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <CopyIcon className="size-3.5" />
-            </Button>
+            </div>
           )}
           <ChevronDownIcon
             className={cn("size-4 text-muted-foreground transition-transform", open && "rotate-180")}

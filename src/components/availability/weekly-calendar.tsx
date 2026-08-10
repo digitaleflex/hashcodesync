@@ -10,12 +10,12 @@ const LANE_HEIGHT = 26;
 const LANE_GAP = 4;
 const MIN_TRACK_HEIGHT = 56;
 
-function toMinutes(time: string): number {
+export function toMinutes(time: string): number {
   const [h, m] = time.split(":").map(Number);
   return h * 60 + m;
 }
 
-function fmtHours(minutes: number): string {
+export function fmtHours(minutes: number): string {
   const h = Math.floor(minutes / 60);
   const m = minutes % 60;
   if (h === 0) return `${m} min`;
@@ -23,7 +23,7 @@ function fmtHours(minutes: number): string {
   return `${h} h ${m}`;
 }
 
-function computeRange(grouped: Record<number, SlotInput[]>): { start: number; end: number } {
+export function computeRange(grouped: Record<number, SlotInput[]>): { start: number; end: number } {
   let min = Infinity;
   let max = -Infinity;
   for (const slots of Object.values(grouped)) {
@@ -51,7 +51,7 @@ type Block = {
   title: string;
 };
 
-function buildBlocks(slots: SlotInput[], rangeStart: number, rangeEnd: number): Block[] {
+export function buildBlocks(slots: SlotInput[], rangeStart: number, rangeEnd: number): Block[] {
   const span = rangeEnd - rangeStart;
   const sorted = [...slots].sort((a, b) => toMinutes(a.startTime) - toMinutes(b.startTime));
   const lanesEnd: number[] = [];

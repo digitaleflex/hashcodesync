@@ -14,6 +14,7 @@ import { KpiGrid } from "@/components/availability/kpi-grid";
 import { ScopeCorrelation } from "@/components/availability/scope-correlation";
 import { WeeklyCalendar } from "@/components/availability/weekly-calendar";
 import { MobileWeekView } from "@/components/availability/mobile-week-view";
+import { MobileWeeklyGrid } from "@/components/availability/mobile-weekly-grid";
 import { TimeSlotsList } from "@/components/availability/time-slots-list";
 import { SlotFormModal } from "@/components/availability/slot-form-modal";
 import { CompatibilitySection } from "@/components/availability/compatibility-section";
@@ -378,7 +379,11 @@ export function AvailabilityManager() {
           ) : (
             <>
               <div className="sm:hidden">
-                <MobileWeekView grouped={grouped} />
+                <MobileWeeklyGrid
+                  grouped={grouped}
+                  onOpenDay={handleOpenDay}
+                  onEditSlot={handleEdit}
+                />
               </div>
               <div className="hidden sm:block">
                 <WeeklyCalendar grouped={grouped} onOpenDay={handleOpenDay} onEditSlot={handleEdit} />

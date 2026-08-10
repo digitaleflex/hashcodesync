@@ -247,6 +247,9 @@ export type UserWhereInput = {
   weekSnapshots?: Prisma.WeekSnapshotListRelationFilter
   weekValidationLogs?: Prisma.WeekValidationLogListRelationFilter
   waitlists?: Prisma.WaitlistListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
+  planningPreferences?: Prisma.XOR<Prisma.PlanningPreferencesNullableScalarRelationFilter, Prisma.PlanningPreferencesWhereInput> | null
+  unavailabilities?: Prisma.UnavailabilityListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -278,6 +281,9 @@ export type UserOrderByWithRelationInput = {
   weekSnapshots?: Prisma.WeekSnapshotOrderByRelationAggregateInput
   weekValidationLogs?: Prisma.WeekValidationLogOrderByRelationAggregateInput
   waitlists?: Prisma.WaitlistOrderByRelationAggregateInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityOrderByRelationAggregateInput
+  planningPreferences?: Prisma.PlanningPreferencesOrderByWithRelationInput
+  unavailabilities?: Prisma.UnavailabilityOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -312,6 +318,9 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   weekSnapshots?: Prisma.WeekSnapshotListRelationFilter
   weekValidationLogs?: Prisma.WeekValidationLogListRelationFilter
   waitlists?: Prisma.WaitlistListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
+  planningPreferences?: Prisma.XOR<Prisma.PlanningPreferencesNullableScalarRelationFilter, Prisma.PlanningPreferencesWhereInput> | null
+  unavailabilities?: Prisma.UnavailabilityListRelationFilter
 }, "id" | "email">
 
 export type UserOrderByWithAggregationInput = {
@@ -377,6 +386,9 @@ export type UserCreateInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -408,6 +420,9 @@ export type UserUncheckedCreateInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -439,6 +454,9 @@ export type UserUpdateInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -470,6 +488,9 @@ export type UserUncheckedUpdateInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -661,6 +682,48 @@ export type UserUpdateOneRequiredWithoutAvailabilitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutAvailabilitiesInput, Prisma.UserUpdateWithoutAvailabilitiesInput>, Prisma.UserUncheckedUpdateWithoutAvailabilitiesInput>
 }
 
+export type UserCreateNestedOneWithoutRecurringAvailabilitiesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringAvailabilitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRecurringAvailabilitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRecurringAvailabilitiesInput
+  upsert?: Prisma.UserUpsertWithoutRecurringAvailabilitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput, Prisma.UserUpdateWithoutRecurringAvailabilitiesInput>, Prisma.UserUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
+export type UserCreateNestedOneWithoutPlanningPreferencesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPlanningPreferencesInput, Prisma.UserUncheckedCreateWithoutPlanningPreferencesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPlanningPreferencesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutPlanningPreferencesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutPlanningPreferencesInput, Prisma.UserUncheckedCreateWithoutPlanningPreferencesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutPlanningPreferencesInput
+  upsert?: Prisma.UserUpsertWithoutPlanningPreferencesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutPlanningPreferencesInput, Prisma.UserUpdateWithoutPlanningPreferencesInput>, Prisma.UserUncheckedUpdateWithoutPlanningPreferencesInput>
+}
+
+export type UserCreateNestedOneWithoutUnavailabilitiesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUnavailabilitiesInput, Prisma.UserUncheckedCreateWithoutUnavailabilitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUnavailabilitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutUnavailabilitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutUnavailabilitiesInput, Prisma.UserUncheckedCreateWithoutUnavailabilitiesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutUnavailabilitiesInput
+  upsert?: Prisma.UserUpsertWithoutUnavailabilitiesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutUnavailabilitiesInput, Prisma.UserUpdateWithoutUnavailabilitiesInput>, Prisma.UserUncheckedUpdateWithoutUnavailabilitiesInput>
+}
+
 export type UserCreateNestedOneWithoutWeeklyValidationsInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWeeklyValidationsInput, Prisma.UserUncheckedCreateWithoutWeeklyValidationsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWeeklyValidationsInput
@@ -843,6 +906,9 @@ export type UserCreateWithoutSessionsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -873,6 +939,9 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -919,6 +988,9 @@ export type UserUpdateWithoutSessionsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -949,6 +1021,9 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -979,6 +1054,9 @@ export type UserCreateWithoutAccountsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -1009,6 +1087,9 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -1055,6 +1136,9 @@ export type UserUpdateWithoutAccountsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -1085,6 +1169,9 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedGroupsInput = {
@@ -1115,6 +1202,9 @@ export type UserCreateWithoutCreatedGroupsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedGroupsInput = {
@@ -1145,6 +1235,9 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedGroupsInput = {
@@ -1191,6 +1284,9 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
@@ -1221,6 +1317,9 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutGroupMembershipsInput = {
@@ -1251,6 +1350,9 @@ export type UserCreateWithoutGroupMembershipsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutGroupMembershipsInput = {
@@ -1281,6 +1383,9 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutGroupMembershipsInput = {
@@ -1327,6 +1432,9 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
@@ -1357,6 +1465,9 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutJoinRequestsInput = {
@@ -1387,6 +1498,9 @@ export type UserCreateWithoutJoinRequestsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutJoinRequestsInput = {
@@ -1417,6 +1531,9 @@ export type UserUncheckedCreateWithoutJoinRequestsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutJoinRequestsInput = {
@@ -1463,6 +1580,9 @@ export type UserUpdateWithoutJoinRequestsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutJoinRequestsInput = {
@@ -1493,6 +1613,9 @@ export type UserUncheckedUpdateWithoutJoinRequestsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAvailabilitiesInput = {
@@ -1523,6 +1646,9 @@ export type UserCreateWithoutAvailabilitiesInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAvailabilitiesInput = {
@@ -1553,6 +1679,9 @@ export type UserUncheckedCreateWithoutAvailabilitiesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAvailabilitiesInput = {
@@ -1599,6 +1728,9 @@ export type UserUpdateWithoutAvailabilitiesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
@@ -1629,6 +1761,453 @@ export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRecurringAvailabilitiesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedCreateWithoutRecurringAvailabilitiesInput>
+}
+
+export type UserUpsertWithoutRecurringAvailabilitiesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRecurringAvailabilitiesInput, Prisma.UserUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
+export type UserUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutPlanningPreferencesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutPlanningPreferencesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutPlanningPreferencesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutPlanningPreferencesInput, Prisma.UserUncheckedCreateWithoutPlanningPreferencesInput>
+}
+
+export type UserUpsertWithoutPlanningPreferencesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutPlanningPreferencesInput, Prisma.UserUncheckedUpdateWithoutPlanningPreferencesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutPlanningPreferencesInput, Prisma.UserUncheckedCreateWithoutPlanningPreferencesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutPlanningPreferencesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutPlanningPreferencesInput, Prisma.UserUncheckedUpdateWithoutPlanningPreferencesInput>
+}
+
+export type UserUpdateWithoutPlanningPreferencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutPlanningPreferencesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutUnavailabilitiesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutUnavailabilitiesInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutUnavailabilitiesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutUnavailabilitiesInput, Prisma.UserUncheckedCreateWithoutUnavailabilitiesInput>
+}
+
+export type UserUpsertWithoutUnavailabilitiesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutUnavailabilitiesInput, Prisma.UserUncheckedUpdateWithoutUnavailabilitiesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutUnavailabilitiesInput, Prisma.UserUncheckedCreateWithoutUnavailabilitiesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutUnavailabilitiesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutUnavailabilitiesInput, Prisma.UserUncheckedUpdateWithoutUnavailabilitiesInput>
+}
+
+export type UserUpdateWithoutUnavailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutUnavailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWeeklyValidationsInput = {
@@ -1659,6 +2238,9 @@ export type UserCreateWithoutWeeklyValidationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
@@ -1689,6 +2271,9 @@ export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWeeklyValidationsInput = {
@@ -1735,6 +2320,9 @@ export type UserUpdateWithoutWeeklyValidationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
@@ -1765,6 +2353,9 @@ export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWeekValidationLogsInput = {
@@ -1795,6 +2386,9 @@ export type UserCreateWithoutWeekValidationLogsInput = {
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWeekValidationLogsInput = {
@@ -1825,6 +2419,9 @@ export type UserUncheckedCreateWithoutWeekValidationLogsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWeekValidationLogsInput = {
@@ -1871,6 +2468,9 @@ export type UserUpdateWithoutWeekValidationLogsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWeekValidationLogsInput = {
@@ -1901,6 +2501,9 @@ export type UserUncheckedUpdateWithoutWeekValidationLogsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWeekSnapshotsInput = {
@@ -1931,6 +2534,9 @@ export type UserCreateWithoutWeekSnapshotsInput = {
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWeekSnapshotsInput = {
@@ -1961,6 +2567,9 @@ export type UserUncheckedCreateWithoutWeekSnapshotsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWeekSnapshotsInput = {
@@ -2007,6 +2616,9 @@ export type UserUpdateWithoutWeekSnapshotsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWeekSnapshotsInput = {
@@ -2037,6 +2649,9 @@ export type UserUncheckedUpdateWithoutWeekSnapshotsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkshopsInput = {
@@ -2067,6 +2682,9 @@ export type UserCreateWithoutWorkshopsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkshopsInput = {
@@ -2097,6 +2715,9 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkshopsInput = {
@@ -2143,6 +2764,9 @@ export type UserUpdateWithoutWorkshopsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkshopsInput = {
@@ -2173,6 +2797,9 @@ export type UserUncheckedUpdateWithoutWorkshopsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutCreatedSeriesInput = {
@@ -2203,6 +2830,9 @@ export type UserCreateWithoutCreatedSeriesInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutCreatedSeriesInput = {
@@ -2233,6 +2863,9 @@ export type UserUncheckedCreateWithoutCreatedSeriesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutCreatedSeriesInput = {
@@ -2279,6 +2912,9 @@ export type UserUpdateWithoutCreatedSeriesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
@@ -2309,6 +2945,9 @@ export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutParticipationInput = {
@@ -2339,6 +2978,9 @@ export type UserCreateWithoutParticipationInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutParticipationInput = {
@@ -2369,6 +3011,9 @@ export type UserUncheckedCreateWithoutParticipationInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutParticipationInput = {
@@ -2415,6 +3060,9 @@ export type UserUpdateWithoutParticipationInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutParticipationInput = {
@@ -2445,6 +3093,9 @@ export type UserUncheckedUpdateWithoutParticipationInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAttendancesInput = {
@@ -2475,6 +3126,9 @@ export type UserCreateWithoutAttendancesInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAttendancesInput = {
@@ -2505,6 +3159,9 @@ export type UserUncheckedCreateWithoutAttendancesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAttendancesInput = {
@@ -2551,6 +3208,9 @@ export type UserUpdateWithoutAttendancesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAttendancesInput = {
@@ -2581,6 +3241,9 @@ export type UserUncheckedUpdateWithoutAttendancesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWaitlistsInput = {
@@ -2611,6 +3274,9 @@ export type UserCreateWithoutWaitlistsInput = {
   weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWaitlistsInput = {
@@ -2641,6 +3307,9 @@ export type UserUncheckedCreateWithoutWaitlistsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWaitlistsInput = {
@@ -2687,6 +3356,9 @@ export type UserUpdateWithoutWaitlistsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWaitlistsInput = {
@@ -2717,6 +3389,9 @@ export type UserUncheckedUpdateWithoutWaitlistsInput = {
   weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutWorkshopFeedbacksInput = {
@@ -2747,6 +3422,9 @@ export type UserCreateWithoutWorkshopFeedbacksInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutWorkshopFeedbacksInput = {
@@ -2777,6 +3455,9 @@ export type UserUncheckedCreateWithoutWorkshopFeedbacksInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutWorkshopFeedbacksInput = {
@@ -2823,6 +3504,9 @@ export type UserUpdateWithoutWorkshopFeedbacksInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutWorkshopFeedbacksInput = {
@@ -2853,6 +3537,9 @@ export type UserUncheckedUpdateWithoutWorkshopFeedbacksInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationsInput = {
@@ -2883,6 +3570,9 @@ export type UserCreateWithoutNotificationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -2913,6 +3603,9 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -2959,6 +3652,9 @@ export type UserUpdateWithoutNotificationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -2989,6 +3685,9 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutNotificationPreferencesInput = {
@@ -3019,6 +3718,9 @@ export type UserCreateWithoutNotificationPreferencesInput = {
   weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
@@ -3049,6 +3751,9 @@ export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
   waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutNotificationPreferencesInput = {
@@ -3095,6 +3800,9 @@ export type UserUpdateWithoutNotificationPreferencesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
@@ -3125,6 +3833,9 @@ export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
   weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
   weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
   waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -3150,6 +3861,8 @@ export type UserCountOutputType = {
   weekSnapshots: number
   weekValidationLogs: number
   waitlists: number
+  recurringAvailabilities: number
+  unavailabilities: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3170,6 +3883,8 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   weekSnapshots?: boolean | UserCountOutputTypeCountWeekSnapshotsArgs
   weekValidationLogs?: boolean | UserCountOutputTypeCountWeekValidationLogsArgs
   waitlists?: boolean | UserCountOutputTypeCountWaitlistsArgs
+  recurringAvailabilities?: boolean | UserCountOutputTypeCountRecurringAvailabilitiesArgs
+  unavailabilities?: boolean | UserCountOutputTypeCountUnavailabilitiesArgs
 }
 
 /**
@@ -3301,6 +4016,20 @@ export type UserCountOutputTypeCountWaitlistsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.WaitlistWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRecurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringAvailabilityWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountUnavailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.UnavailabilityWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3331,6 +4060,9 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   weekSnapshots?: boolean | Prisma.User$weekSnapshotsArgs<ExtArgs>
   weekValidationLogs?: boolean | Prisma.User$weekValidationLogsArgs<ExtArgs>
   waitlists?: boolean | Prisma.User$waitlistsArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.User$recurringAvailabilitiesArgs<ExtArgs>
+  planningPreferences?: boolean | Prisma.User$planningPreferencesArgs<ExtArgs>
+  unavailabilities?: boolean | Prisma.User$unavailabilitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -3395,6 +4127,9 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   weekSnapshots?: boolean | Prisma.User$weekSnapshotsArgs<ExtArgs>
   weekValidationLogs?: boolean | Prisma.User$weekValidationLogsArgs<ExtArgs>
   waitlists?: boolean | Prisma.User$waitlistsArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.User$recurringAvailabilitiesArgs<ExtArgs>
+  planningPreferences?: boolean | Prisma.User$planningPreferencesArgs<ExtArgs>
+  unavailabilities?: boolean | Prisma.User$unavailabilitiesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -3420,6 +4155,9 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     weekSnapshots: Prisma.$WeekSnapshotPayload<ExtArgs>[]
     weekValidationLogs: Prisma.$WeekValidationLogPayload<ExtArgs>[]
     waitlists: Prisma.$WaitlistPayload<ExtArgs>[]
+    recurringAvailabilities: Prisma.$RecurringAvailabilityPayload<ExtArgs>[]
+    planningPreferences: Prisma.$PlanningPreferencesPayload<ExtArgs> | null
+    unavailabilities: Prisma.$UnavailabilityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3844,6 +4582,9 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   weekSnapshots<T extends Prisma.User$weekSnapshotsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$weekSnapshotsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeekSnapshotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   weekValidationLogs<T extends Prisma.User$weekValidationLogsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$weekValidationLogsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WeekValidationLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   waitlists<T extends Prisma.User$waitlistsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$waitlistsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WaitlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringAvailabilities<T extends Prisma.User$recurringAvailabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$recurringAvailabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  planningPreferences<T extends Prisma.User$planningPreferencesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$planningPreferencesArgs<ExtArgs>>): Prisma.Prisma__PlanningPreferencesClient<runtime.Types.Result.GetResult<Prisma.$PlanningPreferencesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  unavailabilities<T extends Prisma.User$unavailabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$unavailabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$UnavailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4682,6 +5423,73 @@ export type User$waitlistsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.WaitlistScalarFieldEnum | Prisma.WaitlistScalarFieldEnum[]
+}
+
+/**
+ * User.recurringAvailabilities
+ */
+export type User$recurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringAvailability
+   */
+  select?: Prisma.RecurringAvailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringAvailability
+   */
+  omit?: Prisma.RecurringAvailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringAvailabilityInclude<ExtArgs> | null
+  where?: Prisma.RecurringAvailabilityWhereInput
+  orderBy?: Prisma.RecurringAvailabilityOrderByWithRelationInput | Prisma.RecurringAvailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringAvailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringAvailabilityScalarFieldEnum | Prisma.RecurringAvailabilityScalarFieldEnum[]
+}
+
+/**
+ * User.planningPreferences
+ */
+export type User$planningPreferencesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the PlanningPreferences
+   */
+  select?: Prisma.PlanningPreferencesSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the PlanningPreferences
+   */
+  omit?: Prisma.PlanningPreferencesOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.PlanningPreferencesInclude<ExtArgs> | null
+  where?: Prisma.PlanningPreferencesWhereInput
+}
+
+/**
+ * User.unavailabilities
+ */
+export type User$unavailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Unavailability
+   */
+  select?: Prisma.UnavailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Unavailability
+   */
+  omit?: Prisma.UnavailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.UnavailabilityInclude<ExtArgs> | null
+  where?: Prisma.UnavailabilityWhereInput
+  orderBy?: Prisma.UnavailabilityOrderByWithRelationInput | Prisma.UnavailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.UnavailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.UnavailabilityScalarFieldEnum | Prisma.UnavailabilityScalarFieldEnum[]
 }
 
 /**

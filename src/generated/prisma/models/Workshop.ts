@@ -592,14 +592,6 @@ export type WorkshopUncheckedUpdateManyWithoutCreatorNestedInput = {
   deleteMany?: Prisma.WorkshopScalarWhereInput | Prisma.WorkshopScalarWhereInput[]
 }
 
-export type NullableIntFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type WorkshopCreateNestedManyWithoutSeriesInput = {
   create?: Prisma.XOR<Prisma.WorkshopCreateWithoutSeriesInput, Prisma.WorkshopUncheckedCreateWithoutSeriesInput> | Prisma.WorkshopCreateWithoutSeriesInput[] | Prisma.WorkshopUncheckedCreateWithoutSeriesInput[]
   connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutSeriesInput | Prisma.WorkshopCreateOrConnectWithoutSeriesInput[]

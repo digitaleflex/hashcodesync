@@ -63,6 +63,21 @@ export type GroupActivity = Prisma.GroupActivityModel
  */
 export type Availability = Prisma.AvailabilityModel
 /**
+ * Model RecurringAvailability
+ * 
+ */
+export type RecurringAvailability = Prisma.RecurringAvailabilityModel
+/**
+ * Model PlanningPreferences
+ * 
+ */
+export type PlanningPreferences = Prisma.PlanningPreferencesModel
+/**
+ * Model Unavailability
+ * 
+ */
+export type Unavailability = Prisma.UnavailabilityModel
+/**
  * Model WeeklyValidation
  * 
  */

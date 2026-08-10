@@ -200,6 +200,7 @@ export type GroupActivityWhereInput = {
   updatedAt?: Prisma.DateTimeFilter<"GroupActivity"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   availabilities?: Prisma.AvailabilityListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
 }
 
 export type GroupActivityOrderByWithRelationInput = {
@@ -212,6 +213,7 @@ export type GroupActivityOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrder
   group?: Prisma.GroupOrderByWithRelationInput
   availabilities?: Prisma.AvailabilityOrderByRelationAggregateInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityOrderByRelationAggregateInput
 }
 
 export type GroupActivityWhereUniqueInput = Prisma.AtLeast<{
@@ -227,6 +229,7 @@ export type GroupActivityWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeFilter<"GroupActivity"> | Date | string
   group?: Prisma.XOR<Prisma.GroupScalarRelationFilter, Prisma.GroupWhereInput>
   availabilities?: Prisma.AvailabilityListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
 }, "id">
 
 export type GroupActivityOrderByWithAggregationInput = {
@@ -264,6 +267,7 @@ export type GroupActivityCreateInput = {
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutActivitiesInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutActivityInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityUncheckedCreateInput = {
@@ -275,6 +279,7 @@ export type GroupActivityUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutActivityInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityUpdateInput = {
@@ -286,6 +291,7 @@ export type GroupActivityUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutActivitiesNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutActivityNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityUncheckedUpdateInput = {
@@ -297,6 +303,7 @@ export type GroupActivityUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutActivityNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityCreateManyInput = {
@@ -431,6 +438,22 @@ export type GroupActivityUpdateOneWithoutAvailabilitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupActivityUpdateToOneWithWhereWithoutAvailabilitiesInput, Prisma.GroupActivityUpdateWithoutAvailabilitiesInput>, Prisma.GroupActivityUncheckedUpdateWithoutAvailabilitiesInput>
 }
 
+export type GroupActivityCreateNestedOneWithoutRecurringAvailabilitiesInput = {
+  create?: Prisma.XOR<Prisma.GroupActivityCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.GroupActivityCreateOrConnectWithoutRecurringAvailabilitiesInput
+  connect?: Prisma.GroupActivityWhereUniqueInput
+}
+
+export type GroupActivityUpdateOneWithoutRecurringAvailabilitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupActivityCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.GroupActivityCreateOrConnectWithoutRecurringAvailabilitiesInput
+  upsert?: Prisma.GroupActivityUpsertWithoutRecurringAvailabilitiesInput
+  disconnect?: Prisma.GroupActivityWhereInput | boolean
+  delete?: Prisma.GroupActivityWhereInput | boolean
+  connect?: Prisma.GroupActivityWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupActivityUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUpdateWithoutRecurringAvailabilitiesInput>, Prisma.GroupActivityUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
 export type GroupActivityCreateWithoutGroupInput = {
   id?: string
   name: string
@@ -439,6 +462,7 @@ export type GroupActivityCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutActivityInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityUncheckedCreateWithoutGroupInput = {
@@ -449,6 +473,7 @@ export type GroupActivityUncheckedCreateWithoutGroupInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutActivityInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityCreateOrConnectWithoutGroupInput = {
@@ -498,6 +523,7 @@ export type GroupActivityCreateWithoutAvailabilitiesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   group: Prisma.GroupCreateNestedOneWithoutActivitiesInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityUncheckedCreateWithoutAvailabilitiesInput = {
@@ -508,6 +534,7 @@ export type GroupActivityUncheckedCreateWithoutAvailabilitiesInput = {
   description?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutActivityInput
 }
 
 export type GroupActivityCreateOrConnectWithoutAvailabilitiesInput = {
@@ -534,6 +561,7 @@ export type GroupActivityUpdateWithoutAvailabilitiesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   group?: Prisma.GroupUpdateOneRequiredWithoutActivitiesNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityUncheckedUpdateWithoutAvailabilitiesInput = {
@@ -544,6 +572,67 @@ export type GroupActivityUncheckedUpdateWithoutAvailabilitiesInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutActivityNestedInput
+}
+
+export type GroupActivityCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  name: string
+  type?: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  group: Prisma.GroupCreateNestedOneWithoutActivitiesInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutActivityInput
+}
+
+export type GroupActivityUncheckedCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  groupId: string
+  name: string
+  type?: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutActivityInput
+}
+
+export type GroupActivityCreateOrConnectWithoutRecurringAvailabilitiesInput = {
+  where: Prisma.GroupActivityWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupActivityCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedCreateWithoutRecurringAvailabilitiesInput>
+}
+
+export type GroupActivityUpsertWithoutRecurringAvailabilitiesInput = {
+  update: Prisma.XOR<Prisma.GroupActivityUpdateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+  create: Prisma.XOR<Prisma.GroupActivityCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  where?: Prisma.GroupActivityWhereInput
+}
+
+export type GroupActivityUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput = {
+  where?: Prisma.GroupActivityWhereInput
+  data: Prisma.XOR<Prisma.GroupActivityUpdateWithoutRecurringAvailabilitiesInput, Prisma.GroupActivityUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
+export type GroupActivityUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  group?: Prisma.GroupUpdateOneRequiredWithoutActivitiesNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutActivityNestedInput
+}
+
+export type GroupActivityUncheckedUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  groupId?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityCreateManyGroupInput = {
@@ -563,6 +652,7 @@ export type GroupActivityUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availabilities?: Prisma.AvailabilityUpdateManyWithoutActivityNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityUncheckedUpdateWithoutGroupInput = {
@@ -573,6 +663,7 @@ export type GroupActivityUncheckedUpdateWithoutGroupInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutActivityNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutActivityNestedInput
 }
 
 export type GroupActivityUncheckedUpdateManyWithoutGroupInput = {
@@ -591,10 +682,12 @@ export type GroupActivityUncheckedUpdateManyWithoutGroupInput = {
 
 export type GroupActivityCountOutputType = {
   availabilities: number
+  recurringAvailabilities: number
 }
 
 export type GroupActivityCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   availabilities?: boolean | GroupActivityCountOutputTypeCountAvailabilitiesArgs
+  recurringAvailabilities?: boolean | GroupActivityCountOutputTypeCountRecurringAvailabilitiesArgs
 }
 
 /**
@@ -614,6 +707,13 @@ export type GroupActivityCountOutputTypeCountAvailabilitiesArgs<ExtArgs extends 
   where?: Prisma.AvailabilityWhereInput
 }
 
+/**
+ * GroupActivityCountOutputType without action
+ */
+export type GroupActivityCountOutputTypeCountRecurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringAvailabilityWhereInput
+}
+
 
 export type GroupActivitySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -625,6 +725,7 @@ export type GroupActivitySelect<ExtArgs extends runtime.Types.Extensions.Interna
   updatedAt?: boolean
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   availabilities?: boolean | Prisma.GroupActivity$availabilitiesArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.GroupActivity$recurringAvailabilitiesArgs<ExtArgs>
   _count?: boolean | Prisma.GroupActivityCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["groupActivity"]>
 
@@ -664,6 +765,7 @@ export type GroupActivityOmit<ExtArgs extends runtime.Types.Extensions.InternalA
 export type GroupActivityInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   group?: boolean | Prisma.GroupDefaultArgs<ExtArgs>
   availabilities?: boolean | Prisma.GroupActivity$availabilitiesArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.GroupActivity$recurringAvailabilitiesArgs<ExtArgs>
   _count?: boolean | Prisma.GroupActivityCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type GroupActivityIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -678,6 +780,7 @@ export type $GroupActivityPayload<ExtArgs extends runtime.Types.Extensions.Inter
   objects: {
     group: Prisma.$GroupPayload<ExtArgs>
     availabilities: Prisma.$AvailabilityPayload<ExtArgs>[]
+    recurringAvailabilities: Prisma.$RecurringAvailabilityPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1083,6 +1186,7 @@ export interface Prisma__GroupActivityClient<T, Null = never, ExtArgs extends ru
   readonly [Symbol.toStringTag]: "PrismaPromise"
   group<T extends Prisma.GroupDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupDefaultArgs<ExtArgs>>): Prisma.Prisma__GroupClient<runtime.Types.Result.GetResult<Prisma.$GroupPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   availabilities<T extends Prisma.GroupActivity$availabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupActivity$availabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringAvailabilities<T extends Prisma.GroupActivity$recurringAvailabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.GroupActivity$recurringAvailabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1541,6 +1645,30 @@ export type GroupActivity$availabilitiesArgs<ExtArgs extends runtime.Types.Exten
   take?: number
   skip?: number
   distinct?: Prisma.AvailabilityScalarFieldEnum | Prisma.AvailabilityScalarFieldEnum[]
+}
+
+/**
+ * GroupActivity.recurringAvailabilities
+ */
+export type GroupActivity$recurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringAvailability
+   */
+  select?: Prisma.RecurringAvailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringAvailability
+   */
+  omit?: Prisma.RecurringAvailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringAvailabilityInclude<ExtArgs> | null
+  where?: Prisma.RecurringAvailabilityWhereInput
+  orderBy?: Prisma.RecurringAvailabilityOrderByWithRelationInput | Prisma.RecurringAvailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringAvailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringAvailabilityScalarFieldEnum | Prisma.RecurringAvailabilityScalarFieldEnum[]
 }
 
 /**

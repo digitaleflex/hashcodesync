@@ -202,6 +202,7 @@ export type GroupWhereInput = {
   members?: Prisma.GroupMemberListRelationFilter
   activities?: Prisma.GroupActivityListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
 }
 
@@ -217,6 +218,7 @@ export type GroupOrderByWithRelationInput = {
   members?: Prisma.GroupMemberOrderByRelationAggregateInput
   activities?: Prisma.GroupActivityOrderByRelationAggregateInput
   availabilities?: Prisma.AvailabilityOrderByRelationAggregateInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityOrderByRelationAggregateInput
   joinRequests?: Prisma.GroupJoinRequestOrderByRelationAggregateInput
 }
 
@@ -235,6 +237,7 @@ export type GroupWhereUniqueInput = Prisma.AtLeast<{
   members?: Prisma.GroupMemberListRelationFilter
   activities?: Prisma.GroupActivityListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
+  recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
   joinRequests?: Prisma.GroupJoinRequestListRelationFilter
 }, "id">
 
@@ -275,6 +278,7 @@ export type GroupCreateInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
 }
 
@@ -289,6 +293,7 @@ export type GroupUncheckedCreateInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
 }
 
@@ -303,6 +308,7 @@ export type GroupUpdateInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
 }
 
@@ -317,6 +323,7 @@ export type GroupUncheckedUpdateInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
 }
 
@@ -499,6 +506,22 @@ export type GroupUpdateOneWithoutAvailabilitiesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutAvailabilitiesInput, Prisma.GroupUpdateWithoutAvailabilitiesInput>, Prisma.GroupUncheckedUpdateWithoutAvailabilitiesInput>
 }
 
+export type GroupCreateNestedOneWithoutRecurringAvailabilitiesInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRecurringAvailabilitiesInput
+  connect?: Prisma.GroupWhereUniqueInput
+}
+
+export type GroupUpdateOneWithoutRecurringAvailabilitiesNestedInput = {
+  create?: Prisma.XOR<Prisma.GroupCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  connectOrCreate?: Prisma.GroupCreateOrConnectWithoutRecurringAvailabilitiesInput
+  upsert?: Prisma.GroupUpsertWithoutRecurringAvailabilitiesInput
+  disconnect?: Prisma.GroupWhereInput | boolean
+  delete?: Prisma.GroupWhereInput | boolean
+  connect?: Prisma.GroupWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.GroupUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput, Prisma.GroupUpdateWithoutRecurringAvailabilitiesInput>, Prisma.GroupUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
 export type GroupCreateWithoutCreatorInput = {
   id?: string
   name: string
@@ -509,6 +532,7 @@ export type GroupCreateWithoutCreatorInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
 }
 
@@ -522,6 +546,7 @@ export type GroupUncheckedCreateWithoutCreatorInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
 }
 
@@ -574,6 +599,7 @@ export type GroupCreateWithoutMembersInput = {
   creator: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
   activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
 }
 
@@ -587,6 +613,7 @@ export type GroupUncheckedCreateWithoutMembersInput = {
   updatedAt?: Date | string
   activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
 }
 
@@ -616,6 +643,7 @@ export type GroupUpdateWithoutMembersInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
   activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
 }
 
@@ -629,6 +657,7 @@ export type GroupUncheckedUpdateWithoutMembersInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
 }
 
@@ -643,6 +672,7 @@ export type GroupCreateWithoutJoinRequestsInput = {
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
 }
 
 export type GroupUncheckedCreateWithoutJoinRequestsInput = {
@@ -656,6 +686,7 @@ export type GroupUncheckedCreateWithoutJoinRequestsInput = {
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
 }
 
 export type GroupCreateOrConnectWithoutJoinRequestsInput = {
@@ -685,6 +716,7 @@ export type GroupUpdateWithoutJoinRequestsInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupUncheckedUpdateWithoutJoinRequestsInput = {
@@ -698,6 +730,7 @@ export type GroupUncheckedUpdateWithoutJoinRequestsInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
 }
 
 export type GroupCreateWithoutActivitiesInput = {
@@ -710,6 +743,7 @@ export type GroupCreateWithoutActivitiesInput = {
   creator: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
 }
 
@@ -723,6 +757,7 @@ export type GroupUncheckedCreateWithoutActivitiesInput = {
   updatedAt?: Date | string
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
 }
 
@@ -752,6 +787,7 @@ export type GroupUpdateWithoutActivitiesInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
 }
 
@@ -765,6 +801,7 @@ export type GroupUncheckedUpdateWithoutActivitiesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
 }
 
@@ -778,6 +815,7 @@ export type GroupCreateWithoutAvailabilitiesInput = {
   creator: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
   members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
 }
 
@@ -791,6 +829,7 @@ export type GroupUncheckedCreateWithoutAvailabilitiesInput = {
   updatedAt?: Date | string
   members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
   activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutGroupInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
 }
 
@@ -820,6 +859,7 @@ export type GroupUpdateWithoutAvailabilitiesInput = {
   creator?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
 }
 
@@ -833,6 +873,79 @@ export type GroupUncheckedUpdateWithoutAvailabilitiesInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  name: string
+  description?: string | null
+  coverImage?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutCreatedGroupsInput
+  members?: Prisma.GroupMemberCreateNestedManyWithoutGroupInput
+  activities?: Prisma.GroupActivityCreateNestedManyWithoutGroupInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutGroupInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutGroupInput
+}
+
+export type GroupUncheckedCreateWithoutRecurringAvailabilitiesInput = {
+  id?: string
+  name: string
+  description?: string | null
+  coverImage?: string | null
+  createdBy: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  members?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutGroupInput
+  activities?: Prisma.GroupActivityUncheckedCreateNestedManyWithoutGroupInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutGroupInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutGroupInput
+}
+
+export type GroupCreateOrConnectWithoutRecurringAvailabilitiesInput = {
+  where: Prisma.GroupWhereUniqueInput
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedCreateWithoutRecurringAvailabilitiesInput>
+}
+
+export type GroupUpsertWithoutRecurringAvailabilitiesInput = {
+  update: Prisma.XOR<Prisma.GroupUpdateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+  create: Prisma.XOR<Prisma.GroupCreateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedCreateWithoutRecurringAvailabilitiesInput>
+  where?: Prisma.GroupWhereInput
+}
+
+export type GroupUpdateToOneWithWhereWithoutRecurringAvailabilitiesInput = {
+  where?: Prisma.GroupWhereInput
+  data: Prisma.XOR<Prisma.GroupUpdateWithoutRecurringAvailabilitiesInput, Prisma.GroupUncheckedUpdateWithoutRecurringAvailabilitiesInput>
+}
+
+export type GroupUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutCreatedGroupsNestedInput
+  members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
+  activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
+}
+
+export type GroupUncheckedUpdateWithoutRecurringAvailabilitiesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  coverImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
+  activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
 }
 
@@ -855,6 +968,7 @@ export type GroupUpdateWithoutCreatorInput = {
   members?: Prisma.GroupMemberUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutGroupNestedInput
 }
 
@@ -868,6 +982,7 @@ export type GroupUncheckedUpdateWithoutCreatorInput = {
   members?: Prisma.GroupMemberUncheckedUpdateManyWithoutGroupNestedInput
   activities?: Prisma.GroupActivityUncheckedUpdateManyWithoutGroupNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutGroupNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutGroupNestedInput
   joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutGroupNestedInput
 }
 
@@ -889,6 +1004,7 @@ export type GroupCountOutputType = {
   members: number
   activities: number
   availabilities: number
+  recurringAvailabilities: number
   joinRequests: number
 }
 
@@ -896,6 +1012,7 @@ export type GroupCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.
   members?: boolean | GroupCountOutputTypeCountMembersArgs
   activities?: boolean | GroupCountOutputTypeCountActivitiesArgs
   availabilities?: boolean | GroupCountOutputTypeCountAvailabilitiesArgs
+  recurringAvailabilities?: boolean | GroupCountOutputTypeCountRecurringAvailabilitiesArgs
   joinRequests?: boolean | GroupCountOutputTypeCountJoinRequestsArgs
 }
 
@@ -933,6 +1050,13 @@ export type GroupCountOutputTypeCountAvailabilitiesArgs<ExtArgs extends runtime.
 /**
  * GroupCountOutputType without action
  */
+export type GroupCountOutputTypeCountRecurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RecurringAvailabilityWhereInput
+}
+
+/**
+ * GroupCountOutputType without action
+ */
 export type GroupCountOutputTypeCountJoinRequestsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.GroupJoinRequestWhereInput
 }
@@ -950,6 +1074,7 @@ export type GroupSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
   activities?: boolean | Prisma.Group$activitiesArgs<ExtArgs>
   availabilities?: boolean | Prisma.Group$availabilitiesArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.Group$recurringAvailabilitiesArgs<ExtArgs>
   joinRequests?: boolean | Prisma.Group$joinRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["group"]>
@@ -992,6 +1117,7 @@ export type GroupInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   members?: boolean | Prisma.Group$membersArgs<ExtArgs>
   activities?: boolean | Prisma.Group$activitiesArgs<ExtArgs>
   availabilities?: boolean | Prisma.Group$availabilitiesArgs<ExtArgs>
+  recurringAvailabilities?: boolean | Prisma.Group$recurringAvailabilitiesArgs<ExtArgs>
   joinRequests?: boolean | Prisma.Group$joinRequestsArgs<ExtArgs>
   _count?: boolean | Prisma.GroupCountOutputTypeDefaultArgs<ExtArgs>
 }
@@ -1009,6 +1135,7 @@ export type $GroupPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     members: Prisma.$GroupMemberPayload<ExtArgs>[]
     activities: Prisma.$GroupActivityPayload<ExtArgs>[]
     availabilities: Prisma.$AvailabilityPayload<ExtArgs>[]
+    recurringAvailabilities: Prisma.$RecurringAvailabilityPayload<ExtArgs>[]
     joinRequests: Prisma.$GroupJoinRequestPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
@@ -1417,6 +1544,7 @@ export interface Prisma__GroupClient<T, Null = never, ExtArgs extends runtime.Ty
   members<T extends Prisma.Group$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   activities<T extends Prisma.Group$activitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$activitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   availabilities<T extends Prisma.Group$availabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$availabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recurringAvailabilities<T extends Prisma.Group$recurringAvailabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$recurringAvailabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RecurringAvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   joinRequests<T extends Prisma.Group$joinRequestsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Group$joinRequestsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupJoinRequestPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -1924,6 +2052,30 @@ export type Group$availabilitiesArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.AvailabilityScalarFieldEnum | Prisma.AvailabilityScalarFieldEnum[]
+}
+
+/**
+ * Group.recurringAvailabilities
+ */
+export type Group$recurringAvailabilitiesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RecurringAvailability
+   */
+  select?: Prisma.RecurringAvailabilitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RecurringAvailability
+   */
+  omit?: Prisma.RecurringAvailabilityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RecurringAvailabilityInclude<ExtArgs> | null
+  where?: Prisma.RecurringAvailabilityWhereInput
+  orderBy?: Prisma.RecurringAvailabilityOrderByWithRelationInput | Prisma.RecurringAvailabilityOrderByWithRelationInput[]
+  cursor?: Prisma.RecurringAvailabilityWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RecurringAvailabilityScalarFieldEnum | Prisma.RecurringAvailabilityScalarFieldEnum[]
 }
 
 /**

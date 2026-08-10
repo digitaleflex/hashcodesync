@@ -309,6 +309,29 @@ export function SlotFormModal({
           return;
         }
         toast.success(`${allSlots.length} créneau${allSlots.length > 1 ? "x" : ""} ajouté${allSlots.length > 1 ? "s" : ""}`);
+
+        // Persister la fréquence récurrente : un motif par plage horaire distincte.
+        if (recurring) {
+          const dayMask = selectedDays.reduce((mask, d) => mask | (1 << d), 0);
+          const ranges = slots
+            .map((s) => `${s.startTime}-${s.endTime}`)
+            .filter((v, i, a) => a.indexOf(v) === i);
+          const results = await Promise.all(
+            ranges.map((key) => {
+              const [startTime, endTime] = key.split("-");
+              return fetch("/api/availabilities/recurring", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ dayMask, startTime, endTime, groupId, activityId }),
+              });
+            })
+          );
+          if (results.some((r) => !r.ok)) {
+            toast.warning(
+              "Disponibilités ajoutées, mais la fréquence récurrente n'a pas pu être enregistrée"
+            );
+          }
+        }
       }
 
       onOpenChange(false);

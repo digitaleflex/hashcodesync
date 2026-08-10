@@ -23,6 +23,7 @@ model User {
   accounts      Account[]
   availabilities Availability[]
   workshops     Workshop[]
+  mentoredWorkshops Workshop[] @relation("MenteeWorkshops")
   participation    Participant[]
   attendances      Attendance[]
   groupMemberships GroupMember[]
@@ -36,6 +37,9 @@ model User {
   weekSnapshots     WeekSnapshot[]
   weekValidationLogs WeekValidationLog[]
   waitlists        Waitlist[]
+  recurringAvailabilities RecurringAvailability[]
+  planningPreferences     PlanningPreferences?
+  unavailabilities        Unavailability[]
 
   @@map("user")
 }
@@ -99,6 +103,7 @@ model Group {
   members     GroupMember[]
   activities  GroupActivity[]
   availabilities Availability[]
+  recurringAvailabilities RecurringAvailability[]
   joinRequests GroupJoinRequest[]
 
   @@index([createdBy])
@@ -145,6 +150,7 @@ model GroupActivity {
   description String?
   group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   availabilities Availability[]
+  recurringAvailabilities RecurringAvailability[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -171,6 +177,69 @@ model Availability {
   @@index([activityId])
   @@index([day])
   @@index([userId, day])
+}
+
+// Motif récurrent persistant : exprime « tous les jours » / « tous les jours sauf X »
+// via un masque de bits (bit i = jour i, 0 = Lundi ... 6 = Dimanche, 127 = tous les jours).
+// C'est la source de vérité de la fréquence : la semaine courante est matérialisée
+// depuis ces motifs, mais la définition persiste d'une semaine à l'autre.
+model RecurringAvailability {
+  id         String   @id @default(cuid())
+  userId     String
+  dayMask    Int // 0..127
+  startTime  String // "HH:mm"
+  endTime    String // "HH:mm"
+  groupId    String?
+  activityId String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group      Group?   @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  activity   GroupActivity? @relation(fields: [activityId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([groupId])
+  @@index([activityId])
+}
+
+// Préférences de planification (V2 Smart Scheduling) : jours/moments préférés,
+// type d'activités souhaité, fréquence de participation et limites personnelles
+// par semaine. Préférence ≠ contrainte : seul max* est une limite dure.
+model PlanningPreferences {
+  id                    String   @id @default(cuid())
+  userId                String   @unique
+  preferredDays         Int      @default(0) // masque de bits, 127 = tous les jours
+  morning               Boolean  @default(true)
+  afternoon             Boolean  @default(true)
+  evening               Boolean  @default(true)
+  preferredDurationHours Int?
+  wantsWorkshops        Boolean  @default(true)
+  wantsMentoring        Boolean  @default(true)
+  frequency             String   @default("weekly") // weekly | biweekly | flexible
+  maxHoursPerWeek       Int?
+  maxWorkshopsPerWeek   Int?
+  maxMentorshipPerWeek  Int?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  user                  User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// Périodes d'indisponibilité (absences) : contrainte dure pour le moteur de
+// planification. Aucun créneau ne doit être recommandé sur [startDate, endDate].
+model Unavailability {
+  id        String   @id @default(cuid())
+  userId    String
+  startDate DateTime // date de début (incluse)
+  endDate   DateTime // date de fin (incluse)
+  reason    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([userId, startDate])
 }
 
 // Validation hebdomadaire : une fois validée, les disponibilités de l'utilisateur
@@ -243,8 +312,11 @@ model Workshop {
   meetingUrl  String?
   createdBy   String
   seriesId    String?
+  type        String           @default("atelier") // atelier | mentorship_session
+  menteeId    String?
   creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
   series      WorkshopSeries?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  mentee      User?            @relation("MenteeWorkshops", fields: [menteeId], references: [id], onDelete: SetNull)
   participants Participant[]
   attendance  Attendance[]
   waitlist    Waitlist[]
@@ -255,6 +327,8 @@ model Workshop {
   @@index([createdBy])
   @@index([startAt])
   @@index([seriesId])
+  @@index([type])
+  @@index([menteeId])
 }
 
 // Un programme regroupé (bootcamp, cycle de mentorat...) qui rassemble

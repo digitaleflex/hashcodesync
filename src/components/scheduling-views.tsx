@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -9,6 +9,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
 import { FlameIcon, SparklesIcon, CalendarPlusIcon } from "lucide-react";
 
 export const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
@@ -116,6 +117,20 @@ export function HeatmapCard({
     return cell ? cell.count / totalMembers : 0;
   };
 
+  const [mobileDay, setMobileDay] = useState<number>(highlightCell?.day ?? 0);
+  useEffect(() => {
+    if (highlightCell) setMobileDay(highlightCell.day);
+  }, [highlightCell]);
+
+  const dayLabel = (day: number, hour: number) => {
+    const ratio = getRatio(day, hour);
+    const cell = index.get(`${day}:${hour}`);
+    const isGap = gapSet?.has(`${day}:${hour}`);
+    return cell
+      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.count} membre${cell.count > 1 ? "s" : ""} · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`
+      : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -154,7 +169,91 @@ export function HeatmapCard({
         </div>
       </CardHeader>
       <CardContent>
-        <div className="overflow-x-auto">
+        <div className="sm:hidden">
+          <div className="-mx-4 mb-3 flex gap-2 overflow-x-auto px-4 pb-1" role="tablist" aria-label="Jour sélectionné">
+            {DAY_NAMES.map((name, day) => {
+              const active = mobileDay === day;
+              return (
+                <button
+                  key={day}
+                  type="button"
+                  role="tab"
+                  aria-selected={active}
+                  onClick={() => setMobileDay(day)}
+                  className={cn(
+                    "flex h-9 shrink-0 items-center gap-1.5 rounded-lg border px-3 text-sm font-medium transition-colors",
+                    active
+                      ? "border-transparent text-white"
+                      : "border-border bg-background text-muted-foreground"
+                  )}
+                  style={active ? { backgroundColor: dayColor(day) } : undefined}
+                >
+                  <span className="size-2 rounded-full" style={{ backgroundColor: active ? "currentColor" : dayColor(day) }} />
+                  {name}
+                </button>
+              );
+            })}
+          </div>
+          <div className="flex flex-col gap-1.5" role="list" aria-label={`Disponibilités du ${DAY_NAMES_FULL[mobileDay]}`}>
+            {hours.map((hour) => {
+              const ratio = getRatio(mobileDay, hour);
+              const isGap = gapSet?.has(`${mobileDay}:${hour}`);
+              const hl = isHighlight(mobileDay, hour);
+              const cell = index.get(`${mobileDay}:${hour}`);
+              const label = dayLabel(mobileDay, hour);
+              const row = (
+                <>
+                  <span className="w-12 shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
+                    {hour}:00
+                  </span>
+                  <span className="relative h-3.5 flex-1 overflow-hidden rounded-full bg-muted/70" aria-hidden="true">
+                    <span
+                      className="absolute inset-y-0 left-0 rounded-full"
+                      style={{
+                        width: `${Math.max(ratio * 100, ratio > 0 ? 6 : 0)}%`,
+                        backgroundColor: isGap ? "hsl(0, 0%, 72%)" : dayColor(mobileDay),
+                      }}
+                    />
+                  </span>
+                  <span className="w-16 shrink-0 text-right leading-tight">
+                    <span className="block text-xs font-semibold tabular-nums">
+                      {Math.round(ratio * 100)}%
+                    </span>
+                    {cell && (
+                      <span className="block text-[10px] text-muted-foreground">
+                        {cell.count} membre{cell.count > 1 ? "s" : ""}
+                      </span>
+                    )}
+                  </span>
+                </>
+              );
+              const rowClass = cn(
+                "relative flex h-11 items-center gap-3 rounded-lg border px-3",
+                isGap ? "border-dashed border-error/40" : "border-border/60",
+                hl && "ring-2 ring-[#e94560]"
+              );
+              return onCellSelect ? (
+                <button
+                  key={hour}
+                  type="button"
+                  role="listitem"
+                  aria-label={label}
+                  title={label}
+                  onClick={() => onCellSelect(mobileDay, hour)}
+                  className={cn(rowClass, "cursor-pointer transition-transform hover:scale-[1.01]")}
+                >
+                  {row}
+                </button>
+              ) : (
+                <div key={hour} role="listitem" title={label} aria-label={label} className={rowClass}>
+                  {row}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="hidden sm:block overflow-x-auto">
           <table className="w-full min-w-[560px] border-separate border-spacing-1">
             <caption className="sr-only">
               Disponibilités hebdomadaires de la cohorte par jour et par heure.

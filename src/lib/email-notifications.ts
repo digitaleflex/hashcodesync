@@ -26,7 +26,7 @@ async function sendEmailNotification(input: EmailNotificationInput): Promise<voi
       html: input.html,
     });
   } catch (error) {
-    console.error(`[EmailNotification] Failed to send ${input.type ?? "email"} to ${input.to}`, error);
+    console.error(`[NotificationEmail] Impossible d'envoyer ${input.type ?? "l'email"} à ${input.to}`, error);
   }
 }
 

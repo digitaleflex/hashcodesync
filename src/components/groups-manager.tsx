@@ -93,7 +93,7 @@ type Availability = {
 
 const fetcher = (url: string) =>
   fetch(url).then((r) => {
-    if (!r.ok) throw new Error("Failed");
+    if (!r.ok) throw new Error("Erreur réseau");
     return r.json();
   });
 

@@ -50,6 +50,9 @@ export const auth = betterAuth({
     expiresIn: 60 * 60 * 24,
   },
   user: {
+    deleteUser: {
+      enabled: true,
+    },
     additionalFields: {
       role: {
         type: "string",

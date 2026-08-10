@@ -83,22 +83,23 @@ function detectGaps(
 }
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
-  if (session.user.role !== "admin") {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
-  }
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+    }
 
-  const windowHours = Math.max(1, Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2)));
-  const groupId = req.nextUrl.searchParams.get("groupId") || null;
-  const activityId = req.nextUrl.searchParams.get("activityId") || null;
+    const windowHours = Math.max(1, Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2)));
+    const groupId = req.nextUrl.searchParams.get("groupId") || null;
+    const activityId = req.nextUrl.searchParams.get("activityId") || null;
 
-  let totalMembers = 0;
-  let users: UserSlots[] = [];
+    let totalMembers = 0;
+    let users: UserSlots[] = [];
 
-  if (groupId) {
+    if (groupId) {
     const members = await prisma.groupMember.findMany({
       where: { groupId },
       include: {
@@ -173,4 +174,8 @@ export async function GET(req: NextRequest) {
     totalMembers: scheduling.totalMembers,
     totalAvailabilities: scheduling.totalAvailabilities,
   });
+  } catch (e) {
+    console.error("GET /api/admin/scheduling/gaps erreur", e);
+    return NextResponse.json({ error: "Impossible de charger les zones creuses" }, { status: 500 });
+  }
 }

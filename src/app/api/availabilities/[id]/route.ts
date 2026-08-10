@@ -25,25 +25,30 @@ export async function DELETE(
   req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    const blocked = await ensureEditable(session.user.id);
+    if (blocked) return blocked;
+
+    const { id } = await params;
+
+    const existing = await prisma.availability.findFirst({
+      where: { id, userId: session.user.id },
+    });
+    if (!existing) {
+      return NextResponse.json({ error: "Créneau introuvable" }, { status: 404 });
+    }
+
+    await prisma.availability.delete({ where: { id } });
+    return NextResponse.json({ ok: true });
+  } catch (e) {
+    console.error("DELETE /api/disponibilites/[id] erreur", e);
+    return NextResponse.json({ error: "Impossible de supprimer le créneau" }, { status: 500 });
   }
-
-  const blocked = await ensureEditable(session.user.id);
-  if (blocked) return blocked;
-
-  const { id } = await params;
-
-  const existing = await prisma.availability.findFirst({
-    where: { id, userId: session.user.id },
-  });
-  if (!existing) {
-    return NextResponse.json({ error: "Créneau introuvable" }, { status: 404 });
-  }
-
-  await prisma.availability.delete({ where: { id } });
-  return NextResponse.json({ ok: true });
 }
 
 // PATCH /api/availabilities/[id] -> modifier un créneau existant.

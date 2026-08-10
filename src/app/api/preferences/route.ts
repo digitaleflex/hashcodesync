@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 
-const FREQUENCIES = ["weekly", "biweekly", "flexible"];
+const FREQUENCIES = ["weekly", "biweekly", "monthly", "flexible"];
 
 const DEFAULT_PREFS = {
   preferredDays: 0,

@@ -22,29 +22,34 @@ async function ensureEditable(userId: string): Promise<NextResponse | null> {
 }
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    const url = new URL(req.url);
+    const rawGroupId = url.searchParams.get("groupId");
+    const rawActivityId = url.searchParams.get("activityId");
+
+    const and: Record<string, unknown>[] = [{ userId: session.user.id }];
+    if (rawGroupId) and.push({ groupId: rawGroupId });
+    if (rawActivityId) and.push({ activityId: rawActivityId });
+
+    const availabilities = await prisma.availability.findMany({
+      where: { AND: and },
+      orderBy: [{ day: "asc" }, { startTime: "asc" }],
+      include: {
+        group: { select: { id: true, name: true } },
+        activity: { select: { id: true, name: true } },
+      },
+    });
+
+    return withCache(availabilities, 15);
+  } catch (e) {
+    console.error("GET /api/disponibilites erreur", e);
+    return NextResponse.json({ error: "Impossible de charger les disponibilités" }, { status: 500 });
   }
-
-  const url = new URL(req.url);
-  const rawGroupId = url.searchParams.get("groupId");
-  const rawActivityId = url.searchParams.get("activityId");
-
-  const and: Record<string, unknown>[] = [{ userId: session.user.id }];
-  if (rawGroupId) and.push({ groupId: rawGroupId });
-  if (rawActivityId) and.push({ activityId: rawActivityId });
-
-  const availabilities = await prisma.availability.findMany({
-    where: { AND: and },
-    orderBy: [{ day: "asc" }, { startTime: "asc" }],
-    include: {
-      group: { select: { id: true, name: true } },
-      activity: { select: { id: true, name: true } },
-    },
-  });
-
-  return withCache(availabilities, 15);
 }
 
 // POST /api/availabilities -> créer une dispo (optionnellement liée groupe/activité).

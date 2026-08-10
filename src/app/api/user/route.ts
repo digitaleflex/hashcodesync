@@ -16,6 +16,7 @@ export async function PATCH(req: NextRequest) {
       firstname?: string;
       lastname?: string;
       timezone?: string;
+      image?: string;
     };
     const firstname = String(body.firstname ?? "").trim();
     const lastname = String(body.lastname ?? "").trim();
@@ -32,6 +33,16 @@ export async function PATCH(req: NextRequest) {
       lastname,
       name: `${firstname} ${lastname}`,
     };
+    if (body.image) {
+      // Avatar : chemin relatif servi par Next (ex. /uploads/xxx.jpg).
+      if (!body.image.startsWith("/uploads/")) {
+        return NextResponse.json(
+          { error: "Avatar invalide" },
+          { status: 400 }
+        );
+      }
+      data.image = body.image;
+    }
     if (body.timezone) {
       try {
         new Intl.DateTimeFormat("en-US", { timeZone: body.timezone });
@@ -55,12 +66,13 @@ export async function PATCH(req: NextRequest) {
         lastname: true,
         role: true,
         timezone: true,
+        image: true,
       },
     });
 
     return NextResponse.json(updated);
   } catch (error) {
-    console.error("PATCH /api/user", error);
+    console.error("PATCH /api/utilisateur erreur", error);
     return NextResponse.json(
       { error: "Erreur lors de la mise à jour du profil" },
       { status: 500 }

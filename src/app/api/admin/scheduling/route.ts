@@ -45,37 +45,136 @@ function cacheKey(args: { windowHours: number; groupId: string | null; activityI
 }
 
 export async function GET(req: NextRequest) {
-  const session = await auth.api.getSession({ headers: await headers() });
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
-  }
-  if (session.user.role !== "admin") {
-    return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
-  }
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+    if (session.user.role !== "admin") {
+      return NextResponse.json({ error: "Accès refusé" }, { status: 403 });
+    }
 
-  const windowHours = Math.max(
-    1,
-    Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2))
-  );
-  const groupId = req.nextUrl.searchParams.get("groupId") || null;
-  const activityId = req.nextUrl.searchParams.get("activityId") || null;
-  const smooth = req.nextUrl.searchParams.get("smooth") !== "false";
+    const windowHours = Math.max(
+      1,
+      Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2))
+    );
+    const groupId = req.nextUrl.searchParams.get("groupId") || null;
+    const activityId = req.nextUrl.searchParams.get("activityId") || null;
+    const smooth = req.nextUrl.searchParams.get("smooth") !== "false";
 
-  const groups = await prisma.group.findMany({
-    orderBy: { name: "asc" },
-    select: {
-      id: true,
-      name: true,
-      _count: { select: { activities: true, members: true } },
-    },
-  });
+    const groups = await prisma.group.findMany({
+      orderBy: { name: "asc" },
+      select: {
+        id: true,
+        name: true,
+        _count: { select: { activities: true, members: true } },
+      },
+    });
 
-  const key = cacheKey({ windowHours, groupId, activityId });
-  const hit = cache.get(key);
-  const now = Date.now();
-  if (hit && hit.expires > now) {
+    const key = cacheKey({ windowHours, groupId, activityId });
+    const hit = cache.get(key);
+    const now = Date.now();
+    if (hit && hit.expires > now) {
+      return NextResponse.json({
+        ...hit.payload,
+        groups: groups.map((g) => ({
+          id: g.id,
+          name: g.name,
+          activityCount: g._count.activities,
+          memberCount: g._count.members,
+        })),
+      });
+    }
+
+    let totalMembers: number;
+    let groupName: string | null = null;
+    let users: UserSlots[];
+
+    if (groupId) {
+      const group = await prisma.group.findUnique({
+        where: { id: groupId },
+        select: { id: true, name: true },
+      });
+      groupName = group?.name ?? null;
+
+      const members = await prisma.groupMember.findMany({
+        where: { groupId },
+        include: {
+          user: {
+            select: {
+              id: true,
+              timezone: true,
+              attendances: { select: { status: true } },
+              availabilities: {
+                select: {
+                  day: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
+            },
+          },
+        },
+      });
+      totalMembers = members.length;
+      users = members.map((m) => ({
+        id: m.user.id,
+        timezone: m.user.timezone,
+        attendance: countAttendance(m.user.attendances),
+        availabilities: m.user.availabilities,
+      }));
+    } else {
+      const all = await prisma.user.findMany({
+        where: { availabilities: { some: {} } },
+        select: {
+          id: true,
+          timezone: true,
+          attendances: { select: { status: true } },
+          availabilities: {
+            select: {
+              day: true,
+              startTime: true,
+              endTime: true,
+              groupId: true,
+              activityId: true,
+            },
+          },
+        },
+      });
+      totalMembers = all.length;
+      users = all.map((u) => ({
+        id: u.id,
+        timezone: u.timezone,
+        attendance: countAttendance(u.attendances),
+        availabilities: u.availabilities,
+      }));
+    }
+
+    const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
+
+    const availabilities = convertToReference(rows);
+
+    const scheduling = computeScheduling(
+      availabilities.map(
+        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })
+      ),
+      Math.max(totalMembers, 1),
+      windowHours,
+      { smooth, smoothSigma: 1.2 }
+    );
+
+    const payload: Record<string, unknown> = {
+      ...scheduling,
+      referenceTimezone: REFERENCE_TIMEZONE,
+      groupId: groupId ?? undefined,
+      groupName,
+    };
+    cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
+
     return NextResponse.json({
-      ...hit.payload,
+      ...payload,
       groups: groups.map((g) => ({
         id: g.id,
         name: g.name,
@@ -83,104 +182,10 @@ export async function GET(req: NextRequest) {
         memberCount: g._count.members,
       })),
     });
+  } catch (e) {
+    console.error("GET /api/admin/scheduling erreur", e);
+    return NextResponse.json({ error: "Impossible de charger le planning" }, { status: 500 });
   }
-
-  let totalMembers: number;
-  let groupName: string | null = null;
-  let users: UserSlots[];
-
-  if (groupId) {
-    const group = await prisma.group.findUnique({
-      where: { id: groupId },
-      select: { id: true, name: true },
-    });
-    groupName = group?.name ?? null;
-
-    const members = await prisma.groupMember.findMany({
-      where: { groupId },
-      include: {
-        user: {
-          select: {
-            id: true,
-            timezone: true,
-            attendances: { select: { status: true } },
-            availabilities: {
-              select: {
-                day: true,
-                startTime: true,
-                endTime: true,
-                groupId: true,
-                activityId: true,
-              },
-            },
-          },
-        },
-      },
-    });
-    totalMembers = members.length;
-    users = members.map((m) => ({
-      id: m.user.id,
-      timezone: m.user.timezone,
-      attendance: countAttendance(m.user.attendances),
-      availabilities: m.user.availabilities,
-    }));
-  } else {
-    const all = await prisma.user.findMany({
-      where: { availabilities: { some: {} } },
-      select: {
-        id: true,
-        timezone: true,
-        attendances: { select: { status: true } },
-        availabilities: {
-          select: {
-            day: true,
-            startTime: true,
-            endTime: true,
-            groupId: true,
-            activityId: true,
-          },
-        },
-      },
-    });
-    totalMembers = all.length;
-    users = all.map((u) => ({
-      id: u.id,
-      timezone: u.timezone,
-      attendance: countAttendance(u.attendances),
-      availabilities: u.availabilities,
-    }));
-  }
-
-  const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
-
-  const availabilities = convertToReference(rows);
-
-  const scheduling = computeScheduling(
-    availabilities.map(
-      (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })
-    ),
-    Math.max(totalMembers, 1),
-    windowHours,
-    { smooth, smoothSigma: 1.2 }
-  );
-
-  const payload: Record<string, unknown> = {
-    ...scheduling,
-    referenceTimezone: REFERENCE_TIMEZONE,
-    groupId: groupId ?? undefined,
-    groupName,
-  };
-  cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
-
-  return NextResponse.json({
-    ...payload,
-    groups: groups.map((g) => ({
-      id: g.id,
-      name: g.name,
-      activityCount: g._count.activities,
-      memberCount: g._count.members,
-    })),
-  });
 }
 
 function countAttendance(rows: { status: string }[]) {

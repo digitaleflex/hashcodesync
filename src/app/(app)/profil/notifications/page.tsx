@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import type { Route } from "next";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -180,7 +179,7 @@ function NavLink({
   return (
     <Button
       nativeButton={false}
-      render={<Link href={href as Route} />}
+      render={<Link href={href} />}
       variant="ghost"
       className="-ml-2 gap-2"
     >

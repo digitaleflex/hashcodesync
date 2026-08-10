@@ -78,7 +78,7 @@ export async function POST(
 
     return NextResponse.json(participant, { status: 201 });
   } catch (e) {
-    console.error("POST /api/workshops/[id]/participants error", e);
+    console.error("POST /api/ateliers/[id]/participants erreur", e);
     return NextResponse.json({ error: "Impossible de rejoindre l'atelier" }, { status: 500 });
   }
 }
@@ -98,7 +98,7 @@ export async function DELETE(
     });
     return NextResponse.json({ success: true });
   } catch (e) {
-    console.error("DELETE /api/workshops/[id]/participants error", e);
+    console.error("DELETE /api/ateliers/[id]/participants erreur", e);
     return NextResponse.json({ error: "Impossible de quitter l'atelier" }, { status: 500 });
   }
 }

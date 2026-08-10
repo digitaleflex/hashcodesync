@@ -56,7 +56,7 @@ export async function POST(
 
     return NextResponse.json(duplicate, { status: 201 });
   } catch (e) {
-    console.error("POST /api/workshops/[id]/duplicate error", e);
+    console.error("POST /api/ateliers/[id]/duplicate erreur", e);
     return NextResponse.json({ error: "Impossible de dupliquer l'atelier" }, { status: 500 });
   }
 }

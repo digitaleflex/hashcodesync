@@ -17,10 +17,13 @@ const select = {
   meetingUrl: true,
   createdBy: true,
   seriesId: true,
+  type: true,
+  menteeId: true,
   createdAt: true,
   updatedAt: true,
   creator: { select: { id: true, name: true, email: true } },
   series: { select: { id: true, name: true } },
+  mentee: { select: { id: true, name: true, email: true } },
   participants: {
     select: {
       id: true,
@@ -45,7 +48,7 @@ export async function GET() {
 
     return withCache(workshops, 30);
   } catch (e) {
-    console.error("GET /api/workshops error", e);
+    console.error("GET /api/ateliers erreur", e);
     return NextResponse.json({ error: "Impossible de charger les ateliers" }, { status: 500 });
   }
 }
@@ -56,9 +59,7 @@ export async function POST(req: NextRequest) {
     if (!session?.user?.id) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
-    if (!["admin", "mentor"].includes(session.user.role)) {
-      return NextResponse.json({ error: "Seul un administrateur ou mentor peut créer un atelier" }, { status: 403 });
-    }
+    const isMentor = session.user.role === "mentor" || session.user.role === "admin";
 
     let body: {
       title?: unknown;
@@ -69,6 +70,8 @@ export async function POST(req: NextRequest) {
       location?: unknown;
       meetingUrl?: unknown;
       seriesId?: unknown;
+      type?: unknown;
+      menteeId?: unknown;
     };
     try {
       body = await req.json();
@@ -87,9 +90,18 @@ export async function POST(req: NextRequest) {
     const location = String(body.location ?? "").trim() || null;
     const meetingUrl = String(body.meetingUrl ?? "").trim() || null;
     const seriesId = String(body.seriesId ?? "").trim() || null;
+    const rawType = String(body.type ?? "atelier").trim();
+    const type = rawType === "mentorship_session" ? "mentorship_session" : "atelier";
+    const menteeId = String(body.menteeId ?? "").trim() || null;
 
     if (!title) {
       return NextResponse.json({ error: "Le titre est requis" }, { status: 400 });
+    }
+    if (type === "mentorship_session" && !isMentor) {
+      return NextResponse.json({ error: "Seul un mentor peut créer une session de mentorat" }, { status: 403 });
+    }
+    if (type === "mentorship_session" && !menteeId) {
+      return NextResponse.json({ error: "Le membre à coacher est requis pour une session de mentorat" }, { status: 400 });
     }
     if (isNaN(startAt.getTime()) || isNaN(endAt.getTime())) {
       return NextResponse.json({ error: "Dates invalides" }, { status: 400 });
@@ -104,40 +116,69 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Capacité invalide" }, { status: 400 });
     }
 
+    const mentee = menteeId ? await prisma.user.findUnique({ where: { id: menteeId } }) : null;
+    if (type === "mentorship_session" && !mentee) {
+      return NextResponse.json({ error: "Membre introuvable" }, { status: 404 });
+    }
+
     const workshop = await prisma.workshop.create({
       data: {
         title,
         description,
         startAt,
         endAt,
-        capacity,
+        capacity: type === "mentorship_session" ? 2 : capacity,
         location,
         meetingUrl,
         seriesId,
+        type,
+        menteeId: type === "mentorship_session" ? menteeId : null,
         createdBy: session.user.id,
       },
       select,
     });
 
-    const others = await prisma.user.findMany({
-      where: { id: { not: session.user.id } },
-      select: { id: true },
-    });
-    await notifyMany(others.map((u) => u.id), {
-      type: "new_workshop",
-      title: "Nouvel atelier",
-      message: `${workshop.title} · ${workshop.startAt.toLocaleDateString("fr-FR")}`,
-    });
+    if (type === "mentorship_session" && menteeId) {
+      await prisma.participant.create({
+        data: {
+          workshopId: workshop.id,
+          userId: menteeId,
+          status: "accepted",
+        },
+      });
 
-    await sendEmailForNotification(others.map((u) => u.id), "new_workshop", {
-      actorName: session.user.name,
-      workshopTitle: workshop.title,
-      actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
-    });
+      await notifyMany([menteeId], {
+        type: "mentorship_session",
+        title: "Nouvelle session de mentorat",
+        message: `${session.user.name ?? "Un mentor"} a planifié une session de mentorat : ${workshop.title} · ${workshop.startAt.toLocaleDateString("fr-FR")}`,
+      });
+
+      await sendEmailForNotification([menteeId], "mentorship_session", {
+        actorName: session.user.name,
+        workshopTitle: workshop.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
+      });
+    } else {
+      const others = await prisma.user.findMany({
+        where: { id: { not: session.user.id } },
+        select: { id: true },
+      });
+      await notifyMany(others.map((u) => u.id), {
+        type: "new_workshop",
+        title: "Nouvel atelier",
+        message: `${workshop.title} · ${workshop.startAt.toLocaleDateString("fr-FR")}`,
+      });
+
+      await sendEmailForNotification(others.map((u) => u.id), "new_workshop", {
+        actorName: session.user.name,
+        workshopTitle: workshop.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
+      });
+    }
 
     return NextResponse.json(workshop, { status: 201 });
   } catch (e) {
-    console.error("POST /api/workshops error", e);
+    console.error("POST /api/ateliers erreur", e);
     return NextResponse.json({ error: "Impossible de créer l'atelier" }, { status: 500 });
   }
 }

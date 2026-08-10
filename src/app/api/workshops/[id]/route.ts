@@ -8,6 +8,7 @@ import { sendEmailForNotification } from "@/lib/email-notification-templates";
 const include = {
   creator: { select: { id: true, name: true, email: true } },
   series: { select: { id: true, name: true } },
+  mentee: { select: { id: true, name: true, email: true } },
   participants: {
     select: {
       id: true,
@@ -30,6 +31,8 @@ type Body = {
   location?: unknown;
   meetingUrl?: unknown;
   seriesId?: unknown;
+  type?: unknown;
+  menteeId?: unknown;
 };
 
 function parseBody(body: Body) {
@@ -44,7 +47,10 @@ function parseBody(body: Body) {
   const location = String(body.location ?? "").trim() || null;
   const meetingUrl = String(body.meetingUrl ?? "").trim() || null;
   const seriesId = String(body.seriesId ?? "").trim() || null;
-  return { title, description, startAt, endAt, capacity, location, meetingUrl, seriesId };
+  const rawType = String(body.type ?? "atelier").trim();
+  const type = rawType === "mentorship_session" ? "mentorship_session" : "atelier";
+  const menteeId = String(body.menteeId ?? "").trim() || null;
+  return { title, description, startAt, endAt, capacity, location, meetingUrl, seriesId, type, menteeId };
 }
 
 export async function GET(
@@ -63,7 +69,7 @@ export async function GET(
     }
     return NextResponse.json(workshop);
   } catch (e) {
-    console.error("GET /api/workshops/[id] error", e);
+    console.error("GET /api/ateliers/[id] erreur", e);
     return NextResponse.json({ error: "Impossible de charger l'atelier" }, { status: 500 });
   }
 }
@@ -101,6 +107,8 @@ export async function PATCH(
       location,
       meetingUrl,
       seriesId,
+      type,
+      menteeId,
     } = parseBody(body);
 
     if (!title) {
@@ -125,11 +133,15 @@ export async function PATCH(
       location?: string | null;
       meetingUrl?: string | null;
       seriesId?: string | null;
+      type?: string;
+      menteeId?: string | null;
     } = { title, description, startAt, endAt };
     if (capacity !== undefined) data.capacity = capacity;
     if (location !== undefined) data.location = location;
     if (meetingUrl !== undefined) data.meetingUrl = meetingUrl;
     if (seriesId !== undefined) data.seriesId = seriesId;
+    if (type !== undefined) data.type = type;
+    if (menteeId !== undefined) data.menteeId = type === "mentorship_session" ? menteeId : null;
 
     const updated = await prisma.workshop.update({
       where: { id },
@@ -137,25 +149,45 @@ export async function PATCH(
       include,
     });
 
-    const participants = await prisma.participant.findMany({
-      where: { workshopId: id, userId: { not: session.user.id } },
-      select: { userId: true },
-    });
-    await notifyMany(participants.map((p) => p.userId), {
-      type: "workshop_update",
-      title: "Atelier modifié",
-      message: `${updated.title}`,
-    });
+    if (type === "mentorship_session" && menteeId) {
+      await prisma.participant.upsert({
+        where: { workshopId_userId: { workshopId: id, userId: menteeId } },
+        create: { workshopId: id, userId: menteeId, status: "accepted" },
+        update: { status: "accepted" },
+      });
 
-    await sendEmailForNotification(participants.map((p) => p.userId), "workshop_update", {
-      actorName: session.user.name,
-      workshopTitle: updated.title,
-      actionUrl: `${req.nextUrl.origin}/ateliers/${updated.id}`,
-    });
+      await notifyMany([menteeId], {
+        type: "mentorship_session",
+        title: "Session de mentorat modifiée",
+        message: `La session de mentorat "${updated.title}" a été modifiée par ${session.user.name ?? "le créateur"}.`,
+      });
+
+      await sendEmailForNotification([menteeId], "mentorship_session", {
+        actorName: session.user.name,
+        workshopTitle: updated.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${updated.id}`,
+      });
+    } else {
+      const participants = await prisma.participant.findMany({
+        where: { workshopId: id, userId: { not: session.user.id } },
+        select: { userId: true },
+      });
+      await notifyMany(participants.map((p) => p.userId), {
+        type: "workshop_update",
+        title: "Atelier modifié",
+        message: `${updated.title}`,
+      });
+
+      await sendEmailForNotification(participants.map((p) => p.userId), "workshop_update", {
+        actorName: session.user.name,
+        workshopTitle: updated.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${updated.id}`,
+      });
+    }
 
     return NextResponse.json(updated);
   } catch (e) {
-    console.error("PATCH /api/workshops/[id] error", e);
+    console.error("PATCH /api/ateliers/[id] erreur", e);
     return NextResponse.json({ error: "Impossible de modifier l'atelier" }, { status: 500 });
   }
 }
@@ -199,7 +231,7 @@ export async function DELETE(
 
     return NextResponse.json({ success: true });
   } catch (e) {
-    console.error("DELETE /api/workshops/[id] error", e);
+    console.error("DELETE /api/ateliers/[id] erreur", e);
     return NextResponse.json({ error: "Impossible de supprimer l'atelier" }, { status: 500 });
   }
 }

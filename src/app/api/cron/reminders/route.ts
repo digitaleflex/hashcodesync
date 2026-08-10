@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
     where: {
       startAt: { gte: now, lte: in24h },
     },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      startAt: true,
+      type: true,
       participants: {
         where: { status: "accepted" },
         select: { userId: true },
@@ -32,13 +36,20 @@ export async function POST(req: NextRequest) {
     const userIds = workshop.participants.map((p) => p.userId);
     if (userIds.length === 0) continue;
 
+    const isMentorship = workshop.type === "mentorship_session";
+    const notifTitle = isMentorship ? "Rappel : session de mentorat" : "Rappel d'atelier";
+    const notifMessage = isMentorship
+      ? `Vous avez une session de mentorat à venir : "${workshop.title}" (${workshop.startAt.toLocaleString("fr-FR")}).`
+      : `L'atelier "${workshop.title}" commence bientôt (${workshop.startAt.toLocaleString("fr-FR")}).`;
+
     await notifyMany(userIds, {
       type: "reminder",
-      title: "Rappel d'atelier",
-      message: `L'atelier "${workshop.title}" commence bientôt (${workshop.startAt.toLocaleString("fr-FR")}).`,
+      title: notifTitle,
+      message: notifMessage,
     });
 
-    await sendEmailForNotification(userIds, "workshop_reminder", {
+    const emailType = isMentorship ? "mentorship_reminder" : "workshop_reminder";
+    await sendEmailForNotification(userIds, emailType, {
       workshopTitle: workshop.title,
       actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
     });

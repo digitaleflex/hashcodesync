@@ -234,6 +234,7 @@ export type UserWhereInput = {
   accounts?: Prisma.AccountListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
   workshops?: Prisma.WorkshopListRelationFilter
+  mentoredWorkshops?: Prisma.WorkshopListRelationFilter
   participation?: Prisma.ParticipantListRelationFilter
   attendances?: Prisma.AttendanceListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
@@ -268,6 +269,7 @@ export type UserOrderByWithRelationInput = {
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   availabilities?: Prisma.AvailabilityOrderByRelationAggregateInput
   workshops?: Prisma.WorkshopOrderByRelationAggregateInput
+  mentoredWorkshops?: Prisma.WorkshopOrderByRelationAggregateInput
   participation?: Prisma.ParticipantOrderByRelationAggregateInput
   attendances?: Prisma.AttendanceOrderByRelationAggregateInput
   groupMemberships?: Prisma.GroupMemberOrderByRelationAggregateInput
@@ -305,6 +307,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   accounts?: Prisma.AccountListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
   workshops?: Prisma.WorkshopListRelationFilter
+  mentoredWorkshops?: Prisma.WorkshopListRelationFilter
   participation?: Prisma.ParticipantListRelationFilter
   attendances?: Prisma.AttendanceListRelationFilter
   groupMemberships?: Prisma.GroupMemberListRelationFilter
@@ -373,6 +376,7 @@ export type UserCreateInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -407,6 +411,7 @@ export type UserUncheckedCreateInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -441,6 +446,7 @@ export type UserUpdateInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -475,6 +481,7 @@ export type UserUncheckedUpdateInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -580,6 +587,11 @@ export type UserMinOrderByAggregateInput = {
 export type UserScalarRelationFilter = {
   is?: Prisma.UserWhereInput
   isNot?: Prisma.UserWhereInput
+}
+
+export type UserNullableScalarRelationFilter = {
+  is?: Prisma.UserWhereInput | null
+  isNot?: Prisma.UserWhereInput | null
 }
 
 export type StringFieldUpdateOperationsInput = {
@@ -772,12 +784,28 @@ export type UserCreateNestedOneWithoutWorkshopsInput = {
   connect?: Prisma.UserWhereUniqueInput
 }
 
+export type UserCreateNestedOneWithoutMentoredWorkshopsInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedCreateWithoutMentoredWorkshopsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMentoredWorkshopsInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
 export type UserUpdateOneRequiredWithoutWorkshopsNestedInput = {
   create?: Prisma.XOR<Prisma.UserCreateWithoutWorkshopsInput, Prisma.UserUncheckedCreateWithoutWorkshopsInput>
   connectOrCreate?: Prisma.UserCreateOrConnectWithoutWorkshopsInput
   upsert?: Prisma.UserUpsertWithoutWorkshopsInput
   connect?: Prisma.UserWhereUniqueInput
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutWorkshopsInput, Prisma.UserUpdateWithoutWorkshopsInput>, Prisma.UserUncheckedUpdateWithoutWorkshopsInput>
+}
+
+export type UserUpdateOneWithoutMentoredWorkshopsNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedCreateWithoutMentoredWorkshopsInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutMentoredWorkshopsInput
+  upsert?: Prisma.UserUpsertWithoutMentoredWorkshopsInput
+  disconnect?: Prisma.UserWhereInput | boolean
+  delete?: Prisma.UserWhereInput | boolean
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutMentoredWorkshopsInput, Prisma.UserUpdateWithoutMentoredWorkshopsInput>, Prisma.UserUncheckedUpdateWithoutMentoredWorkshopsInput>
 }
 
 export type UserCreateNestedOneWithoutCreatedSeriesInput = {
@@ -893,6 +921,7 @@ export type UserCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -926,6 +955,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -975,6 +1005,7 @@ export type UserUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1008,6 +1039,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1041,6 +1073,7 @@ export type UserCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1074,6 +1107,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -1123,6 +1157,7 @@ export type UserUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1156,6 +1191,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1190,6 +1226,7 @@ export type UserCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1223,6 +1260,7 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -1272,6 +1310,7 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1305,6 +1344,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1338,6 +1378,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
@@ -1371,6 +1412,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
@@ -1420,6 +1462,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
@@ -1453,6 +1496,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1486,6 +1530,7 @@ export type UserCreateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1519,6 +1564,7 @@ export type UserUncheckedCreateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -1568,6 +1614,7 @@ export type UserUpdateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1601,6 +1648,7 @@ export type UserUncheckedUpdateWithoutJoinRequestsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1633,6 +1681,7 @@ export type UserCreateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1666,6 +1715,7 @@ export type UserUncheckedCreateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -1715,6 +1765,7 @@ export type UserUpdateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1748,6 +1799,7 @@ export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1782,6 +1834,7 @@ export type UserCreateWithoutRecurringAvailabilitiesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1815,6 +1868,7 @@ export type UserUncheckedCreateWithoutRecurringAvailabilitiesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -1864,6 +1918,7 @@ export type UserUpdateWithoutRecurringAvailabilitiesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -1897,6 +1952,7 @@ export type UserUncheckedUpdateWithoutRecurringAvailabilitiesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -1930,6 +1986,7 @@ export type UserCreateWithoutPlanningPreferencesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -1963,6 +2020,7 @@ export type UserUncheckedCreateWithoutPlanningPreferencesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2012,6 +2070,7 @@ export type UserUpdateWithoutPlanningPreferencesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2045,6 +2104,7 @@ export type UserUncheckedUpdateWithoutPlanningPreferencesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2078,6 +2138,7 @@ export type UserCreateWithoutUnavailabilitiesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2111,6 +2172,7 @@ export type UserUncheckedCreateWithoutUnavailabilitiesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2160,6 +2222,7 @@ export type UserUpdateWithoutUnavailabilitiesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2193,6 +2256,7 @@ export type UserUncheckedUpdateWithoutUnavailabilitiesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2226,6 +2290,7 @@ export type UserCreateWithoutWeeklyValidationsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2259,6 +2324,7 @@ export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2308,6 +2374,7 @@ export type UserUpdateWithoutWeeklyValidationsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2341,6 +2408,7 @@ export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2374,6 +2442,7 @@ export type UserCreateWithoutWeekValidationLogsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2407,6 +2476,7 @@ export type UserUncheckedCreateWithoutWeekValidationLogsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2456,6 +2526,7 @@ export type UserUpdateWithoutWeekValidationLogsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2489,6 +2560,7 @@ export type UserUncheckedUpdateWithoutWeekValidationLogsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2522,6 +2594,7 @@ export type UserCreateWithoutWeekSnapshotsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2555,6 +2628,7 @@ export type UserUncheckedCreateWithoutWeekSnapshotsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2604,6 +2678,7 @@ export type UserUpdateWithoutWeekSnapshotsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2637,6 +2712,7 @@ export type UserUncheckedUpdateWithoutWeekSnapshotsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2669,6 +2745,7 @@ export type UserCreateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2702,6 +2779,7 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2723,6 +2801,79 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
 export type UserCreateOrConnectWithoutWorkshopsInput = {
   where: Prisma.UserWhereUniqueInput
   create: Prisma.XOR<Prisma.UserCreateWithoutWorkshopsInput, Prisma.UserUncheckedCreateWithoutWorkshopsInput>
+}
+
+export type UserCreateWithoutMentoredWorkshopsInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutMentoredWorkshopsInput = {
+  id?: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  role?: string
+  firstname: string
+  lastname: string
+  timezone?: string
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
+  workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
+  attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
+  groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
+  createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedCreateNestedManyWithoutCreatorInput
+  notifications?: Prisma.NotificationUncheckedCreateNestedManyWithoutUserInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedCreateNestedManyWithoutUserInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedCreateNestedManyWithoutUserInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedCreateNestedManyWithoutUserInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedCreateNestedManyWithoutUserInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedCreateNestedManyWithoutUserInput
+  waitlists?: Prisma.WaitlistUncheckedCreateNestedManyWithoutUserInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedCreateNestedManyWithoutUserInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedCreateNestedOneWithoutUserInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutMentoredWorkshopsInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedCreateWithoutMentoredWorkshopsInput>
 }
 
 export type UserUpsertWithoutWorkshopsInput = {
@@ -2751,6 +2902,7 @@ export type UserUpdateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2784,6 +2936,86 @@ export type UserUncheckedUpdateWithoutWorkshopsInput = {
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
+  participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUncheckedUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUncheckedUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUncheckedUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUncheckedUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUncheckedUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUncheckedUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUncheckedUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUncheckedUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUncheckedUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserUpsertWithoutMentoredWorkshopsInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedUpdateWithoutMentoredWorkshopsInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedCreateWithoutMentoredWorkshopsInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutMentoredWorkshopsInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutMentoredWorkshopsInput, Prisma.UserUncheckedUpdateWithoutMentoredWorkshopsInput>
+}
+
+export type UserUpdateWithoutMentoredWorkshopsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
+  attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
+  groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
+  createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
+  createdSeries?: Prisma.WorkshopSeriesUpdateManyWithoutCreatorNestedInput
+  notifications?: Prisma.NotificationUpdateManyWithoutUserNestedInput
+  notificationPreferences?: Prisma.NotificationPreferenceUpdateManyWithoutUserNestedInput
+  joinRequests?: Prisma.GroupJoinRequestUpdateManyWithoutUserNestedInput
+  workshopFeedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutUserNestedInput
+  weeklyValidations?: Prisma.WeeklyValidationUpdateManyWithoutUserNestedInput
+  weekSnapshots?: Prisma.WeekSnapshotUpdateManyWithoutUserNestedInput
+  weekValidationLogs?: Prisma.WeekValidationLogUpdateManyWithoutUserNestedInput
+  waitlists?: Prisma.WaitlistUpdateManyWithoutUserNestedInput
+  recurringAvailabilities?: Prisma.RecurringAvailabilityUpdateManyWithoutUserNestedInput
+  planningPreferences?: Prisma.PlanningPreferencesUpdateOneWithoutUserNestedInput
+  unavailabilities?: Prisma.UnavailabilityUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutMentoredWorkshopsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  role?: Prisma.StringFieldUpdateOperationsInput | string
+  firstname?: Prisma.StringFieldUpdateOperationsInput | string
+  lastname?: Prisma.StringFieldUpdateOperationsInput | string
+  timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
+  workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2818,6 +3050,7 @@ export type UserCreateWithoutCreatedSeriesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -2851,6 +3084,7 @@ export type UserUncheckedCreateWithoutCreatedSeriesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -2900,6 +3134,7 @@ export type UserUpdateWithoutCreatedSeriesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -2933,6 +3168,7 @@ export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -2966,6 +3202,7 @@ export type UserCreateWithoutParticipationInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
@@ -2999,6 +3236,7 @@ export type UserUncheckedCreateWithoutParticipationInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
@@ -3048,6 +3286,7 @@ export type UserUpdateWithoutParticipationInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
@@ -3081,6 +3320,7 @@ export type UserUncheckedUpdateWithoutParticipationInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3114,6 +3354,7 @@ export type UserCreateWithoutAttendancesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupCreateNestedManyWithoutCreatorInput
@@ -3147,6 +3388,7 @@ export type UserUncheckedCreateWithoutAttendancesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
   createdGroups?: Prisma.GroupUncheckedCreateNestedManyWithoutCreatorInput
@@ -3196,6 +3438,7 @@ export type UserUpdateWithoutAttendancesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUpdateManyWithoutCreatorNestedInput
@@ -3229,6 +3472,7 @@ export type UserUncheckedUpdateWithoutAttendancesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
   createdGroups?: Prisma.GroupUncheckedUpdateManyWithoutCreatorNestedInput
@@ -3262,6 +3506,7 @@ export type UserCreateWithoutWaitlistsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -3295,6 +3540,7 @@ export type UserUncheckedCreateWithoutWaitlistsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -3344,6 +3590,7 @@ export type UserUpdateWithoutWaitlistsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -3377,6 +3624,7 @@ export type UserUncheckedUpdateWithoutWaitlistsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -3410,6 +3658,7 @@ export type UserCreateWithoutWorkshopFeedbacksInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -3443,6 +3692,7 @@ export type UserUncheckedCreateWithoutWorkshopFeedbacksInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -3492,6 +3742,7 @@ export type UserUpdateWithoutWorkshopFeedbacksInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -3525,6 +3776,7 @@ export type UserUncheckedUpdateWithoutWorkshopFeedbacksInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -3558,6 +3810,7 @@ export type UserCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -3591,6 +3844,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -3640,6 +3894,7 @@ export type UserUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -3673,6 +3928,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -3706,6 +3962,7 @@ export type UserCreateWithoutNotificationPreferencesInput = {
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberCreateNestedManyWithoutUserInput
@@ -3739,6 +3996,7 @@ export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutMenteeInput
   participation?: Prisma.ParticipantUncheckedCreateNestedManyWithoutUserInput
   attendances?: Prisma.AttendanceUncheckedCreateNestedManyWithoutUserInput
   groupMemberships?: Prisma.GroupMemberUncheckedCreateNestedManyWithoutUserInput
@@ -3788,6 +4046,7 @@ export type UserUpdateWithoutNotificationPreferencesInput = {
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUpdateManyWithoutUserNestedInput
@@ -3821,6 +4080,7 @@ export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
+  mentoredWorkshops?: Prisma.WorkshopUncheckedUpdateManyWithoutMenteeNestedInput
   participation?: Prisma.ParticipantUncheckedUpdateManyWithoutUserNestedInput
   attendances?: Prisma.AttendanceUncheckedUpdateManyWithoutUserNestedInput
   groupMemberships?: Prisma.GroupMemberUncheckedUpdateManyWithoutUserNestedInput
@@ -3848,6 +4108,7 @@ export type UserCountOutputType = {
   accounts: number
   availabilities: number
   workshops: number
+  mentoredWorkshops: number
   participation: number
   attendances: number
   groupMemberships: number
@@ -3870,6 +4131,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   accounts?: boolean | UserCountOutputTypeCountAccountsArgs
   availabilities?: boolean | UserCountOutputTypeCountAvailabilitiesArgs
   workshops?: boolean | UserCountOutputTypeCountWorkshopsArgs
+  mentoredWorkshops?: boolean | UserCountOutputTypeCountMentoredWorkshopsArgs
   participation?: boolean | UserCountOutputTypeCountParticipationArgs
   attendances?: boolean | UserCountOutputTypeCountAttendancesArgs
   groupMemberships?: boolean | UserCountOutputTypeCountGroupMembershipsArgs
@@ -3922,6 +4184,13 @@ export type UserCountOutputTypeCountAvailabilitiesArgs<ExtArgs extends runtime.T
  * UserCountOutputType without action
  */
 export type UserCountOutputTypeCountWorkshopsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.WorkshopWhereInput
+}
+
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountMentoredWorkshopsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.WorkshopWhereInput
 }
 
@@ -4047,6 +4316,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   availabilities?: boolean | Prisma.User$availabilitiesArgs<ExtArgs>
   workshops?: boolean | Prisma.User$workshopsArgs<ExtArgs>
+  mentoredWorkshops?: boolean | Prisma.User$mentoredWorkshopsArgs<ExtArgs>
   participation?: boolean | Prisma.User$participationArgs<ExtArgs>
   attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
@@ -4114,6 +4384,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   availabilities?: boolean | Prisma.User$availabilitiesArgs<ExtArgs>
   workshops?: boolean | Prisma.User$workshopsArgs<ExtArgs>
+  mentoredWorkshops?: boolean | Prisma.User$mentoredWorkshopsArgs<ExtArgs>
   participation?: boolean | Prisma.User$participationArgs<ExtArgs>
   attendances?: boolean | Prisma.User$attendancesArgs<ExtArgs>
   groupMemberships?: boolean | Prisma.User$groupMembershipsArgs<ExtArgs>
@@ -4142,6 +4413,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     accounts: Prisma.$AccountPayload<ExtArgs>[]
     availabilities: Prisma.$AvailabilityPayload<ExtArgs>[]
     workshops: Prisma.$WorkshopPayload<ExtArgs>[]
+    mentoredWorkshops: Prisma.$WorkshopPayload<ExtArgs>[]
     participation: Prisma.$ParticipantPayload<ExtArgs>[]
     attendances: Prisma.$AttendancePayload<ExtArgs>[]
     groupMemberships: Prisma.$GroupMemberPayload<ExtArgs>[]
@@ -4569,6 +4841,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   accounts<T extends Prisma.User$accountsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$accountsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AccountPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   availabilities<T extends Prisma.User$availabilitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$availabilitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AvailabilityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   workshops<T extends Prisma.User$workshopsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$workshopsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  mentoredWorkshops<T extends Prisma.User$mentoredWorkshopsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$mentoredWorkshopsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WorkshopPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   participation<T extends Prisma.User$participationArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$participationArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendances<T extends Prisma.User$attendancesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$attendancesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   groupMemberships<T extends Prisma.User$groupMembershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$groupMembershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$GroupMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -5093,6 +5366,30 @@ export type User$availabilitiesArgs<ExtArgs extends runtime.Types.Extensions.Int
  * User.workshops
  */
 export type User$workshopsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Workshop
+   */
+  select?: Prisma.WorkshopSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Workshop
+   */
+  omit?: Prisma.WorkshopOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.WorkshopInclude<ExtArgs> | null
+  where?: Prisma.WorkshopWhereInput
+  orderBy?: Prisma.WorkshopOrderByWithRelationInput | Prisma.WorkshopOrderByWithRelationInput[]
+  cursor?: Prisma.WorkshopWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.WorkshopScalarFieldEnum | Prisma.WorkshopScalarFieldEnum[]
+}
+
+/**
+ * User.mentoredWorkshops
+ */
+export type User$mentoredWorkshopsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   /**
    * Select specific fields to fetch from the Workshop
    */

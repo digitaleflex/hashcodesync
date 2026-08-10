@@ -44,6 +44,12 @@ const NAV_ITEMS = [
   { href: "/mentor", label: "Mentorat", icon: ShieldCheckIcon, match: "/mentor" },
 ];
 
+const ROLE_LABELS: Record<string, string> = {
+  member: "Membre",
+  mentor: "Mentor",
+  admin: "Administrateur",
+};
+
 export function AppShell() {
   const router = useRouter();
   const pathname = usePathname();
@@ -74,7 +80,9 @@ export function AppShell() {
           {}
           <Link href="/dashboard" className="flex items-center gap-2.5 text-white">
             <LogoSymbol size={24} />
-            <span className="font-heading text-lg font-semibold tracking-tight">HashCode Sync</span>
+            <span className="hidden sm:inline font-heading text-lg font-semibold tracking-tight">
+              HashCode Sync
+            </span>
           </Link>
 
           {}
@@ -162,8 +170,10 @@ export function AppShell() {
                       {user?.firstname} {user?.lastname}
                     </p>
                     <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                    {showAdmin && (
-                      <p className="text-xs text-primary">Administrateur</p>
+                    {user?.role && (
+                      <p className="text-xs text-primary">
+                        {ROLE_LABELS[user.role as string] ?? user.role}
+                      </p>
                     )}
                   </div>
                 </div>
@@ -192,7 +202,7 @@ export function AppShell() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="lg:hidden text-[#A7B0C2] hover:bg-white/[0.04] hover:text-white"
+                    className="hidden md:flex lg:hidden text-[#A7B0C2] hover:bg-white/[0.04] hover:text-white"
                     aria-label="Menu"
                   >
                     <MenuIcon className="size-5" />

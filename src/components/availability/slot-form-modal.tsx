@@ -449,25 +449,25 @@ export function SlotFormModal({
               </button>
             )}
             <Label className="text-sm font-medium">Jours</Label>
-            <div className="flex flex-wrap items-center gap-1.5">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
                 onClick={selectAllDays}
-                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+                className="h-9 rounded-lg border border-border bg-background px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
               >
                 Tous les jours
               </button>
               <button
                 type="button"
                 onClick={selectWorkdays}
-                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+                className="h-9 rounded-lg border border-border bg-background px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
               >
                 Jours ouvrés
               </button>
               <button
                 type="button"
                 onClick={invertDays}
-                className="h-7 rounded-md border border-border bg-background px-2 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
+                className="h-9 rounded-lg border border-border bg-background px-2.5 text-xs font-medium text-muted-foreground transition-colors hover:border-accent/50 hover:text-foreground"
               >
                 Tous sauf… (inverser)
               </button>
@@ -481,7 +481,7 @@ export function SlotFormModal({
                     type="button"
                     onClick={() => toggleDay(i)}
                     className={cn(
-                      "h-9 min-w-[3.2rem] rounded-lg border px-3 text-sm font-medium transition-all",
+                      "h-10 min-w-[3.5rem] rounded-lg border px-3 text-sm font-medium transition-all",
                       active
                         ? "border-accent bg-accent text-accent-foreground"
                         : "border-border bg-background text-muted-foreground hover:border-accent/50 hover:text-foreground"

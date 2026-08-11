@@ -36,6 +36,8 @@ type HeatmapData = {
     endTime: string;
     available: number;
     percent: number;
+    memberCount: number;
+    topContributors: { userId: string | null; weight: number }[];
   }[];
 };
 
@@ -46,6 +48,7 @@ type CandSlot = {
   startHour: number;
   endHour: number;
   weight: number;
+  covering: SlotAvail[];
 };
 
 // Somme des poids des dispo couvrant une fenêtre [start,end] un jour donné.
@@ -62,6 +65,19 @@ function weightedMembers(
     }
   }
   return w;
+}
+
+// Membres (créneaux) couvrant entièrement la fenêtre — sert à compter les
+// contributeurs et à exposer le top-3 de la recommandation.
+function coveringMembers(
+  availabilities: SlotAvail[],
+  day: number,
+  start: number,
+  end: number
+): SlotAvail[] {
+  return availabilities.filter(
+    (a) => a.day === day && a.startMin <= start && a.endMin >= end
+  );
 }
 
 // Motif récurrent : masque de jours (bit i = jour i) + plage horaire.
@@ -148,9 +164,10 @@ function candidateSlots(
     for (let startHour = minHour; startHour + windowMinutes / 60 <= maxHour; startHour++) {
       const start = startHour * 60;
       const end = start + windowMinutes;
-      const weight = weightedMembers(members, day, start, end);
+      const covering = coveringMembers(members, day, start, end);
+      const weight = covering.reduce((sum, c) => sum + (c.weight ?? 1), 0);
       if (weight > 0) {
-        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight });
+        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight, covering });
       }
     }
   }
@@ -277,14 +294,28 @@ export function computeScheduling(
     (a, b) => b.weight - a.weight || a.day - b.day || a.startHour - b.startHour
   );
 
-  const recommendation = selectedByDay.slice(0, 6).map((s) => ({
-    day: s.day,
-    startHour: s.startHour,
-    startTime: `${pad(s.startHour)}:00`,
-    endTime: `${pad(s.endHour)}:00`,
-    available: Math.round(s.weight * 100) / 100,
-    percent: totalMembers ? Math.round((s.weight / totalMembers) * 100) : 0,
-  }));
+  const recommendation = selectedByDay.slice(0, 6).map((s) => {
+    const distinct = new Set<string>();
+    for (const c of s.covering) if (c.userId) distinct.add(c.userId);
+    const memberCount = distinct.size > 0 ? distinct.size : s.covering.length;
+    const topContributors = [...s.covering]
+      .sort((a, b) => (b.weight ?? 1) - (a.weight ?? 1))
+      .slice(0, 3)
+      .map((c) => ({
+        userId: c.userId ?? null,
+        weight: Math.round((c.weight ?? 1) * 100) / 100,
+      }));
+    return {
+      day: s.day,
+      startHour: s.startHour,
+      startTime: `${pad(s.startHour)}:00`,
+      endTime: `${pad(s.endHour)}:00`,
+      available: Math.round(s.weight * 100) / 100,
+      percent: totalMembers ? Math.round((s.weight / totalMembers) * 100) : 0,
+      memberCount,
+      topContributors,
+    };
+  });
 
   const data: HeatmapData = {
     totalMembers,

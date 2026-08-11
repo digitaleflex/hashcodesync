@@ -102,7 +102,10 @@ export async function GET(req: NextRequest) {
       );
 
       const totalAvailabilities = users.reduce((sum, u) => sum + u.availabilities.length, 0);
-      const coveragePercent = users.length > 0 ? Math.round((totalAvailabilities / (users.length * 40)) * 100) : 0;
+      // Référence dynamique : le membre le plus rempli de la semaine sert de
+      // base (au lieu d'une constante arbitraire « 40 ») → coverage borné à 100.
+      const maxPerUser = users.length > 0 ? Math.max(1, ...users.map((u) => u.availabilities.length)) : 1;
+      const coveragePercent = users.length > 0 ? Math.min(100, Math.round((totalAvailabilities / (users.length * maxPerUser)) * 100)) : 0;
 
       history.push({
         weekStart: weekStart.toISOString(),

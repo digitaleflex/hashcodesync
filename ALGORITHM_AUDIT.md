@@ -95,14 +95,14 @@ Le problème sous-jacent se modélise ainsi (c'est **ce que le code implémente 
 
 ## 7. Audit de la détection de gaps
 
-**FAIT** :
-- `detectGaps` signale les heures à couverture **strictement nulle** (`count === 0`).
-- Le paramètre `threshold = 0.15` est **mort** (jamais utilisé) — `gaps/route.ts:41` vs `:62`.
-- `DAY_NAMES` inutilisé (ligne 43).
+**FAIT (mise à jour)** :
+- `detectGaps` signale les heures à couverture **sous le seuil** (par défaut : strictement nul).
+- Le seuil relatif `threshold` est désormais **effectif** (paramètre de requête `?threshold=`, clampé 0–1) et comparé à la couverture max du jour : un jour totalement vide = tous les créneaux sont des gaps ; sinon un créneau est un gap si `count < threshold × dayMax` — `gaps/route.ts`.
+- `DAY_NAMES` inutilisé supprimé.
 
-**INTERPRÉTATION** : la notion de « gap » est « personne n'est dispo » ; une plage où 1 membre sur 20 est dispo n'est pas un gap, alors qu'opérationnellement elle est quasi inutilisable pour un atelier.
+**INTERPRÉTATION** : la notion de « gap » est « personne n'est dispo » ; une plage où 1 membre sur 20 est dispo n'est pas un gap, alors qu'opérationnellement elle est quasi inutilisable pour un atelier. Le seuil relatif permet de la considérer comme telle.
 
-**RECO** (déclencheur mesurable) : activer le seuil relatif (`count < threshold × maxDayCount`) dès qu'un atelier est annulé pour cause de sous-effectif (mesure : compteur d'annulations) ; exposer le seuil dans l'UI admin (le paramètre existe déjà, il suffit de le brancher).
+**RECO** (déclencheur mesurable) : ✅ **clôturé** — seuil activé et exposé (`?threshold=`). Prochaine étape UI : un contrôle admin pour régler le seuil sans URL (dès le prochain atelier annulé pour sous-effectif).
 
 ## 8. Audit de la probabilité de présence (ALG-006)
 
@@ -121,9 +121,9 @@ Le problème sous-jacent se modélise ainsi (c'est **ce que le code implémente 
 
 **FAIT** : fusion d'intervalles par jour (chevauchement/toucher) puis arrondi global à 0.5 h.
 
-**INTERPRÉTATION** : définition robuste (pas de double-compte), mais **incohérente** avec `computeStats` (ALG-012) qui, lui, additionne les durées brutes sans fusion — deux chiffres « d'heures » différents selon l'écran.
+**INTERPRÉTATION** : définition robuste (pas de double-compte), mais **incohérente** avec `computeStats` (ALG-012) qui, lui, additionnait les durées brutes sans fusion — deux chiffres « d'heures » différents selon l'écran.
 
-**RECO** (déclencheur mesurable) : réutiliser ALG-007 dans `computeStats` pour l'onglet disponibilités (un seul chiffre source de vérité), déclencheur : constat de divergence signalé par un utilisateur ou test unitaire.
+**RECO** (déclencheur mesurable) : ✅ **clôturé** — `computeStats` réutilise désormais ALG-007 (`computeMassHours`) pour `hours`/`minutes` et le `bestDay` (fusion par jour) : un seul chiffre source de vérité. `avgSlotMinutes` reste la moyenne brute des créneaux déclarés (sémantique distincte).
 
 ## 10. Audit des fuseaux horaires (ALG-008)
 
@@ -180,21 +180,21 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 ## 15. Qualité des données
 
-**FAIT** :
+**FAIT (mise à jour)** :
 - La masse horaire (prior) provient d'une **déclaration** non vérifiée.
-- `history/route.ts:104` : `coveragePercent` divisé par une constante magique **« 40 »** (créneaux max/semaine ?) — non sourcée, figée.
+- `history/route.ts` : `coveragePercent` était divisé par une constante magique **« 40 »** — désormais **référence dynamique** (max de créneaux observé par membre cette semaine, borné à 100).
 - Les créneaux `groupId = null` sont considérés « globaux » dans toute portée.
 - Validation hebdo fige les données → bonne qualité une fois validé, mais aucune donnée sur l'usage réel des créneaux recommandés (feedback atelier partiel : `workshops/[id]/feedback`).
 
-**RECO** (déclencheur mesurable) : remplacer « 40 » par une valeur calculée (max de créneaux observé × sécurité) dès le premier rapport d'incohérence ; collecter le feedback des ateliers pour **calibrer pᵢ** sur l'usage réel.
+**RECO** (déclencheur mesurable) : ✅ **clôturé** (constante « 40 » remplacée). Reste ouvert : collecter le feedback des ateliers pour **calibrer pᵢ** sur l'usage réel.
 
 ## 16. Explicabilité
 
-**FAIT** : la recommandation expose `available` (float) et `percent`, sans justification (« pourquoi ce créneau ? »). Aucun endpoint n'explique la composition d'un score.
+**FAIT (mise à jour)** : la recommandation expose `available` (float), `percent`, ainsi que **`memberCount`** (membres distincts couvrant le créneau) et **`topContributors`** (top-3 membres + leur pᵢ, triés par poids décroissant) — `src/lib/scheduling.ts`.
 
-**INTERPRÉTATION** : pour un admin, « 13.94 » n'est pas décidable. La confiance est déductible (`percent × available/totalMembers`) mais non affichée.
+**INTERPRÉTATION** : pour un admin, « 13.94 » n'est pas décidable. `memberCount` + `topContributors` donnent la justification ; la confiance est déductible (`percent × available/totalMembers`).
 
-**RECO** (déclencheur mesurable) : ajouter un champ `topContributors` (top-3 membres + leur pᵢ) au payload `recommendation` dès la prochaine évolution de l'UI admin (coût O(S·topK), négligeable).
+**RECO** (déclencheur mesurable) : ✅ **clôturé** — champs ajoutés au payload `recommendation` (coût O(S·topK), négligeable). Prochaine étape UI admin : les afficher (dès la prochaine évolution du cockpit).
 
 ## 17. Tests
 
@@ -224,12 +224,12 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 1. `available` = somme de probabilités, sémantique trompeuse.
 2. `percent` basé sur `totalMembers`, pas sur la couverture réelle.
-3. Seuil `detectGaps` déclaré mais inutilisé.
+3. ~~Seuil `detectGaps` déclaré mais inutilisé~~ ✅ **corrigé** — seuil relatif activé (`?threshold=`, clampé 0–1).
 4. ~~Clé de cache incomplète (pas de `smooth`)~~ ✅ **corrigé** — `smooth` inclus dans la clé (`admin/scheduling/route.ts`, commit `9a38e6e`).
-5. Constante « 40 » dans la couverture hebdo.
+5. ~~Constante « 40 » dans la couverture hebdo~~ ✅ **corrigé** — référence dynamique (max observé par membre).
 6. WIS par jour sans budget hebdomadaire ni anti-surcharge.
 7. Poids pᵢ identique pour tous les créneaux d'un membre.
-8. Double définition des « heures » (fusionnée vs brute).
+8. ~~Double définition des « heures » (fusionnée vs brute)~~ ✅ **corrigé** — `computeStats` réutilise ALG-007.
 9. `computeMassHours` arrondi global à 0.5 h (masque les petites variations).
 10. Conversion complète des fuseaux 55× plus lente que le fast-path.
 
@@ -237,11 +237,11 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 | # | Reco | Effort | Impact | Déclencheur mesurable |
 |---|------|--------|--------|----------------------|
-| R1 | Rendre le seuil `detectGaps` effectif | Faible | Moyen | ≥ 1 annulation atelier sous-effectif |
-| R2 | Exposer `memberCount` + `topContributors` | Faible | Moyen | Prochaine itération UI admin |
+| R1 | Rendre le seuil `detectGaps` effectif | Faible | Moyen | ✅ **clôturé** |
+| R2 | Exposer `memberCount` + `topContributors` | Faible | Moyen | ✅ **clôturé** |
 | R3 | Corriger la clé de cache (`smooth`) | Faible | Faible | ✅ **clôturé** (`9a38e6e`) |
-| R4 | Réutiliser ALG-007 dans `computeStats` | Faible | Faible | Test unitaire |
-| R5 | Sourcer/remplacer la constante « 40 » | Faible | Moyen | Rapport d'incohérence couverture |
+| R4 | Réutiliser ALG-007 dans `computeStats` | Faible | Faible | ✅ **clôturé** |
+| R5 | Sourcer/remplacer la constante « 40 » | Faible | Moyen | ✅ **clôturé** |
 | R6 | Tests unitaires des fonctions pures | Moyen | Élevé | ✅ **partiel** — 10 tests passent (`b0bffbd`), couverture du moteur scheduling à compléter |
 | R7 | Budget hebdo par membre + capacité pondérée | Moyen | Élevé | ≥ 2 ateliers/semaine planifiés |
 | R8 | Pré-calcul hebdo + cache persistant | Élevé | Élevé | > 5 000 membres actifs |
@@ -249,7 +249,7 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 ## 23. Feuille de route (détail : ALGORITHM_ROADMAP.md)
 
-**CURRENT** (recommandation scoring + WIS + Beta-binomiale) est **adapté** à la cohorte actuelle et **suffisant** en l'état. Améliorations par paliers : QUICK WINS (R1-R6 — R3 clôturé, R6 partiel) → V2 contraintes métier (R7) → V3 échelle (R8, R9). Aucun solveur externe avant que le problème ne devienne réellement contraint (voir §24).
+**CURRENT** (recommandation scoring + WIS + Beta-binomiale) est **adapté** à la cohorte actuelle et **suffisant** en l'état. Améliorations par paliers : QUICK WINS (R1-R5 ✅ **clôturés**, R6 partiel — 10 tests ✅, couverture du moteur scheduling à compléter) → V2 contraintes métier (R7) → V3 échelle (R8, R9). Aucun solveur externe avant que le problème ne devienne réellement contraint (voir §24).
 
 ## 24. Résumé (verdict)
 

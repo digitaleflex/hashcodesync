@@ -22,9 +22,9 @@ Cependant, nous avons identifié **1 vulnérabilité haute** (suppression de fic
 | A6 | 🟡 Basse | Headers de sécurité / CSP non définis | `next.config.ts` |
 | A7 | 🟡 Basse | Contrôle d'accès global via cookie uniquement (+ défense en profondeur manquante) | `src/middleware.ts` |
 | A8 | 🟡 Basse | La présence d'un atelier peut être marquée pour un userId quelconque (fiabilité polluable) | `admin/workshops/[id]/attendance/route.ts` |
-| A9 | 🟢 Info | `NEXT_PUBLIC_BETTER_AUTH_URL` manquante dans `.env` (fallback localhost) | `.env` |
+| A9 | 🟢 Info | `NEXT_PUBLIC_BETTER_AUTH_URL` manquante dans `.env` (fallback localhost) | ✅ **clôturé** — présent dans `.env` + `.env.example` |
 
-> **Statut de remédiation** : A1, A2, A3, A4, A5, A6, A8 ✅ **corrigés et clôturés** (commits `a4deaa9`, `10d4ee3`, `2d65292` — détails par section). Restent ouverts : **A7** (middleware) et **A9** (variable d'env) — à traiter au déploiement.
+> **Statut de remédiation** : A1, A2, A3, A4, A5, A6, A7, A8 ✅ **corrigés et clôturés** (A1-A6/A8 : commits `a4deaa9`, `10d4ee3`, `2d65292`, `08e18a4` — détails par section ; A7 : `src/proxy.ts`). **A9** ✅ **clôturé** (variable présente dans `.env`/`.env.example`). Reste au déploiement : renseigner les valeurs d'env en prod.
 
 ---
 
@@ -106,7 +106,7 @@ Fichier de logs Next.js suivi dans git (contenu actuel neutre, mais des logs fut
 
 Le middleware redirige les non-connectés ; la vérification d'autorisation **serveur** (`/admin`, `/mentor`) repose sur les pages/API, les bonnes pratiques ont déjà géré `redirect("/forbidden")`. Renforcer avec l'info de session validée (au lieu de présence du cookie seulement) quand possible.
 
-> ⏳ **OUVERT** — à traiter (défense en profondeur).
+> ✅ **CLÔTURÉ** — `src/proxy.ts` valide la **session serveur** (`auth.api.getSession`) pour les routes à rôle restreint (`/admin`, `/admin/groupes`, `/mentor`) avec cache TTL 5 min, et redirige vers `/forbidden` si le rôle ne correspond pas. Les pages protégées redirigent vers `/login` (avec `next`).
 
 ### 🟡 A8 — Présence marquable pour n'importe quel user
 
@@ -139,10 +139,10 @@ Le middleware redirige les non-connectés ; la vérification d'autorisation **se
 5. 🟡 **A5** : retirer `dev-server.log` du tracking. ✅ **clôturé** (`a4deaa9` + `.gitignore`)
 6. 🟡 **A8** : valider le `userId` participant avant upsert de présence. ✅ **clôturé** (`a4deaa9`)
 7. 🟡 **A4** : envoi du reset-password par mail (SMTP/Resend), log dev uniquement. ✅ **clôturé** (`10d4ee3`/`2d65292`/`08e18a4`)
-8. 🟡 **A7** : rôle check enrichi dans le middleware (session validée). ⏳ **ouvert**
-9. 🟢 **A9** : définir `NEXT_PUBLIC_BETTER_AUTH_URL` dans l'env de déploiement. ⏳ **ouvert**
+8. 🟡 **A7** : rôle check enrichi dans le middleware (session validée). ✅ **clôturé** — `src/proxy.ts` (session `auth.api.getSession` + cache TTL 5 min)
+9. 🟢 **A9** : définir `NEXT_PUBLIC_BETTER_AUTH_URL` dans l'env de déploiement. ✅ **clôturé** — présent dans `.env` et `.env.example` ; reste à renseigner dans l'env prod
 
-Acceptance avant déploiement : les points 🔴/🟠 (A1, A2, A3) sont corrigés et clôturés ; restent **A7** et **A9** (durcissement / configuration de déploiement).
+Acceptance avant déploiement : **A1–A9 tous clôturés côté code** ; reste uniquement la configuration de déploiement (variables d'env A9, `prisma migrate deploy`).
 
 ---
 

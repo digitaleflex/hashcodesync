@@ -1,4 +1,5 @@
 import { DAY_SHORT, DAY_NAMES } from "@/components/availability/constants";
+import { computeMassHours } from "@/lib/masse-horaire";
 
 export type Availability = {
   id: string;
@@ -34,24 +35,33 @@ export function computeStats(list: SlotInput[]): AvailabilityStats {
   if (list.length === 0) {
     return { slots: 0, hours: 0, minutes: 0, daysCount: 0, bestDay: null, avgSlotMinutes: null };
   }
-  let minutes = 0;
-  const perDay = new Array(7).fill(0);
+  let rawMinutes = 0;
   const days = new Set<number>();
   for (const a of list) {
-    const d = toMinutes(a.endTime) - toMinutes(a.startTime);
-    minutes += d;
-    perDay[a.day] += d;
     days.add(a.day);
+    const d = toMinutes(a.endTime) - toMinutes(a.startTime);
+    if (d > 0) rawMinutes += d;
   }
-  let bestDay = 0;
-  for (let i = 1; i < 7; i++) if (perDay[i] > perDay[bestDay]) bestDay = i;
+  // Masse horaire hebdomadaire = même calcul que le dashboard (fusion des
+  // chevauchements par jour) → un seul chiffre de référence partout.
+  const hours = computeMassHours(list);
+  const minutes = Math.round(hours * 60);
+  let bestDay: number | null = null;
+  let bestMinutes = 0;
+  for (const day of days) {
+    const m = Math.round(computeMassHours(list.filter((a) => a.day === day)) * 60);
+    if (m > bestMinutes) {
+      bestMinutes = m;
+      bestDay = day;
+    }
+  }
   return {
     slots: list.length,
-    hours: minutes / 60,
+    hours,
     minutes,
     daysCount: days.size,
-    bestDay: perDay[bestDay] > 0 ? bestDay : null,
-    avgSlotMinutes: minutes / list.length,
+    bestDay: bestMinutes > 0 ? bestDay : null,
+    avgSlotMinutes: list.length > 0 ? Math.round(rawMinutes / list.length) : null,
   };
 }
 

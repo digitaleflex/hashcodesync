@@ -43,7 +43,6 @@ function detectGaps(
   maxHour: number,
   threshold = 0.15
 ): { day: number; dayName: string; gaps: { startHour: number; endHour: number; duration: number }[] }[] {
-  const DAY_NAMES = ["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"];
   const DAY_NAMES_FULL = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"];
   const byDay = new Map<number, Map<number, number>>();
   for (const c of heatmap) {
@@ -60,9 +59,16 @@ function detectGaps(
     let inGap = false;
     let gapStart = minHour;
 
+    // Couverture max observée ce jour : sert de référence au seuil relatif.
+    let dayMax = 0;
+    for (const v of dayMap.values()) dayMax = Math.max(dayMax, v);
+    const gapLevel = dayMax * threshold;
+
     for (let h = minHour; h < maxHour; h++) {
       const count = dayMap.get(h) ?? 0;
-      const isEmpty = count === 0;
+      // Un jour totalement vide = tous les créneaux sont des gaps ;
+      // sinon un créneau est un gap si sa couverture est sous le seuil relatif.
+      const isEmpty = dayMax === 0 ? count === 0 : count < gapLevel;
       if (isEmpty && !inGap) {
         inGap = true;
         gapStart = h;
@@ -98,6 +104,7 @@ export async function GET(req: NextRequest) {
     const windowHours = Math.max(1, Math.min(4, Number(req.nextUrl.searchParams.get("window") ?? 2)));
     const groupId = req.nextUrl.searchParams.get("groupId") || null;
     const activityId = req.nextUrl.searchParams.get("activityId") || null;
+    const threshold = Math.min(1, Math.max(0, Number(req.nextUrl.searchParams.get("threshold") ?? 0.15)));
 
     let totalMembers = 0;
     let users: UserSlots[] = [];
@@ -192,7 +199,7 @@ export async function GET(req: NextRequest) {
     { smooth: true, smoothSigma: 1.2 }
   );
 
-  const gaps = detectGaps(scheduling.heatmap, scheduling.minHour, scheduling.maxHour);
+  const gaps = detectGaps(scheduling.heatmap, scheduling.minHour, scheduling.maxHour, threshold);
 
   return NextResponse.json({
     gaps,

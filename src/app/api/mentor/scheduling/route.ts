@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { computeScheduling, SlotAvail } from "@/lib/scheduling";
+import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
 import { convertToReference, REFERENCE_TIMEZONE } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
@@ -132,6 +132,15 @@ export async function GET(req: NextRequest) {
                   activityId: true,
                 },
               },
+              recurringAvailabilities: {
+                select: {
+                  dayMask: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
             },
           },
         },
@@ -145,7 +154,8 @@ export async function GET(req: NextRequest) {
           a.user.firstname.localeCompare(b.user.firstname)
         )
         .map((mem) => {
-          const applicable = mem.user.availabilities.filter(
+          const declared = [...mem.user.availabilities, ...expandPatterns(mem.user.recurringAvailabilities)];
+          const applicable = declared.filter(
             (a) =>
               (a.groupId === groupId || a.groupId === null) &&
               (!activityId || a.activityId === activityId || a.activityId === null)
@@ -178,6 +188,7 @@ export async function GET(req: NextRequest) {
           startTime: a.startTime,
           endTime: a.endTime,
           userTz: m.timezone,
+          userId: m.id,
           weight: m.p,
         }))
       );
@@ -195,6 +206,9 @@ export async function GET(req: NextRequest) {
             attendances: { select: { status: true } },
             availabilities: {
               select: { day: true, startTime: true, endTime: true },
+            },
+            recurringAvailabilities: {
+              select: { dayMask: true, startTime: true, endTime: true },
             },
           },
         }),
@@ -243,18 +257,21 @@ export async function GET(req: NextRequest) {
         };
       });
       availabilitiesRows = allUsers.flatMap((u) => {
-        const mass = computeMassHours(
-          u.availabilities.map((a) => ({ day: a.day, startTime: a.startTime, endTime: a.endTime }))
-        );
+        const declared = [
+          ...u.availabilities,
+          ...expandPatterns(u.recurringAvailabilities),
+        ];
+        const mass = computeMassHours(declared);
         const w = presenceProbability(
           { present: u.attendances.filter((x) => x.status === "present").length, absent: u.attendances.filter((x) => x.status === "absent").length },
           mass
         );
-        return u.availabilities.map((a) => ({
+        return declared.map((a) => ({
           day: a.day,
           startTime: a.startTime,
           endTime: a.endTime,
           userTz: u.timezone,
+          userId: u.id,
           weight: w,
         }));
       });
@@ -266,10 +283,14 @@ export async function GET(req: NextRequest) {
 
     const availabilities = convertToReference(availabilitiesRows);
 
-    const scheduling = computeScheduling(
+    const merged = mergePerUserIntervals(
       availabilities.map(
-        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })
-      ),
+        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId })
+      )
+    );
+
+    const scheduling = computeScheduling(
+      merged,
       Math.max(coverage, 1),
       windowHours,
       { smooth: true, smoothSigma: 1.2 }

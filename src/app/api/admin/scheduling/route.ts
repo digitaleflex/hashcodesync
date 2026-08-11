@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { computeScheduling, SlotAvail } from "@/lib/scheduling";
+import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
 import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
@@ -12,12 +12,14 @@ type UserSlots = {
   timezone: string;
   attendance: { present: number; absent: number };
   availabilities: { day: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
+  recurring: { dayMask: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
 };
 
 function weightedRows(u: UserSlots, groupScope: string | null, activityId: string | null, massScope: boolean) {
+  const declared = [...u.availabilities, ...expandPatterns(u.recurring)];
   const slots = massScope
-    ? u.availabilities
-    : u.availabilities.filter(
+    ? declared
+    : declared.filter(
         (a) =>
           (a.groupId === groupScope || a.groupId === null) &&
           (!activityId || a.activityId === activityId || a.activityId === null)
@@ -30,6 +32,7 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
     startTime: a.startTime,
     endTime: a.endTime,
     userTz: u.timezone,
+    userId: u.id,
     weight,
   }));
 }
@@ -40,8 +43,8 @@ const cache = new Map<
   { payload: Record<string, unknown>; expires: number }
 >();
 
-function cacheKey(args: { windowHours: number; groupId: string | null; activityId: string | null }) {
-  return `${args.windowHours}|${args.groupId ?? ""}|${args.activityId ?? ""}`;
+function cacheKey(args: { windowHours: number; groupId: string | null; activityId: string | null; smooth: boolean }) {
+  return `${args.windowHours}|${args.groupId ?? ""}|${args.activityId ?? ""}|${args.smooth ? "1" : "0"}`;
 }
 
 export async function GET(req: NextRequest) {
@@ -71,7 +74,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const key = cacheKey({ windowHours, groupId, activityId });
+    const key = cacheKey({ windowHours, groupId, activityId, smooth });
     const hit = cache.get(key);
     const now = Date.now();
     if (hit && hit.expires > now) {
@@ -114,6 +117,15 @@ export async function GET(req: NextRequest) {
                   activityId: true,
                 },
               },
+              recurringAvailabilities: {
+                select: {
+                  dayMask: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
             },
           },
         },
@@ -124,6 +136,7 @@ export async function GET(req: NextRequest) {
         timezone: m.user.timezone,
         attendance: countAttendance(m.user.attendances),
         availabilities: m.user.availabilities,
+        recurring: m.user.recurringAvailabilities,
       }));
     } else {
       const all = await prisma.user.findMany({
@@ -141,6 +154,15 @@ export async function GET(req: NextRequest) {
               activityId: true,
             },
           },
+          recurringAvailabilities: {
+            select: {
+              dayMask: true,
+              startTime: true,
+              endTime: true,
+              groupId: true,
+              activityId: true,
+            },
+          },
         },
       });
       totalMembers = all.length;
@@ -149,6 +171,7 @@ export async function GET(req: NextRequest) {
         timezone: u.timezone,
         attendance: countAttendance(u.attendances),
         availabilities: u.availabilities,
+        recurring: u.recurringAvailabilities,
       }));
     }
 
@@ -156,10 +179,14 @@ export async function GET(req: NextRequest) {
 
     const availabilities = convertToReference(rows);
 
-    const scheduling = computeScheduling(
+    const merged = mergePerUserIntervals(
       availabilities.map(
-        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })
-      ),
+        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId })
+      )
+    );
+
+    const scheduling = computeScheduling(
+      merged,
       Math.max(totalMembers, 1),
       windowHours,
       { smooth, smoothSigma: 1.2 }

@@ -99,7 +99,7 @@ model Group {
   createdBy   String
   createdAt   DateTime         @default(now())
   updatedAt   DateTime         @updatedAt
-  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Restrict)
   members     GroupMember[]
   activities  GroupActivity[]
   availabilities Availability[]
@@ -314,7 +314,7 @@ model Workshop {
   seriesId    String?
   type        String           @default("atelier") // atelier | mentorship_session
   menteeId    String?
-  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Restrict)
   series      WorkshopSeries?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
   mentee      User?            @relation("MenteeWorkshops", fields: [menteeId], references: [id], onDelete: SetNull)
   participants Participant[]
@@ -338,7 +338,7 @@ model WorkshopSeries {
   name        String
   description String?
   createdBy   String
-  creator     User      @relation(fields: [createdBy], references: [id], onDelete: Cascade)
+  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Restrict)
   workshops   Workshop[]
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

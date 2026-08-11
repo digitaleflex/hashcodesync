@@ -6,6 +6,7 @@ import { currentWeekStart } from "@/lib/timezone";
 
 const TIME_REGEX = /^([01]\d|2[0-3]):[0-5]\d$/;
 const DAYS = [0, 1, 2, 3, 4, 5, 6];
+const DAY_NAMES = ["lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi", "dimanche"];
 
 async function ensureEditable(userId: string): Promise<NextResponse | null> {
   const lock = await prisma.weeklyValidation.findUnique({
@@ -137,26 +138,25 @@ export async function POST(req: NextRequest) {
     if (overlaps) {
       return NextResponse.json(
         {
-          error: `Chevauchement détecté le jour ${DAYS[p.day]} (${p.startTime}–${p.endTime})`,
+          error: `Chevauchement détecté le jour ${DAY_NAMES[p.day]} (${p.startTime}–${p.endTime})`,
         },
         { status: 409 }
       );
     }
-    // Vérifier aussi entre les nouveaux créneaux.
-    for (let i = 0; i < prepared.length; i++) {
-      if (prepared[i].day === p.day) {
-        for (let j = i + 1; j < prepared.length; j++) {
-          if (prepared[j].day === p.day) {
-            if (p.startTime < prepared[j].endTime && p.endTime > prepared[j].startTime) {
-              return NextResponse.json(
-                {
-                  error: `Chevauchement entre deux nouveaux créneaux le jour ${DAYS[p.day]}`,
-                },
-                { status: 409 }
-              );
-            }
-          }
-        }
+  }
+
+  // Vérifier les chevauchements entre les nouveaux créneaux (paires i < j uniquement).
+  for (let i = 0; i < prepared.length; i++) {
+    for (let j = i + 1; j < prepared.length; j++) {
+      const a = prepared[i];
+      const b = prepared[j];
+      if (a.day === b.day && a.startTime < b.endTime && a.endTime > b.startTime) {
+        return NextResponse.json(
+          {
+            error: `Chevauchement entre deux nouveaux créneaux le jour ${DAY_NAMES[a.day]}`,
+          },
+          { status: 409 }
+        );
       }
     }
   }

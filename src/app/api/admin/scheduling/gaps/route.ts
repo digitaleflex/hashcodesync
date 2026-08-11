@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { computeScheduling, SlotAvail } from "@/lib/scheduling";
+import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
 import { convertToReference } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
@@ -12,12 +12,14 @@ type UserSlots = {
   timezone: string;
   attendance: { present: number; absent: number };
   availabilities: { day: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
+  recurring: { dayMask: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
 };
 
 function weightedRows(u: UserSlots, groupScope: string | null, activityId: string | null, massScope: boolean) {
+  const declared = [...u.availabilities, ...expandPatterns(u.recurring)];
   const slots = massScope
-    ? u.availabilities
-    : u.availabilities.filter(
+    ? declared
+    : declared.filter(
         (a) =>
           (a.groupId === groupScope || a.groupId === null) &&
           (!activityId || a.activityId === activityId || a.activityId === null)
@@ -30,6 +32,7 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
     startTime: a.startTime,
     endTime: a.endTime,
     userTz: u.timezone,
+    userId: u.id,
     weight,
   }));
 }
@@ -108,25 +111,35 @@ export async function GET(req: NextRequest) {
             id: true,
             timezone: true,
             attendances: { select: { status: true } },
-            availabilities: {
-              select: {
-                day: true,
-                startTime: true,
-                endTime: true,
-                groupId: true,
-                activityId: true,
+              availabilities: {
+                select: {
+                  day: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
+              recurringAvailabilities: {
+                select: {
+                  dayMask: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
               },
             },
           },
         },
-      },
-    });
+      });
     totalMembers = members.length;
     users = members.map((m) => ({
       id: m.user.id,
       timezone: m.user.timezone,
       attendance: { present: 0, absent: 0 },
       availabilities: m.user.availabilities,
+      recurring: m.user.recurringAvailabilities,
     }));
   } else {
     const all = await prisma.user.findMany({
@@ -144,6 +157,15 @@ export async function GET(req: NextRequest) {
             activityId: true,
           },
         },
+        recurringAvailabilities: {
+          select: {
+            dayMask: true,
+            startTime: true,
+            endTime: true,
+            groupId: true,
+            activityId: true,
+          },
+        },
       },
     });
     totalMembers = all.length;
@@ -152,14 +174,19 @@ export async function GET(req: NextRequest) {
       timezone: u.timezone,
       attendance: { present: 0, absent: 0 },
       availabilities: u.availabilities,
+      recurring: u.recurringAvailabilities,
     }));
   }
 
   const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
   const availabilities = convertToReference(rows);
 
+  const merged = mergePerUserIntervals(
+    availabilities.map((a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId }))
+  );
+
   const scheduling = computeScheduling(
-    availabilities.map((a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight })),
+    merged,
     Math.max(totalMembers, 1),
     windowHours,
     { smooth: true, smoothSigma: 1.2 }

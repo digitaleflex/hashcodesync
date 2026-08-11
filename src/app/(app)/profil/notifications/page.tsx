@@ -172,7 +172,7 @@ function NavLink({
   label,
   icon,
 }: {
-  href: string;
+  href: Parameters<typeof Link>[0]["href"];
   label: string;
   icon: React.ReactNode;
 }) {

@@ -3,7 +3,9 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeMassHours } from "@/lib/masse-horaire";
-import { currentWeekStart } from "@/lib/timezone";
+import { presenceProbability } from "@/lib/probability";
+import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
+import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
 import { withCache } from "@/lib/cache";
 
 export async function GET(req: NextRequest) {
@@ -23,7 +25,7 @@ export async function GET(req: NextRequest) {
       workshops,
       groupsResult,
       notifications,
-      scheduling,
+      cohortUsers,
     ] = await Promise.all([
       prisma.availability.findMany({
         where: { userId: session.user.id },
@@ -82,16 +84,32 @@ export async function GET(req: NextRequest) {
         take: 30,
       }),
       isLeader
-        ? prisma.$queryRaw`
-            SELECT
-              a."day" AS day,
-              EXTRACT(HOUR FROM a."startTime"::time)::int AS hour,
-              COUNT(*) AS count
-            FROM "Availability" a
-            WHERE a."userId" != ${session.user.id}
-            GROUP BY a."day", EXTRACT(HOUR FROM a."startTime"::time)::int
-            ORDER BY day, hour
-          `
+        ? prisma.user.findMany({
+            where: { id: { not: session.user.id }, availabilities: { some: {} } },
+            select: {
+              id: true,
+              timezone: true,
+              attendances: { select: { status: true } },
+              availabilities: {
+                select: {
+                  day: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
+              recurringAvailabilities: {
+                select: {
+                  dayMask: true,
+                  startTime: true,
+                  endTime: true,
+                  groupId: true,
+                  activityId: true,
+                },
+              },
+            },
+          })
         : Promise.resolve([]),
     ]);
 
@@ -110,17 +128,62 @@ export async function GET(req: NextRequest) {
         participantCount: Array.isArray(w.participants) ? w.participants.length : 0,
       }));
 
-    const memberGroups = groupsResult.filter((g) => g._count.members > 0).length;
+    const memberGroups = groupsResult.filter((g) => g.members.length > 0).length;
 
-    const cohort = isLeader
-      ? {
-          has: true,
-          heatmap: (scheduling as any) ?? [],
-          totalMembers: new Set(
-            groupsResult.flatMap((g) => g.members.map((m) => m.userId))
-          ).size,
-        }
-      : null;
+    let cohort: {
+      has: boolean;
+      heatmap: { day: number; hour: number; count: number }[];
+      heatmapSmoothed?: { day: number; hour: number; count: number }[];
+      recommendation: { day: number; startHour: number; startTime: string; endTime: string; available: number; percent: number }[];
+      minHour: number;
+      maxHour: number;
+      totalMembers: number;
+      referenceTimezone: string;
+    } | null = null;
+
+    if (isLeader && cohortUsers.length > 0) {
+      const rows = cohortUsers.flatMap((u) => {
+        const declared = [...u.availabilities, ...expandPatterns(u.recurringAvailabilities)];
+        const mass = computeMassHours(declared);
+        const weight = presenceProbability(
+          {
+            present: u.attendances.filter((a) => a.status === "present").length,
+            absent: u.attendances.filter((a) => a.status === "absent").length,
+          },
+          mass
+        );
+        return declared.map((a) => ({
+          day: a.day,
+          startTime: a.startTime,
+          endTime: a.endTime,
+          userTz: u.timezone,
+          userId: u.id,
+          weight,
+        }));
+      });
+
+      const merged = mergePerUserIntervals(
+        convertToReference(rows).map(
+          (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId })
+        )
+      );
+
+      const scheduling = computeScheduling(merged, cohortUsers.length, 2, {
+        smooth: true,
+        smoothSigma: 1.2,
+      });
+
+      cohort = {
+        has: true,
+        heatmap: scheduling.heatmap,
+        heatmapSmoothed: scheduling.heatmapSmoothed,
+        recommendation: scheduling.recommendation,
+        minHour: scheduling.minHour,
+        maxHour: scheduling.maxHour,
+        totalMembers: scheduling.totalMembers,
+        referenceTimezone: REFERENCE_TIMEZONE,
+      };
+    }
 
     return withCache(
       {

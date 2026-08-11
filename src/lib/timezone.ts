@@ -13,6 +13,7 @@ export type RefAvailability = {
   endMin: number;
   userTz: string;
   weight?: number; // probabilité pᵢ de présence (optionnel)
+  userId?: string; // identifiant du membre (fusion des intervalles)
 };
 
 type ZoneClock = {
@@ -138,6 +139,7 @@ export function convertToReference(
     endTime: string;
     userTz: string;
     weight?: number;
+    userId?: string;
   }[],
   refTz = REFERENCE_TIMEZONE,
   now = new Date()
@@ -157,12 +159,14 @@ export function convertToReference(
         userTz: r.userTz,
       };
       if (r.weight !== undefined) a.weight = r.weight;
+      if (r.userId !== undefined) a.userId = r.userId;
       return a;
     });
   }
   return rows.map((r) => {
     const a = convertAvailability(r.day, r.startTime, r.endTime, r.userTz, refTz, now);
     if (r.weight !== undefined) a.weight = r.weight;
+    if (r.userId !== undefined) a.userId = r.userId;
     return a;
   });
 }

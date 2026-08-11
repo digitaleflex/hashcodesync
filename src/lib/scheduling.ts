@@ -15,6 +15,9 @@ export type SlotAvail = {
   startMin: number;
   endMin: number;
   weight?: number;
+  // Identifiant du membre propriétaire du créneau : permet de fusionner les
+  // intervalles d'un même membre avant comptage (évite le double-comptage).
+  userId?: string;
 };
 
 type HeatmapData = {
@@ -59,6 +62,75 @@ function weightedMembers(
     }
   }
   return w;
+}
+
+// Motif récurrent : masque de jours (bit i = jour i) + plage horaire.
+export type RecurringPattern = {
+  dayMask: number;
+  startTime: string;
+  endTime: string;
+  groupId?: string | null;
+  activityId?: string | null;
+};
+
+// Étend un motif récurrent en créneaux hebdomadaires (un par jour du masque).
+export function expandPatterns(patterns: RecurringPattern[]): { day: number; startTime: string; endTime: string; groupId?: string | null; activityId?: string | null }[] {
+  const out: { day: number; startTime: string; endTime: string; groupId?: string | null; activityId?: string | null }[] = [];
+  for (const p of patterns) {
+    for (let d = 0; d < 7; d++) {
+      if (p.dayMask & (1 << d)) {
+        out.push({ day: d, startTime: p.startTime, endTime: p.endTime, groupId: p.groupId, activityId: p.activityId });
+      }
+    }
+  }
+  return out;
+}
+
+// Fusionne les intervalles d'un même membre sur un même jour (après conversion
+// vers le fuseau de référence). Sans fusion, un membre ayant plusieurs créneaux
+// superposés (dispo générale + dispo de groupe/activité, ou 2 groupes) serait
+// compté 2× dans la heatmap et les recommandations. L'intervalle fusionné garde
+// le poids max du membre. Retourne les entrées inchangées si aucun userId.
+export function mergePerUserIntervals(slots: SlotAvail[]): SlotAvail[] {
+  const hasIds = slots.length > 0 && slots.every((s) => s.userId);
+  if (!hasIds) return slots;
+
+  const byUser = new Map<string, Map<number, { startMin: number; endMin: number; weight?: number }[]>>();
+  for (const s of slots) {
+    let byDay = byUser.get(s.userId!);
+    if (!byDay) {
+      byDay = new Map();
+      byUser.set(s.userId!, byDay);
+    }
+    const arr = byDay.get(s.day) ?? [];
+    arr.push({ startMin: s.startMin, endMin: s.endMin, weight: s.weight });
+    byDay.set(s.day, arr);
+  }
+
+  const merged: SlotAvail[] = [];
+  for (const [userId, byDay] of byUser) {
+    for (const [day, intervals] of byDay) {
+      intervals.sort((a, b) => a.startMin - b.startMin || b.endMin - a.endMin);
+      let cur = intervals[0];
+      let weight = cur.weight ?? 1;
+      const flush = () => {
+        merged.push({ day, startMin: cur.startMin, endMin: cur.endMin, userId, weight });
+      };
+      for (let i = 1; i < intervals.length; i++) {
+        const next = intervals[i];
+        if (next.startMin <= cur.endMin) {
+          cur.endMin = Math.max(cur.endMin, next.endMin);
+          if (next.weight !== undefined) weight = Math.max(weight, next.weight);
+        } else {
+          flush();
+          cur = next;
+          weight = next.weight ?? 1;
+        }
+      }
+      flush();
+    }
+  }
+  return merged;
 }
 
 // --- Fenêtres candidates : chaque jour/heure de départ, on compte la somme des

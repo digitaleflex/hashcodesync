@@ -24,7 +24,7 @@ Cependant, nous avons identifié **1 vulnérabilité haute** (suppression de fic
 | A8 | 🟡 Basse | La présence d'un atelier peut être marquée pour un userId quelconque (fiabilité polluable) | `admin/workshops/[id]/attendance/route.ts` |
 | A9 | 🟢 Info | `NEXT_PUBLIC_BETTER_AUTH_URL` manquante dans `.env` (fallback localhost) | `.env` |
 
-> **Statut de remédiation** : A1, A2, A3, A5, A6, A8 ✅ **corrigés** (voir `git log` — commit de sécurité). A4/A7/A9 à traiter dans une passe suivante (SMTP réel, mailer, nommage env).
+> **Statut de remédiation** : A1, A2, A3, A4, A5, A6, A8 ✅ **corrigés et clôturés** (commits `a4deaa9`, `10d4ee3`, `2d65292` — détails par section). Restent ouverts : **A7** (middleware) et **A9** (variable d'env) — à traiter au déploiement.
 
 ---
 
@@ -33,6 +33,8 @@ Cependant, nous avons identifié **1 vulnérabilité haute** (suppression de fic
 ### 🔴 A1 — Path traversal → suppression de fichier on Linux
 
 **Fichiers** : `src/app/api/admin/groups/[id]/route.ts:55-72` + `src/lib/uploads.ts`.
+
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. `removeUpload` n'utilise que le `basename` et vérifie que le chemin résolu reste dans `public/uploads` (double garde), empêchant toute traversée (`/uploads/../../.env`).
 
 Un manager/admin d'un groupe peut PATCH `coverImage` avec une valeur commençant par `/uploads/` (check `coverImage.startsWith("/uploads/")`). `removeUpload` exécute ensuite :
 
@@ -52,6 +54,8 @@ Avec `relativeUrl` = `/uploads/../../.env` → `path.join` normalise en `public/
 
 **Fichier** : `src/app/api/upload/route.ts`.
 
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. Le contenu réel est vérifié par **magic bytes** (PNG `89 50 4E 47`, JPEG `FF D8 FF`, WebP `RIFF…WEBP`, GIF) et doit correspondre au MIME déclaré ; fichier stocké sous `randomUUID.ext`.
+
 Le type est validé sur `file.type` (MIME fourni par le client, spoofable). L'extension est dérivée de ce même MIME. Un fichier avec un contenu réellement HTML/JS mais présenté comme `image/png` sera accepté et stocké dans `public/uploads/` (servi statiquement par Next, même origine). Même sans SVG autorisé, la combinaison pourrait permettre un stockage de contenu exploitable.
 
 **Correction** : lire les **magic bytes** (signatures PNG `89504E47`, JPEG `FFD8`, GIF `GIF8`, WebP `RIFF`+`WEBP`) et refuser sinon ; optionnellement desconter `image/svg+xml` de la whitelist.
@@ -61,6 +65,8 @@ Le type est validé sur `file.type` (MIME fourni par le client, spoofable). L'ex
 ### 🟠 A3 — Cookies de session sans `Secure` explicite
 
 **Fichier** : `src/lib/auth.ts`.
+
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. `baseURL` défini, `trustedOrigins` configurées (env), `advanced.useSecureCookies` en production, expiration 7 jours.
 
 La config Better-auth ne définit ni `session` (expiresIn, cookies secure), ni `trustedOrigins`, ni rate limit. En production derrière HTTPS, le flag `Secure` du cookie de session doit être explicite (Better-auth le fait via `BETTER_AUTH_URL` HTTPS/d`advanced.secureCookies`), sinon risque de vol de session en clair. À confirmer avec la configuration de déploiement.
 
@@ -77,6 +83,8 @@ Toujours configurer `trustedOrigins` sur le domain de prod.
 
 **Fichier** : `src/lib/auth.ts` `sendResetPassword`.
 
+> ✅ **CLÔTURÉ** — commits `10d4ee3`/`2d65292`/`08e18a4`. L'envoi passe par le mailer (`Resend` puis fallback SMTP) ; le `console.log` restant dans `src/lib/mailer.ts:28` n'existe **qu'en dev** (`NODE_ENV !== "production"`) et sans transporteur configuré.
+
 ```ts
 console.log(`[HashCode Sync] Lien de réinitialisation pour ${user.email} : ${url}`);
 ```
@@ -86,17 +94,25 @@ Correct dans le dev (pas de SMTP), mais en prod, expose le lien ⇅ dans les log
 
 Fichier de logs Next.js suivi dans git (contenu actuel neutre, mais des logs futurs peuvent y fuiter). À supprimer du tracking (ligne dedans `.gitignore`).
 
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. Fichier supprimé du tracking, `*.log` ajouté au `.gitignore`.
+
 ### 🟡 A6 — Absence de Content-Security-Policy / headers sécurité
 
 `next.config.ts` : `poweredByHeader: false` déjà bon. Ajouter dans `headers()` statiquement sur tout : `Content-Security-Policy`, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `X-Frame-Options: DENY`.
+
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. CSP + `nosniff` + `X-Frame-Options: DENY` + Referrer-Policy + Permissions-Policy appliqués sur toutes les routes dans `next.config.ts`.
 
 ### 🟡 A7 — Middleware : session cookie seulement
 
 Le middleware redirige les non-connectés ; la vérification d'autorisation **serveur** (`/admin`, `/mentor`) repose sur les pages/API, les bonnes pratiques ont déjà géré `redirect("/forbidden")`. Renforcer avec l'info de session validée (au lieu de présence du cookie seulement) quand possible.
 
+> ⏳ **OUVERT** — à traiter (défense en profondeur).
+
 ### 🟡 A8 — Présence marquable pour n'importe quel user
 
 `admin/workshops/[id]/attendance/route.ts` : un createur d'atelier peut POST un `userId` quelconque sans vérifier qu'il a un rôle dans l'atelier. → fausse fiabilité bayèse (données polluées), pas une fuite de données. Ajouter une vérif que le `userId` est bien participant (ou membre) de l'atelier avant upsert.
+
+> ✅ **CLÔTURÉ** — commit `a4deaa9`. La présence n'est acceptée que pour un participant réel de l'atelier (`attendance/route.ts` + `attendance/bulk/route.ts` : `allowedUserIds` filtré sur les participants).
 
 ---
 
@@ -116,15 +132,17 @@ Le middleware redirige les non-connectés ; la vérification d'autorisation **se
 
 ## Checklist de remédiation (priorité)
 
-1. 🔴 **A1** : corriger `removeUpload`/PATCH `coverImage` (basename / resolved path interior `public/uploads`).
-2. 🟠 **A2** : magic-byte validation dans `/api/upload`.
-3. 🟠 **A3** : forcer `secureCookies` + `trustedOrigins` en prod dans Better-auth.
-4. 🟡 **A6** : headers sécurité via `next.config.ts`.
-5. 🟡 **A5** : retirer `dev-server.log` du tracking.
-6. 🟡 **A8** : valider le `userId` participant avant upsert de présence.
-7. 🟡 **A7/A4** : selon prod (role check enrichi + envoi mail uniquement).
+1. 🔴 **A1** : corriger `removeUpload`/PATCH `coverImage` (basename / resolved path interior `public/uploads`). ✅ **clôturé** (`a4deaa9`)
+2. 🟠 **A2** : magic-byte validation dans `/api/upload`. ✅ **clôturé** (`a4deaa9`)
+3. 🟠 **A3** : forcer `secureCookies` + `trustedOrigins` en prod dans Better-auth. ✅ **clôturé** (`a4deaa9`)
+4. 🟡 **A6** : headers sécurité via `next.config.ts`. ✅ **clôturé** (`a4deaa9`)
+5. 🟡 **A5** : retirer `dev-server.log` du tracking. ✅ **clôturé** (`a4deaa9` + `.gitignore`)
+6. 🟡 **A8** : valider le `userId` participant avant upsert de présence. ✅ **clôturé** (`a4deaa9`)
+7. 🟡 **A4** : envoi du reset-password par mail (SMTP/Resend), log dev uniquement. ✅ **clôturé** (`10d4ee3`/`2d65292`/`08e18a4`)
+8. 🟡 **A7** : rôle check enrichi dans le middleware (session validée). ⏳ **ouvert**
+9. 🟢 **A9** : définir `NEXT_PUBLIC_BETTER_AUTH_URL` dans l'env de déploiement. ⏳ **ouvert**
 
-Acceptance avant déploiement : les points 🔴 → A1-corrigé testé (PATCH malveillant refusé), et au moins 🟠 A2/A3.
+Acceptance avant déploiement : les points 🔴/🟠 (A1, A2, A3) sont corrigés et clôturés ; restent **A7** et **A9** (durcissement / configuration de déploiement).
 
 ---
 

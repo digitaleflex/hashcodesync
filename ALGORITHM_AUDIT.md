@@ -198,11 +198,11 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 ## 17. Tests
 
-**FAIT** : aucun fichier `*.test.*`/`*.spec.*`, aucune config vitest/jest/playwright. Seul TODO du repo : `src/components/availability/compatibility-section.tsx:29`.
+**FAIT (mise à jour)** : une suite de tests unitaires existe désormais dans `test/` (`ownership-unavailability.test.ts`, `reliability.test.ts` — 10 cas, `npm test` ✅, ajoutée en `b0bffbd`). Il manque encore les cas des **fonctions pures scheduling** (WIS, fusion d'intervalles, fast-path fuseaux, `expandPatterns`, `detectGaps`).
 
-**INTERPRÉTATION** : les fonctions pures (ALG-001 à ALG-008) sont idéalement testables et ne le sont pas ; risque de régression silencieuse (ex. le seuil `detectGaps` mort).
+**INTERPRÉTATION** : les fonctions pures (ALG-001 à ALG-008) sont idéalement testables ; couvrir celles du moteur de scheduling est la prochaine étape pour éliminer le risque de régression silencieuse (ex. le seuil `detectGaps` mort).
 
-**RECO** (déclencheur mesurable, sans sur-ingénierie) : ajouter un test par fonction pure avec vitest (≥ 8 cas : couverture partielle, chevauchement mass, fast-path fuseaux, WIS, Beta-binomiale, rounding). Critère de « done » : `npm test` passe avant chaque déploiement.
+**RECO** (déclencheur mesurable, sans sur-ingénierie) : étendre la suite aux fonctions `src/lib/scheduling.ts` et `src/lib/timezone.ts` (≥ 8 cas : couverture partielle, chevauchement mass, fast-path fuseaux, WIS, Beta-binomiale, rounding). Critère de « done » : `npm test` passe avant chaque déploiement.
 
 ## 18. Performances opérationnelles
 
@@ -225,7 +225,7 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 1. `available` = somme de probabilités, sémantique trompeuse.
 2. `percent` basé sur `totalMembers`, pas sur la couverture réelle.
 3. Seuil `detectGaps` déclaré mais inutilisé.
-4. Clé de cache incomplète (pas de `smooth` ni fuseau).
+4. ~~Clé de cache incomplète (pas de `smooth`)~~ ✅ **corrigé** — `smooth` inclus dans la clé (`admin/scheduling/route.ts`, commit `9a38e6e`).
 5. Constante « 40 » dans la couverture hebdo.
 6. WIS par jour sans budget hebdomadaire ni anti-surcharge.
 7. Poids pᵢ identique pour tous les créneaux d'un membre.
@@ -239,17 +239,17 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 |---|------|--------|--------|----------------------|
 | R1 | Rendre le seuil `detectGaps` effectif | Faible | Moyen | ≥ 1 annulation atelier sous-effectif |
 | R2 | Exposer `memberCount` + `topContributors` | Faible | Moyen | Prochaine itération UI admin |
-| R3 | Corriger la clé de cache (`smooth`) | Faible | Faible | Revue du cache |
+| R3 | Corriger la clé de cache (`smooth`) | Faible | Faible | ✅ **clôturé** (`9a38e6e`) |
 | R4 | Réutiliser ALG-007 dans `computeStats` | Faible | Faible | Test unitaire |
 | R5 | Sourcer/remplacer la constante « 40 » | Faible | Moyen | Rapport d'incohérence couverture |
-| R6 | Tests unitaires des fonctions pures | Moyen | Élevé | Avant chaque déploiement |
+| R6 | Tests unitaires des fonctions pures | Moyen | Élevé | ✅ **partiel** — 10 tests passent (`b0bffbd`), couverture du moteur scheduling à compléter |
 | R7 | Budget hebdo par membre + capacité pondérée | Moyen | Élevé | ≥ 2 ateliers/semaine planifiés |
 | R8 | Pré-calcul hebdo + cache persistant | Élevé | Élevé | > 5 000 membres actifs |
 | R9 | Calibrer pᵢ sur le feedback atelier | Élevé | Moyen | n médian ≥ 30 par membre |
 
 ## 23. Feuille de route (détail : ALGORITHM_ROADMAP.md)
 
-**CURRENT** (recommandation scoring + WIS + Beta-binomiale) est **adapté** à la cohorte actuelle et **suffisant** en l'état. Améliorations par paliers : QUICK WINS (R1-R6) → V2 contraintes métier (R7) → V3 échelle (R8, R9). Aucun solveur externe avant que le problème ne devienne réellement contraint (voir §24).
+**CURRENT** (recommandation scoring + WIS + Beta-binomiale) est **adapté** à la cohorte actuelle et **suffisant** en l'état. Améliorations par paliers : QUICK WINS (R1-R6 — R3 clôturé, R6 partiel) → V2 contraintes métier (R7) → V3 échelle (R8, R9). Aucun solveur externe avant que le problème ne devienne réellement contraint (voir §24).
 
 ## 24. Résumé (verdict)
 

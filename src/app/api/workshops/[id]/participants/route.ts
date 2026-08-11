@@ -15,38 +15,6 @@ export async function POST(
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
     const { id } = await params;
-    const workshop = await prisma.workshop.findUnique({ where: { id } });
-    if (!workshop) {
-      return NextResponse.json({ error: "Atelier introuvable" }, { status: 404 });
-    }
-
-    const existing = await prisma.participant.findUnique({
-      where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
-    });
-
-    if (existing && existing.status === "accepted") {
-      return NextResponse.json({ error: "Vous êtes déjà inscrit à cet atelier." }, { status: 409 });
-    }
-
-    if (workshop.capacity && !existing) {
-      const acceptedCount = await prisma.participant.count({
-        where: { workshopId: id, status: "accepted" },
-      });
-      if (acceptedCount >= workshop.capacity) {
-        const onWaitlist = await prisma.waitlist.findUnique({
-          where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
-        });
-        if (!onWaitlist) {
-          await prisma.waitlist.create({
-            data: { workshopId: id, userId: session.user.id },
-          });
-        }
-        return NextResponse.json(
-          { error: "Atelier complet. Vous avez été ajouté à la liste d'attente." },
-          { status: 409 }
-        );
-      }
-    }
 
     let status = "accepted";
     try {
@@ -56,27 +24,82 @@ export async function POST(
       // pas de corps JSON : on garde le statut par défaut "accepted"
     }
 
-    const participant = await prisma.participant.upsert({
-      where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
-      create: { workshopId: id, userId: session.user.id, status },
-      update: { status },
-    });
+    const result = await prisma.$transaction(
+      async (tx) => {
+        const workshop = await tx.workshop.findUnique({ where: { id } });
+        if (!workshop) {
+          return { type: "not_found" as const };
+        }
 
-    if (workshop.createdBy !== session.user.id) {
-      await notifyMany([workshop.createdBy], {
+        const existing = await tx.participant.findUnique({
+          where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
+        });
+
+        if (existing && existing.status === "accepted") {
+          return { type: "already" as const };
+        }
+
+        if (workshop.capacity && !existing) {
+          const acceptedCount = await tx.participant.count({
+            where: { workshopId: id, status: "accepted" },
+          });
+          if (acceptedCount >= workshop.capacity) {
+            const onWaitlist = await tx.waitlist.findUnique({
+              where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
+            });
+            if (!onWaitlist) {
+              await tx.waitlist.create({
+                data: { workshopId: id, userId: session.user.id },
+              });
+            }
+            return { type: "waitlist" as const };
+          }
+        }
+
+        const participant = await tx.participant.upsert({
+          where: { workshopId_userId: { workshopId: id, userId: session.user.id } },
+          create: { workshopId: id, userId: session.user.id, status },
+          update: { status },
+        });
+
+        return {
+          type: "ok" as const,
+          participant,
+          createdBy: workshop.createdBy,
+          title: workshop.title,
+        };
+      },
+      { isolationLevel: "Serializable", maxWait: 5000, timeout: 15000 }
+    );
+
+    if (result.type === "not_found") {
+      return NextResponse.json({ error: "Atelier introuvable" }, { status: 404 });
+    }
+    if (result.type === "already") {
+      return NextResponse.json({ error: "Vous êtes déjà inscrit à cet atelier." }, { status: 409 });
+    }
+    if (result.type === "waitlist") {
+      return NextResponse.json(
+        { error: "Atelier complet. Vous avez été ajouté à la liste d'attente." },
+        { status: 409 }
+      );
+    }
+
+    if (result.createdBy !== session.user.id) {
+      await notifyMany([result.createdBy], {
         type: "participant_joined",
         title: "Nouveau participant",
-        message: `${session.user.name ?? "Un membre"} a rejoint "${workshop.title}".`,
+        message: `${session.user.name ?? "Un membre"} a rejoint "${result.title}".`,
       });
 
-      await sendEmailForNotification([workshop.createdBy], "participant_joined", {
+      await sendEmailForNotification([result.createdBy], "participant_joined", {
         actorName: session.user.name,
-        workshopTitle: workshop.title,
-        actionUrl: `${req.nextUrl.origin}/ateliers/${workshop.id}`,
+        workshopTitle: result.title,
+        actionUrl: `${req.nextUrl.origin}/ateliers/${id}`,
       });
     }
 
-    return NextResponse.json(participant, { status: 201 });
+    return NextResponse.json(result.participant, { status: 201 });
   } catch (e) {
     console.error("POST /api/ateliers/[id]/participants erreur", e);
     return NextResponse.json({ error: "Impossible de rejoindre l'atelier" }, { status: 500 });

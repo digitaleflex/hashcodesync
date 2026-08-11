@@ -117,6 +117,15 @@ export async function GET(req: NextRequest) {
       where: { userId: session.user.id, read: false },
     });
 
+    if (!isLeader) {
+      workshops.forEach((w) => {
+        if (w.creator) w.creator = { id: w.creator.id, name: w.creator.name } as typeof w.creator;
+        w.participants.forEach((p) => {
+          p.user = (p.user ? { id: p.user.id, name: p.user.name } : null) as typeof p.user;
+        });
+      });
+    }
+
     const upcoming = workshops
       .filter((w) => new Date(w.endAt).getTime() >= now)
       .map((w) => ({

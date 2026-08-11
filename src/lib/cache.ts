@@ -2,13 +2,22 @@ import { NextResponse } from "next/server";
 
 export function withCache(
   data: unknown,
-  ttlSeconds: number = 30,
+  _ttlSeconds: number = 30,
   init?: { status?: number }
 ) {
   const response = NextResponse.json(data, init);
   response.headers.set(
     "Cache-Control",
-    `private, max-age=${Math.max(ttlSeconds, 0)}, stale-while-revalidate=60`
+    "private, no-cache, max-age=0, must-revalidate"
   );
+  return response;
+}
+
+export function noStore(
+  data: unknown,
+  init?: { status?: number }
+) {
+  const response = NextResponse.json(data, init);
+  response.headers.set("Cache-Control", "no-store");
   return response;
 }

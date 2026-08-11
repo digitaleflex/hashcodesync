@@ -67,6 +67,13 @@ export async function GET(
     if (!workshop) {
       return NextResponse.json({ error: "Atelier introuvable" }, { status: 404 });
     }
+    if (session.user.role !== "admin" && session.user.role !== "mentor") {
+      if (workshop.creator) workshop.creator = { id: workshop.creator.id, name: workshop.creator.name } as typeof workshop.creator;
+      if (workshop.mentee) workshop.mentee = { id: workshop.mentee.id, name: workshop.mentee.name } as typeof workshop.mentee;
+      workshop.participants.forEach((p) => {
+        p.user = (p.user ? { id: p.user.id, name: p.user.name } : null) as typeof p.user;
+      });
+    }
     return NextResponse.json(workshop);
   } catch (e) {
     console.error("GET /api/ateliers/[id] erreur", e);

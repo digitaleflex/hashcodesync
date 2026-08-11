@@ -46,6 +46,16 @@ export async function GET() {
       select,
     });
 
+    if (session.user.role !== "admin" && session.user.role !== "mentor") {
+      workshops.forEach((w) => {
+        if (w.creator) w.creator = { id: w.creator.id, name: w.creator.name } as typeof w.creator;
+        if (w.mentee) w.mentee = { id: w.mentee.id, name: w.mentee.name } as typeof w.mentee;
+        w.participants.forEach((p) => {
+          p.user = (p.user ? { id: p.user.id, name: p.user.name } : null) as typeof p.user;
+        });
+      });
+    }
+
     return withCache(workshops, 30);
   } catch (e) {
     console.error("GET /api/ateliers erreur", e);
@@ -60,6 +70,12 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
     }
     const isMentor = session.user.role === "mentor" || session.user.role === "admin";
+    if (!isMentor) {
+      return NextResponse.json(
+        { error: "Seul un administrateur ou un mentor peut créer un atelier ou une session de mentorat" },
+        { status: 403 }
+      );
+    }
 
     let body: {
       title?: unknown;

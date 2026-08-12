@@ -134,6 +134,13 @@ export default async function ProfilPage() {
       </div>
     );
   } catch (error) {
+    if (
+      error instanceof Error &&
+      error.digest &&
+      error.digest.startsWith("NEXT_REDIRECT")
+    ) {
+      throw error;
+    }
     console.error("Erreur chargement profil:", error);
     return (
       <div className="mx-auto max-w-5xl space-y-6 px-4 py-8">

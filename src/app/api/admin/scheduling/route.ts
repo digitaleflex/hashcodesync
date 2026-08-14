@@ -6,6 +6,7 @@ import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } f
 import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
+import { schedulingCacheKey } from "@/lib/cache";
 
 type UserSlots = {
   id: string;
@@ -43,10 +44,6 @@ const cache = new Map<
   { payload: Record<string, unknown>; expires: number }
 >();
 
-function cacheKey(args: { windowHours: number; groupId: string | null; activityId: string | null; smooth: boolean }) {
-  return `${args.windowHours}|${args.groupId ?? ""}|${args.activityId ?? ""}|${args.smooth ? "1" : "0"}`;
-}
-
 export async function GET(req: NextRequest) {
   try {
     const session = await auth.api.getSession({ headers: await headers() });
@@ -74,7 +71,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const key = cacheKey({ windowHours, groupId, activityId, smooth });
+    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth });
     const hit = cache.get(key);
     const now = Date.now();
     if (hit && hit.expires > now) {

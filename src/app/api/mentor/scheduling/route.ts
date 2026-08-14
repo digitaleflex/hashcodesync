@@ -6,6 +6,7 @@ import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } f
 import { convertToReference, REFERENCE_TIMEZONE } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
+import { schedulingCacheKey } from "@/lib/cache";
 
 // Cache en mémoire à courte durée (TTL) : évite de recharger/recalculer tout le
 // jeu de données à chaque clic sur la heatmap.
@@ -14,10 +15,6 @@ const cache = new Map<
   string,
   { payload: Record<string, unknown>; expires: number }
 >();
-
-function cacheKey(args: { windowHours: number; groupId: string | null; activityId: string | null }) {
-  return `${args.windowHours}|${args.groupId ?? ""}|${args.activityId ?? ""}`;
-}
 
 export async function GET(req: NextRequest) {
   try {
@@ -64,7 +61,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const key = cacheKey({ windowHours, groupId, activityId });
+    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth: true });
     const hit = cache.get(key);
     const now = Date.now();
     if (hit && hit.expires > now) {

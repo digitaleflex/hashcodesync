@@ -194,7 +194,7 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 **INTERPRÉTATION** : pour un admin, « 13.94 » n'est pas décidable. `memberCount` (personnes) vs `expectedAttendance` (somme des pᵢ) séparent le comptage de l'espérance ; `factors` rend le classement contestable. La confiance est déductible (`percent × available/totalMembers`).
 
-**RECO** (déclencheur mesurable) : ✅ **clôturé** — champs ajoutés au payload `recommendation` (coût O(S·topK), négligeable) et affichés dans le cockpit (membres couvrants / présence attendue / couverture + pastilles de facteurs). Prochaine étape UI : panneau « pourquoi ce créneau » complet (V2-11).
+**RECO** (déclencheur mesurable) : ✅ **clôturé** — champs ajoutés au payload `recommendation` (coût O(S·topK), négligeable) et affichés dans le cockpit (membres couvrants / présence attendue / couverture + pastilles de facteurs). V2-01 livré : score composé `computeSlotScore` (`src/lib/scoring.ts`, conception `docs/scheduling-score.md`) — config par défaut = Σ pᵢ (parité testée), `score` + `scoreBreakdown` exposés, termes inactifs à poids 0.
 
 ## 17. Tests
 

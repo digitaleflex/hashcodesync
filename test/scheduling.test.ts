@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { computeScheduling, computeCoveragePercent, selectNonOverlappingHours } from "../src/lib/scheduling";
 import type { SlotAvail } from "../src/lib/scheduling";
+import { computeSlotScore, DEFAULT_SCORE_CONFIG } from "../src/lib/scoring";
 import { computeStats } from "../src/components/availability/shared";
 import { detectGaps } from "../src/app/api/admin/scheduling/gaps/route";
 
@@ -25,6 +26,8 @@ type CandSlotLike = {
   startHour: number;
   endHour: number;
   weight: number;
+  score: number;
+  breakdown: { coverage: number; mentorFit: number; capacityFit: number; preference: number; fairness: number; conflict: number };
   covering: SlotAvail[];
 };
 
@@ -122,7 +125,7 @@ test("computeCoveragePercent: référence dynamique, borné à 100, pas de const
 
 // Référence O(n²) : même règle WIS que la version dichotomique, avec la
 // recherche de prédécesseur par scan linéaire arrière (ancienne implémentation).
-function wisReference(slots: { endMin: number; startMin: number; weight: number }[]) {
+function wisReference(slots: { endMin: number; startMin: number; score: number }[]) {
   const sorted = [...slots].sort(
     (a, b) => a.endMin - b.endMin || a.startMin - b.startMin
   );
@@ -139,7 +142,7 @@ function wisReference(slots: { endMin: number; startMin: number; weight: number 
   const dp = new Array(n).fill(0);
   const take = new Array(n).fill(false);
   for (let i = 0; i < n; i++) {
-    const incl = sorted[i].weight + (p[i] >= 0 ? dp[p[i]] : 0);
+    const incl = sorted[i].score + (p[i] >= 0 ? dp[p[i]] : 0);
     const excl = i > 0 ? dp[i - 1] : 0;
     if (incl >= excl) {
       dp[i] = incl;
@@ -172,13 +175,16 @@ test("selectNonOverlappingHours: parité dichotomie vs O(n²) sur 1000 cas aléa
     for (let k = 0; k < n; k++) {
       const startMin = 360 + Math.floor(rand() * 600);
       const len = 30 + Math.floor(rand() * 3) * 30;
+      const weight = Math.round(rand() * 200) / 100;
       slots.push({
         day,
         startMin,
         endMin: startMin + len,
         startHour: startMin / 60,
         endHour: (startMin + len) / 60,
-        weight: Math.round(rand() * 200) / 100,
+        weight,
+        score: weight,
+        breakdown: { coverage: weight, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 },
         covering: [],
       });
     }
@@ -186,6 +192,59 @@ test("selectNonOverlappingHours: parité dichotomie vs O(n²) sur 1000 cas aléa
     const ref = wisReference(slots).map((s) => `${s.startMin}-${s.endMin}`).sort();
     assert.deepEqual(got, ref, `cas ${t} (n=${n}) : dichotomie != O(n²)`);
   }
+});
+
+test("computeSlotScore: parité — config par défaut = Σ pᵢ (V2-01)", () => {
+  const weights = [0.8, 0.6];
+  const r = computeSlotScore(weights, {}, DEFAULT_SCORE_CONFIG);
+  assert.equal(r.score, 1.4);
+  // Termes inactifs = 0 sans la donnée.
+  assert.deepEqual(r.breakdown, { coverage: 1.4, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 });
+});
+
+test("computeSlotScore: mentor/capacité/préférences/équité/conflit activés", () => {
+  const cfg = {
+    weights: {
+      coverage: 1,
+      mentorFit: 0.4,
+      capacityFit: 0.3,
+      preference: 0.15,
+      fairness: 0.1,
+      conflictPenalty: 0.5,
+    },
+  };
+  const r = computeSlotScore(
+    [0.8, 0.6],
+    {
+      mentorAvailable: true,
+      capacity: 4,
+      preferences: [{ matched: true }, { matched: false }],
+      fairness: 0.2,
+      conflict: 0,
+    },
+    cfg
+  );
+  // f_men=1 (w .4), f_cap=min(1, 1.4/4)=0.35 (w .3), f_pref=0.5 (w .15),
+  // f_fair=0.2 (w .1) → score = 1.4 + .4 + .105 + .075 + .02 = 2.0
+  assert.equal(Math.round(r.score * 1000), 2000);
+  assert.equal(r.breakdown.mentorFit, 1);
+  assert.equal(Math.round(r.breakdown.capacityFit * 100), 35);
+  assert.equal(r.breakdown.preference, 0.5);
+  assert.equal(r.breakdown.fairness, 0.2);
+  assert.equal(r.breakdown.conflict, 0);
+});
+
+test("computeScheduling: score composé exposé, config par défaut = rétrocompat", () => {
+  const s = computeScheduling(rows, 4, 2);
+  const top = s.recommendation[0];
+  // score == available (Σ pᵢ) par défaut.
+  assert.equal(top.score, top.available);
+  assert.equal(top.score, 1.4);
+  // Décomposition présente et cohérente.
+  assert.equal(top.scoreBreakdown.coverage, 1.4);
+  assert.equal(top.scoreBreakdown.mentorFit, 0);
+  // Factors enrichis du score composé.
+  assert.ok(top.factors.some((f) => f.kind === "score"));
 });
 
 test("detectGaps: seuil relatif au max du jour (ALG-009)", () => {

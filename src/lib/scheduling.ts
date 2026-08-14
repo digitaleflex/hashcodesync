@@ -1,3 +1,5 @@
+import { DEFAULT_SCORE_CONFIG, computeSlotScore, type ScoreConfig, type ScoreBreakdown } from "@/lib/scoring";
+
 export function toMin(t: string) {
   const [h, m] = t.split(":").map(Number);
   return h * 60 + m;
@@ -40,6 +42,8 @@ type HeatmapData = {
     coveragePercent: number;
     memberCount: number;
     topContributors: { userId: string | null; weight: number }[];
+    score: number;
+    scoreBreakdown: ScoreBreakdown;
     factors: { kind: string; label: string; detail: string }[];
   }[];
 };
@@ -51,6 +55,8 @@ type CandSlot = {
   startHour: number;
   endHour: number;
   weight: number;
+  score: number;
+  breakdown: ScoreBreakdown;
   covering: SlotAvail[];
 };
 
@@ -154,7 +160,7 @@ function candidateSlots(
       const covering = coveringMembers(members, day, start, end);
       const weight = covering.reduce((sum, c) => sum + (c.weight ?? 1), 0);
       if (weight > 0) {
-        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight, covering });
+        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight, score: weight, breakdown: { coverage: weight, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 }, covering });
       }
     }
   }
@@ -195,7 +201,7 @@ export function selectNonOverlappingHours(slots: CandSlot[]): CandSlot[] {
   const dp = new Array(n).fill(0);
   const take = new Array(n).fill(false);
   for (let i = 0; i < n; i++) {
-    const incl = sorted[i].weight + (p[i] >= 0 ? dp[p[i]] : 0);
+    const incl = sorted[i].score + (p[i] >= 0 ? dp[p[i]] : 0);
     const excl = i > 0 ? dp[i - 1] : 0;
     if (incl >= excl) {
       dp[i] = incl;
@@ -276,7 +282,7 @@ export function computeScheduling(
   availabilities: SlotAvail[],
   totalMembers: number,
   windowHours: number,
-  opts: { smooth?: boolean; smoothSigma?: number } = {}
+  opts: { smooth?: boolean; smoothSigma?: number; scoreConfig?: ScoreConfig; scoreContext?: import("@/lib/scoring").SlotScoreContext } = {}
 ): HeatmapData {
   const heatmap: { day: number; hour: number; count: number; memberCount: number }[] = [];
   let minHour = 24;
@@ -305,6 +311,19 @@ export function computeScheduling(
   const windowMinutes = windowHours * 60;
   const slots = candidateSlots(availabilities, windowMinutes, minHour, maxHour);
 
+  // Score composé multi-critères (V2-01). Avec la config par défaut le score
+  // reproduit exactement Σ pᵢ (test de parité) ; le WIS sélectionne sur `score`.
+  const cfg = opts.scoreConfig ?? DEFAULT_SCORE_CONFIG;
+  for (const s of slots) {
+    const { score, breakdown } = computeSlotScore(
+      s.covering.map((c) => c.weight ?? 1),
+      opts.scoreContext ?? {},
+      cfg
+    );
+    s.score = score;
+    s.breakdown = breakdown;
+  }
+
   const selectedByDay: CandSlot[] = [];
   for (let day = 0; day < 7; day++) {
     const daySlots = slots.filter((s) => s.day === day);
@@ -313,7 +332,7 @@ export function computeScheduling(
     }
   }
   selectedByDay.sort(
-    (a, b) => b.weight - a.weight || a.day - b.day || a.startHour - b.startHour
+    (a, b) => b.score - a.score || a.day - b.day || a.startHour - b.startHour
   );
 
   const recommendation = selectedByDay.slice(0, 6).map((s) => {
@@ -350,6 +369,11 @@ export function computeScheduling(
           .join(", ")}`,
       });
     }
+    factors.push({
+      kind: "score",
+      label: "Score composé",
+      detail: `Score ${Math.round(s.score * 100) / 100} (${Math.round(s.breakdown.coverage * 10) / 10} de couverture)`,
+    });
     return {
       day: s.day,
       startHour: s.startHour,
@@ -361,6 +385,8 @@ export function computeScheduling(
       coveragePercent: totalMembers ? Math.round((memberCount / totalMembers) * 100) : 0,
       memberCount,
       topContributors,
+      score: Math.round(s.score * 100) / 100,
+      scoreBreakdown: s.breakdown,
       factors,
     };
   });

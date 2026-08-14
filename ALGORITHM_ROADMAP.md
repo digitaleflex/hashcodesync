@@ -109,15 +109,17 @@ Ajouter les contraintes métier manquantes sans changer l'algorithme principal (
 ### V2-1: Weighted Scoring multicritère
 
 **Problème:** Le scoring actuel est monocritère (Σ pᵢ).  
-**Solution:** Ajouter des dimensions explicites :
+**Solution:** Ajouter des dimensions explicites — **implémenté** (`src/lib/scoring.ts` + `docs/scheduling-score.md`, issues #52/#53) :
 
 ```
-score = w1 * Σ pᵢ                    (couverture)
-      + w2 * (mentors_available > 0)  (disponibilité mentor)
-      + w3 * capacity_headroom        (marge de capacité)
-      + w4 * fairness_bonus           (équité)
-      - w5 * conflict_penalty         (pénalité conflit)
+score = w1 * Σ pᵢ                    (couverture — seul actif par défaut, rétrocompat)
+      + w2 * (mentors_available > 0)  (disponibilité mentor — poids 0 tant que #34 absent)
+      + w3 * capacity_headroom        (marge de capacité — poids 0 tant que #55 absent)
+      + w4 * fairness_bonus           (équité — poids 0 tant que #58 absent)
+      - w5 * conflict_penalty         (pénalité conflit — poids 0 tant que #54 absent)
 ```
+
+Le WIS sélectionne sur le score composé ; config par défaut = Σ pᵢ exactement (parité testée). `score` + `scoreBreakdown` exposés dans la réponse.
 
 **Effort:** 2-3 jours.  
 **Impact:** Élevé (prend en compte plus de dimensions métier).  

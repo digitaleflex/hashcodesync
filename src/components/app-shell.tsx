@@ -179,14 +179,14 @@ export function AppShell() {
                 </div>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => router.push("/profil")}
+                  onClick={() => router.push("/profil")}
                 >
                   <UserIcon className="size-4 mr-2" />
                   Mon profil
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
-                  onSelect={() => void handleSignOut()}
+                  onClick={() => void handleSignOut()}
                   className="text-destructive focus:text-destructive"
                 >
                   <LogOutIcon className="size-4 mr-2" />

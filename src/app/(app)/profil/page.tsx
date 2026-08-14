@@ -14,21 +14,19 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
-const roleLabels: Record<string, string> = {
-  member: "Membre",
-  mentor: "Mentor",
-  admin: "Administrateur",
-};
-
-// Seuil sous lequel on considère l'historique insuffisant pour afficher un
-// score de fiabilité (on affiche alors « Pas encore suffisamment de données »).
 const MIN_OBSERVATIONS = 3;
 
 export default async function ProfilPage() {
+  let session: Awaited<ReturnType<typeof auth.api.getSession>> | null = null;
   try {
-    const session = await auth.api.getSession({ headers: await headers() });
-    if (!session?.user?.id) redirect("/login");
+    session = await auth.api.getSession({ headers: await headers() });
+  } catch {
+    // Cookie de session invalide ou expiré : on traite l'utilisateur comme
+    // non connecté et on le redirige vers la page de connexion.
+  }
+  if (!session?.user?.id) redirect("/login");
 
+  try {
     const userId = session.user.id;
 
     const [user, groups, prefs, unavailabilities, availabilities, attendance] =
@@ -88,11 +86,6 @@ export default async function ProfilPage() {
         <PageTitle
           title="Mon profil"
           subtitle="Votre centre de contrôle personnel : identité, planification, sécurité."
-          badge={
-            <span className="inline-flex h-6 items-center rounded-full bg-accent/15 px-3 text-xs font-medium text-accent">
-              {roleLabels[user.role] ?? "Membre"}
-            </span>
-          }
         />
         <ProfilView
           user={{
@@ -136,8 +129,9 @@ export default async function ProfilPage() {
   } catch (error) {
     if (
       error instanceof Error &&
-      error.digest &&
-      error.digest.startsWith("NEXT_REDIRECT")
+      (error as Error & { digest?: string }).digest?.startsWith(
+        "NEXT_REDIRECT"
+      )
     ) {
       throw error;
     }

@@ -23,13 +23,18 @@ export const DAY_NAMES_FULL = [
   "Dimanche",
 ];
 
-export type HeatCell = { day: number; hour: number; count: number };
+export type HeatCell = { day: number; hour: number; count: number; memberCount?: number };
+export type RecFactor = { kind: string; label: string; detail: string };
 export type Rec = {
   day: number;
   startTime: string;
   endTime: string;
   available: number;
   percent: number;
+  expectedAttendance?: number;
+  coveragePercent?: number;
+  memberCount?: number;
+  factors?: RecFactor[];
 };
 
 export const DAY_HUES = [345, 285, 220, 175, 130, 50, 25];
@@ -126,9 +131,9 @@ export function HeatmapCard({
     const ratio = getRatio(day, hour);
     const cell = index.get(`${day}:${hour}`);
     const isGap = gapSet?.has(`${day}:${hour}`);
-    return cell
-      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.count} membre${cell.count > 1 ? "s" : ""} · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`
-      : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+    if (!cell) return `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+    const members = cell.memberCount ?? cell.count;
+    return `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${members} membre${members > 1 ? "s" : ""} · ${Math.round(cell.count * 10) / 10} présence(s) attendue(s) · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`;
   };
 
   return (
@@ -221,7 +226,7 @@ export function HeatmapCard({
                     </span>
                     {cell && (
                       <span className="block text-[10px] text-muted-foreground">
-                        {cell.count} membre{cell.count > 1 ? "s" : ""}
+                        {cell.memberCount ?? cell.count} membre{cell.memberCount ?? cell.count > 1 ? "s" : ""}
                       </span>
                     )}
                   </span>
@@ -291,7 +296,7 @@ export function HeatmapCard({
                     const hl = isHighlight(day, hour);
                     const cell = index.get(`${day}:${hour}`);
                     const label = cell
-                      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.count} membre${cell.count > 1 ? "s" : ""} · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`
+                      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.memberCount ?? cell.count} membre${(cell.memberCount ?? cell.count) > 1 ? "s" : ""} · ${Math.round(cell.count * 10) / 10} présence(s) attendue(s) · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`
                       : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
                     const interactive = !!onCellSelect;
                     const content = (
@@ -445,9 +450,37 @@ export function RecommendationCard({
                   </div>
                 </div>
                 {i === 0 && (
-                  <p className="mt-2 text-xs text-muted-foreground">
-                    Meilleur compromis disponibilité / assiduité.
-                  </p>
+                  <div className="mt-2 space-y-1.5">
+                    <p className="text-xs text-muted-foreground">
+                      Meilleur compromis disponibilité / assiduité.
+                    </p>
+                    {r.memberCount !== undefined && r.expectedAttendance !== undefined && r.coveragePercent !== undefined && (
+                      <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs">
+                        <span className="text-muted-foreground">
+                          <span className="font-medium text-foreground">{r.memberCount}</span> membre(s) couvrant
+                        </span>
+                        <span className="text-muted-foreground">
+                          <span className="font-medium text-foreground">≈ {Math.round(r.expectedAttendance * 10) / 10}</span> présence(s) attendue(s)
+                        </span>
+                        <span className="text-muted-foreground">
+                          <span className="font-medium text-foreground">{r.coveragePercent}%</span> de couverture
+                        </span>
+                      </div>
+                    )}
+                    {r.factors && r.factors.length > 0 && (
+                      <ul className="flex flex-wrap gap-1.5">
+                        {r.factors.map((f) => (
+                          <li
+                            key={f.kind}
+                            className="rounded-full bg-muted/70 px-2 py-0.5 text-[11px] text-muted-foreground"
+                            title={`${f.label} : ${f.detail}`}
+                          >
+                            {f.detail}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
                 )}
               </li>
             ))}

@@ -46,7 +46,7 @@ Le problème sous-jacent se modélise ainsi (c'est **ce que le code implémente 
 - Score d'un créneau = Σ pᵢ sur les membres couvrant entièrement le créneau (**couverture pondérée**).
 - Objectif : sélectionner ≤ 6 créneaux, non chevauchants **par jour**, maximisant Σ scores (WIS, ALG-004).
 
-**FAIT** : il n'y a ni fonction objectif multi-contraintes, ni contrainte dure (minimum de participants, capacité, équité), ni conflit inter-ateliers. Le « problème » résolu est un **problème d'optimisation d'intervalle pondéré par jour**, dégénéré (S ≤ 12 fenêtres), pour lequel WIS est **exact et optimal** en O(S²).
+**FAIT** : il n'y a ni fonction objectif multi-contraintes, ni contrainte dure (minimum de participants, capacité, équité), ni conflit inter-ateliers. Le « problème » résolu est un **problème d'optimisation d'intervalle pondéré par jour**, dégénéré (S ≤ 12 fenêtres), pour lequel WIS est **exact et optimal** (recherche de prédécesseur par dichotomie, O(S log S)).
 
 **INTERPRÉTATION** : la partie « recommandation » est mathématiquement bien posée mais **sous-dimensionnée** : elle répond « où les gens sont-ils le plus disponibles ? » et non « quand peut-on tenir tel atelier avec les bonnes personnes ? ». Le vrai problème opérationnel (affecter plusieurs ateliers à des membres, capacités, préférences) n'est **pas** modélisé.
 
@@ -190,11 +190,11 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 ## 16. Explicabilité
 
-**FAIT (mise à jour)** : la recommandation expose `available` (float), `percent`, ainsi que **`memberCount`** (membres distincts couvrant le créneau) et **`topContributors`** (top-3 membres + leur pᵢ, triés par poids décroissant) — `src/lib/scheduling.ts`.
+**FAIT (mise à jour)** : la recommandation expose `available` (float), `percent`, **`expectedAttendance`** (somme des probabilités = `available`, renommé explicitement), **`coveragePercent`** (couverture relative à la cohorte = `memberCount/totalMembers`), **`memberCount`** (membres distincts couvrant le créneau), **`topContributors`** (top-3 membres + leur pᵢ, triés par poids décroissant) et **`factors`** (liste extensible de raisons du classement : couverture, présence attendue, fiabilité du top — préférences/conflits/pénalités à venir en V2). La heatmap expose désormais `memberCount` par cellule en plus de `count` (somme pondérée) — `src/lib/scheduling.ts`.
 
-**INTERPRÉTATION** : pour un admin, « 13.94 » n'est pas décidable. `memberCount` + `topContributors` donnent la justification ; la confiance est déductible (`percent × available/totalMembers`).
+**INTERPRÉTATION** : pour un admin, « 13.94 » n'est pas décidable. `memberCount` (personnes) vs `expectedAttendance` (somme des pᵢ) séparent le comptage de l'espérance ; `factors` rend le classement contestable. La confiance est déductible (`percent × available/totalMembers`).
 
-**RECO** (déclencheur mesurable) : ✅ **clôturé** — champs ajoutés au payload `recommendation` (coût O(S·topK), négligeable). Prochaine étape UI admin : les afficher (dès la prochaine évolution du cockpit).
+**RECO** (déclencheur mesurable) : ✅ **clôturé** — champs ajoutés au payload `recommendation` (coût O(S·topK), négligeable) et affichés dans le cockpit (membres couvrants / présence attendue / couverture + pastilles de facteurs). Prochaine étape UI : panneau « pourquoi ce créneau » complet (V2-11).
 
 ## 17. Tests
 
@@ -222,8 +222,8 @@ Scalabilité linéaire O(A) pour tout le pipeline mono-fuseau ; constant pour KD
 
 ## 21. Limitations et pièges identifiés
 
-1. `available` = somme de probabilités, sémantique trompeuse.
-2. `percent` basé sur `totalMembers`, pas sur la couverture réelle.
+1. ~~`available` = somme de probabilités, sémantique trompeuse~~ ✅ **corrigé** — `expectedAttendance` exposé séparément de `memberCount` (V1.1-03).
+2. ~~`percent` basé sur `totalMembers`, pas sur la couverture réelle~~ ✅ **corrigé** — `coveragePercent` (couverture réelle) exposé séparément.
 3. ~~Seuil `detectGaps` déclaré mais inutilisé~~ ✅ **corrigé** — seuil relatif activé (`?threshold=`, clampé 0–1).
 4. ~~Clé de cache incomplète (pas de `smooth`)~~ ✅ **corrigé** — `smooth` inclus dans la clé (`admin/scheduling/route.ts`, commit `9a38e6e`).
 5. ~~Constante « 40 » dans la couverture hebdo~~ ✅ **corrigé** — référence dynamique (max observé par membre).

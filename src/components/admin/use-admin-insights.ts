@@ -20,6 +20,11 @@ export type AdminGroup = {
 const cap = (t: string, n = 22): string =>
   t.length > n ? `${t.slice(0, n)}…` : t;
 
+// Seuil d'affichage de l'insight « couverture » : en dessous, la couverture est
+// trop faible pour être présentée comme un succès (seuil de décision, distinct
+// du calcul de couverture lui-même).
+const COVERAGE_INSIGHT_THRESHOLD = 40;
+
 // Génère les insights décisionnels depuis les données déjà chargées
 // (aucune API supplémentaire). Compatible <InsightsList/>.
 export function useAdminInsights({
@@ -77,7 +82,7 @@ export function useAdminInsights({
     });
   }
 
-  if (totalMembers > 0 && (coveragePercent > 40 || totalAvailabilities > 0)) {
+  if (totalMembers > 0 && (coveragePercent > COVERAGE_INSIGHT_THRESHOLD || totalAvailabilities > 0)) {
     insights.push({
       id: "coverage",
       tone: "success",

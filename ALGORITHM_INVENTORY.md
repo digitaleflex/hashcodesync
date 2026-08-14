@@ -193,12 +193,12 @@ return w;
 
 **Méthode:**
 1. Trier par `endMin` croissant, puis `startMin` croissant.
-2. Construire `p[i]` = index du dernier créneau non chevauchant avant i (scan linéaire O(n²)).
+2. Construire `p[i]` = index du dernier créneau non chevauchant avant i (**dichotomie** sur `endMin`, O(log n) par créneau — ALG-004 clôturé).
 3. DP: `dp[i] = max(weight[i] + dp[p[i]], dp[i-1])`.
 4. Reconstruction du sous-ensemble optimal.
 
 **Type:** Dynamic Programming (Weighted Interval Scheduling classique)  
-**Complexité:** O(n²) pour p + O(n) pour DP  
+**Complexité:** O(n log n) pour p + O(n) pour DP  
 **Espace:** O(n)
 
 **Hypothèses implicites:**
@@ -207,7 +207,7 @@ return w;
 - Les poids sont additifs (pas de saturation).
 
 **Limites:**
-- O(n²) peut être optimisé en O(n log n) avec recherche binaire pour p[i].
+- ✅ La recherche de prédécesseur est optimisée en O(n log n) par dichotomie (ALG-004, test de parité vs O(n²) sur 1000 cas aléatoires).
 - Appliqué **par jour indépendamment** — pas de vue semaine globale.
 - Peut sélectionner plusieurs créneaux par jour, mais le système ne sait pas si c'est désiré.
 
@@ -503,7 +503,7 @@ ALG-012 ← ALG-005 (ranking)
 | Goulot | Algorithme | Complexité actuelle | Complexité optimale |
 |---|---|---|---|
 | Heatmap counting | ALG-003 | O(n) par cellule | O(log n) avec interval tree |
-| WIS predecessor | ALG-005 | O(n²) | O(n log n) avec binary search |
+| WIS predecessor | ALG-005 | ✅ O(n log n) (dichotomie, ALG-004) | O(n log n) |
 | Timezone conversion | ALG-007 | O(n) (fast-path: O(1)) | O(1) avec pré-calcul |
 | DB fetching | — | O(N × S) | O(N) avec matérialisation |
 
@@ -522,7 +522,7 @@ ALG-012 ← ALG-005 (ranking)
 
 1. Extraire `weightedRows` dans `src/lib/scheduling.ts` (ou un module partagé).
 2. Ajouter un cache par utilisateur pour `presenceProbability` (déjà calculé dans `weightedRows`).
-3. Optimiser ALG-005 avec recherche binaire pour `p[i]` (O(n log n) au lieu de O(n²)).
+3. ✅ **Fait** — ALG-005 optimisé : `p[i]` par dichotomie (O(n log n)), test de parité vs O(n²) sur 1000 cas aléatoires (`selectNonOverlappingHours`).
 4. Ajouter un index spatial pour ALG-003 (interval tree) si N > 5 000.
 
 ---

@@ -42,7 +42,13 @@ type Rec = {
   endTime: string;
   available: number;
   percent: number;
+  expectedAttendance?: number;
+  coveragePercent?: number;
+  memberCount?: number;
+  factors?: RecFactor[];
 };
+
+type RecFactor = { kind: string; label: string; detail: string };
 
 type GroupOption = { id: string; name: string; activityCount: number; memberCount: number };
 
@@ -52,11 +58,12 @@ type Data = {
   windowHours: number;
   minHour: number;
   maxHour: number;
-  heatmap: { day: number; hour: number; count: number }[];
+  heatmap: { day: number; hour: number; count: number; memberCount?: number }[];
   heatmapSmoothed?: { day: number; hour: number; count: number }[];
   recommendation: Rec[];
   referenceTimezone?: string;
   groupName?: string;
+  maxSlotsPerUser?: number;
   groups?: GroupOption[];
 };
 
@@ -140,8 +147,11 @@ export function SchedulingDashboard() {
   const coveragePercent = useMemo(() => {
     const total = data?.totalMembers ?? 0;
     const avail = data?.totalAvailabilities ?? 0;
-    if (!total) return 0;
-    return (avail / (total * 40)) * 100;
+    // Dénominateur dynamique : créneaux max déclarés par membre (même référence
+    // que /api/admin/scheduling/history), borné à 100. Plus de constante « 40 ».
+    const maxPerUser = data?.maxSlotsPerUser ?? 1;
+    if (!total || !maxPerUser) return 0;
+    return Math.min(100, (avail / (total * maxPerUser)) * 100);
   }, [data]);
 
   const insights = useAdminInsights({

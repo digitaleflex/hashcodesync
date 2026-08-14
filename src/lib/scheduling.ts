@@ -26,7 +26,7 @@ type HeatmapData = {
   windowHours: number;
   minHour: number;
   maxHour: number;
-  heatmap: { day: number; hour: number; count: number }[];
+  heatmap: { day: number; hour: number; count: number; memberCount: number }[];
   // Version lissée (KDE gaussien) de la heatmap, optionnelle.
   heatmapSmoothed?: { day: number; hour: number; count: number }[];
   recommendation: {
@@ -36,8 +36,11 @@ type HeatmapData = {
     endTime: string;
     available: number;
     percent: number;
+    expectedAttendance: number;
+    coveragePercent: number;
     memberCount: number;
     topContributors: { userId: string | null; weight: number }[];
+    factors: { kind: string; label: string; detail: string }[];
   }[];
 };
 
@@ -50,22 +53,6 @@ type CandSlot = {
   weight: number;
   covering: SlotAvail[];
 };
-
-// Somme des poids des dispo couvrant une fenêtre [start,end] un jour donné.
-function weightedMembers(
-  availabilities: SlotAvail[],
-  day: number,
-  start: number,
-  end: number
-): number {
-  let w = 0;
-  for (const a of availabilities) {
-    if (a.day === day && a.startMin <= start && a.endMin >= end) {
-      w += a.weight ?? 1;
-    }
-  }
-  return w;
-}
 
 // Membres (créneaux) couvrant entièrement la fenêtre — sert à compter les
 // contributeurs et à exposer le top-3 de la recommandation.
@@ -175,20 +162,35 @@ function candidateSlots(
 }
 
 // Selection bi pondérée par optimisation d'intervalle : fenêtres non chevauchantes
-// d'un même jour, maximisant la somme des poids.
-function selectNonOverlappingHours(slots: CandSlot[]): CandSlot[] {
+// d'un même jour, maximisant la somme des poids. Exportée pour tests de parité
+// (ALG-004) : la recherche de prédécesseur est par dichotomie (O(S log S)).
+export function selectNonOverlappingHours(slots: CandSlot[]): CandSlot[] {
   const sorted = [...slots].sort(
     (a, b) => a.endMin - b.endMin || a.startMin - b.startMin
   );
   const n = sorted.length;
   const p = new Array(n).fill(-1);
-  for (let i = 0; i < n; i++) {
-    for (let j = i - 1; j >= 0; j--) {
-      if (sorted[j].endMin <= sorted[i].startMin) {
-        p[i] = j;
-        break;
+  // Recherche du prédécesseur compatible par dichotomie sur `endMin` (trié) :
+  // dernier indice j dont `endMin ≤ startMin[i]`. Le tri garantit que les
+  // endMin sont croissants → O(S log S) au lieu de O(S²). Comme
+  // endMin[i] > startMin[i], le prédécesseur trouvé est toujours < i.
+  const predecessor = (target: number): number => {
+    let lo = 0;
+    let hi = n - 1;
+    let ans = -1;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (sorted[mid].endMin <= target) {
+        ans = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
       }
     }
+    return ans;
+  };
+  for (let i = 0; i < n; i++) {
+    p[i] = predecessor(sorted[i].startMin);
   }
   const dp = new Array(n).fill(0);
   const take = new Array(n).fill(false);
@@ -251,6 +253,22 @@ export function gaussianHeatmap(
   return out;
 }
 
+// Couverture hebdomadaire : part des créneaux déclarés rapportée au maximum
+// observé sur la cohorte (membre le plus rempli × nb de membres), bornée à 100.
+// Référence dynamique — plus de constante arbitraire (ex. « 40 »). Même
+// convention dans /api/admin/scheduling (cockpit) et /history (tendance).
+export function computeCoveragePercent(
+  totalAvailabilities: number,
+  totalMembers: number,
+  maxSlotsPerUser: number
+): number {
+  if (totalMembers <= 0 || maxSlotsPerUser <= 0) return 0;
+  return Math.min(
+    100,
+    Math.round((totalAvailabilities / (totalMembers * maxSlotsPerUser)) * 100)
+  );
+}
+
 // computeScheduling : pondère chaque dispo par `weight` (probabilité de présence)
 // et peut appliquer un lissage gaussien à la heatmap. Le pondéré sert au comptage
 // et à la sélection WIS ; `available` = somme attendue des présences.
@@ -260,15 +278,19 @@ export function computeScheduling(
   windowHours: number,
   opts: { smooth?: boolean; smoothSigma?: number } = {}
 ): HeatmapData {
-  const heatmap: { day: number; hour: number; count: number }[] = [];
+  const heatmap: { day: number; hour: number; count: number; memberCount: number }[] = [];
   let minHour = 24;
   let maxHour = -1;
   for (let day = 0; day < 7; day++) {
     for (let hour = 0; hour < 24; hour++) {
       const start = hour * 60;
       const end = start + 60;
-      const count = weightedMembers(availabilities, day, start, end);
-      heatmap.push({ day, hour, count });
+      const covering = coveringMembers(availabilities, day, start, end);
+      const count = covering.reduce((sum, c) => sum + (c.weight ?? 1), 0);
+      const distinct = new Set<string>();
+      for (const c of covering) if (c.userId) distinct.add(c.userId);
+      const memberCount = distinct.size > 0 ? distinct.size : covering.length;
+      heatmap.push({ day, hour, count, memberCount });
       if (count > 0) {
         minHour = Math.min(minHour, hour);
         maxHour = Math.max(maxHour, hour + 1);
@@ -305,15 +327,41 @@ export function computeScheduling(
         userId: c.userId ?? null,
         weight: Math.round((c.weight ?? 1) * 100) / 100,
       }));
+    // Raisons du classement (explicabilité). Extensible en V2 : préférences,
+    // conflits, pénalités s'ajouteront comme facteurs supplémentaires.
+    const factors: { kind: string; label: string; detail: string }[] = [
+      {
+        kind: "coverage",
+        label: "Couverture",
+        detail: `${memberCount} membre${memberCount > 1 ? "s" : ""} couvrent ce créneau`,
+      },
+      {
+        kind: "expected-attendance",
+        label: "Présence attendue",
+        detail: `≈ ${Math.round(s.weight * 10) / 10} présent(s) attendu(s)`,
+      },
+    ];
+    if (topContributors.length > 0) {
+      factors.push({
+        kind: "top-contributors",
+        label: "Fiabilité",
+        detail: `Top ${topContributors.length} contributeur(s) à ${topContributors
+          .map((c) => `${Math.round(c.weight * 100)}%`)
+          .join(", ")}`,
+      });
+    }
     return {
       day: s.day,
       startHour: s.startHour,
       startTime: `${pad(s.startHour)}:00`,
       endTime: `${pad(s.endHour)}:00`,
       available: Math.round(s.weight * 100) / 100,
+      expectedAttendance: Math.round(s.weight * 100) / 100,
       percent: totalMembers ? Math.round((s.weight / totalMembers) * 100) : 0,
+      coveragePercent: totalMembers ? Math.round((memberCount / totalMembers) * 100) : 0,
       memberCount,
       topContributors,
+      factors,
     };
   });
 

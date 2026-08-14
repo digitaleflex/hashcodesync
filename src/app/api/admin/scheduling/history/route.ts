@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { currentWeekStart, isCurrentWeek } from "@/lib/timezone";
-import { computeScheduling, SlotAvail } from "@/lib/scheduling";
+import { computeScheduling, computeCoveragePercent, SlotAvail } from "@/lib/scheduling";
 import { convertToReference } from "@/lib/timezone";
 
 export async function GET(req: NextRequest) {
@@ -105,7 +105,7 @@ export async function GET(req: NextRequest) {
       // Référence dynamique : le membre le plus rempli de la semaine sert de
       // base (au lieu d'une constante arbitraire « 40 ») → coverage borné à 100.
       const maxPerUser = users.length > 0 ? Math.max(1, ...users.map((u) => u.availabilities.length)) : 1;
-      const coveragePercent = users.length > 0 ? Math.min(100, Math.round((totalAvailabilities / (users.length * maxPerUser)) * 100)) : 0;
+      const coveragePercent = computeCoveragePercent(totalAvailabilities, users.length, maxPerUser);
 
       history.push({
         weekStart: weekStart.toISOString(),

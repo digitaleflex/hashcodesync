@@ -177,6 +177,13 @@ export async function GET(req: NextRequest) {
 
     const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
 
+    // Référence dynamique de la couverture : le membre le plus rempli de la
+    // cohorte (nb de créneaux déclarés) sert de dénominateur maximal — même
+    // convention que /api/admin/scheduling/history (plus de constante « 40 »).
+    const perUserCount = new Map<string, number>();
+    for (const r of rows) perUserCount.set(r.userId!, (perUserCount.get(r.userId!) ?? 0) + 1);
+    const maxSlotsPerUser = perUserCount.size > 0 ? Math.max(1, ...perUserCount.values()) : 1;
+
     const availabilities = convertToReference(rows);
 
     const merged = mergePerUserIntervals(
@@ -197,6 +204,7 @@ export async function GET(req: NextRequest) {
       referenceTimezone: REFERENCE_TIMEZONE,
       groupId: groupId ?? undefined,
       groupName,
+      maxSlotsPerUser,
     };
     cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
 

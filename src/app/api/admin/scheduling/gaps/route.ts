@@ -37,7 +37,7 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
   }));
 }
 
-function detectGaps(
+export function detectGaps(
   heatmap: { day: number; hour: number; count: number }[],
   minHour: number,
   maxHour: number,
@@ -66,9 +66,10 @@ function detectGaps(
 
     for (let h = minHour; h < maxHour; h++) {
       const count = dayMap.get(h) ?? 0;
-      // Un jour totalement vide = tous les créneaux sont des gaps ;
-      // sinon un créneau est un gap si sa couverture est sous le seuil relatif.
-      const isEmpty = dayMax === 0 ? count === 0 : count < gapLevel;
+      // Un créneau est un gap s'il est strictement vide OU sous le seuil relatif
+      // (max(1, gapLevel) garantit que count=0 reste toujours un gap).
+      const gapLevel = Math.max(1, dayMax * threshold);
+      const isEmpty = count < gapLevel;
       if (isEmpty && !inGap) {
         inGap = true;
         gapStart = h;

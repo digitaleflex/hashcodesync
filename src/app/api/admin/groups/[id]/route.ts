@@ -68,8 +68,11 @@ export async function PATCH(req: NextRequest, { params }: Ctx) {
   if (typeof body.description === "string") {
     updates.description = body.description.trim() || null;
   }
-  if (typeof body.coverImage === "string") {
-    const coverImage = body.coverImage.trim() || null;
+  if (body.coverImage !== undefined) {
+    if (body.coverImage !== null && typeof body.coverImage !== "string") {
+      return NextResponse.json({ error: "Chemin d'image invalide" }, { status: 400 });
+    }
+    const coverImage = typeof body.coverImage === "string" ? body.coverImage.trim() || null : null;
     if (coverImage !== null && !/^\/uploads\/[A-Za-z0-9._-]+$/.test(coverImage)) {
       return NextResponse.json({ error: "Chemin d'image invalide" }, { status: 400 });
     }

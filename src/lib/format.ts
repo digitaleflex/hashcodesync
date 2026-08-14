@@ -7,6 +7,13 @@ export function formatDate(iso: string | Date) {
   });
 }
 
+export function formatHours(hours: number): string {
+  const h = Math.floor(hours);
+  const m = Math.round((hours - h) * 60);
+  if (m === 0) return `${h} h`;
+  return `${h} h ${String(m).padStart(2, "0").replace(/0$/, "")}`.trim();
+}
+
 export function formatTime(iso: string | Date) {
   const d = typeof iso === "string" ? new Date(iso) : iso;
   return d.toLocaleTimeString("fr-FR", {

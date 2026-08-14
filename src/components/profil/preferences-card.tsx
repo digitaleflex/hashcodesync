@@ -4,13 +4,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -21,7 +14,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
-import { SlidersHorizontalIcon, Loader2Icon, SaveIcon, PencilIcon } from "lucide-react";
+import { ProfileRow } from "@/components/profil/profile-row";
+import { Loader2Icon, SaveIcon, SlidersHorizontalIcon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -77,12 +71,22 @@ export function PreferencesCard({
   const [wantsMentoring, setWantsMentoring] = useState(prefs.wantsMentoring);
   const [frequency, setFrequency] = useState(prefs.frequency);
 
-  const selectedDays = DAY_SHORT.filter((_, i) => days[i]);
   const moments = [
     morning && "Matin",
     afternoon && "Après-midi",
     evening && "Soir",
   ].filter(Boolean);
+
+  const activities = [
+    wantsWorkshops && "Ateliers",
+    wantsMentoring && "Mentorat",
+  ].filter(Boolean);
+
+  const summary = [
+    moments.join(" · ") || "Aucun moment",
+    activities.join(", ") || "Aucune activité",
+    frequencyLabels[frequency] ?? frequency,
+  ].join(" · ");
 
   const save = async () => {
     setSaving(true);
@@ -118,41 +122,14 @@ export function PreferencesCard({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <SlidersHorizontalIcon className="size-4 text-accent" />
-          Préférences
-        </CardTitle>
-        <CardDescription>
-          Vos préférences orientent les recommandations, sans remplacer les
-          contraintes de planification.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <p className="text-sm">
-          {selectedDays.length === 0
-            ? "Aucun jour privilégié"
-            : `Jours privilégiés : ${selectedDays.join(", ")}`}
-        </p>
-        <p className="text-sm">
-          Moments : {moments.length === 0 ? "aucun" : moments.join(", ")}
-        </p>
-        <p className="text-sm">
-          Activités :{" "}
-          {[wantsWorkshops && "Ateliers", wantsMentoring && "Mentorat"]
-            .filter(Boolean)
-            .join(", ") || "aucune"}
-        </p>
-        <p className="text-sm">
-          Fréquence : {frequencyLabels[frequency] ?? frequency}
-        </p>
-
-        <Button variant="outline" className="w-full" onClick={() => setOpen(true)}>
-          <PencilIcon className="size-4" />
-          Modifier
-        </Button>
-      </CardContent>
+    <>
+      <ProfileRow
+        icon={<SlidersHorizontalIcon className="size-4.5" />}
+        label="Préférences"
+        value={summary}
+        action="Modifier"
+        onClick={() => setOpen(true)}
+      />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
@@ -269,6 +246,6 @@ export function PreferencesCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </>
   );
 }

@@ -5,13 +5,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -22,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
+import { ProfileRow } from "@/components/profil/profile-row";
 import { authClient } from "@/lib/auth-client";
 import {
   FileDownIcon,
@@ -34,6 +28,7 @@ import {
 
 export function DataCard() {
   const router = useRouter();
+  const [open, setOpen] = useState(false);
   const [exporting, setExporting] = useState<"json" | "csv" | null>(null);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
@@ -100,63 +95,66 @@ export function DataCard() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <FileDownIcon className="size-4 text-accent" />
-          Mes données
-        </CardTitle>
-        <CardDescription>
-          Vous gardez la main sur vos informations à tout moment.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <div className="flex flex-col gap-2 sm:flex-row">
-          <Button
-            variant="outline"
-            onClick={() => void download("json")}
-            disabled={exporting !== null}
-          >
-            {exporting === "json" ? (
-              <Loader2Icon className="size-4 animate-spin" />
-            ) : (
-              <FileDownIcon className="size-4" />
-            )}
-            Exporter mes données (JSON)
-          </Button>
-          <Button
-            variant="outline"
-            onClick={() => void download("csv")}
-            disabled={exporting !== null}
-          >
-            {exporting === "csv" ? (
-              <Loader2Icon className="size-4 animate-spin" />
-            ) : (
-              <TableIcon className="size-4" />
-            )}
-            Exporter mes disponibilités (CSV)
-          </Button>
-        </div>
+    <div>
+      <ProfileRow
+        icon={<FileDownIcon className="size-4.5" />}
+        label="Données & confidentialité"
+        value="Exports et suppression de votre compte"
+        action={open ? "Fermer" : "Gérer"}
+        onClick={() => setOpen((v) => !v)}
+        expanded={open}
+      />
 
-        <div className="flex flex-col gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
-          <div className="flex items-center gap-2">
-            <AlertTriangleIcon className="size-4 text-destructive" />
-            <p className="text-sm font-medium">Zone sensible</p>
+      {open && (
+        <div className="space-y-4 rounded-b-xl border border-t-0 border-border bg-card p-4">
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              variant="outline"
+              onClick={() => void download("json")}
+              disabled={exporting !== null}
+            >
+              {exporting === "json" ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                <FileDownIcon className="size-4" />
+              )}
+              Exporter mes données (JSON)
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => void download("csv")}
+              disabled={exporting !== null}
+            >
+              {exporting === "csv" ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                <TableIcon className="size-4" />
+              )}
+              Exporter mes disponibilités (CSV)
+            </Button>
           </div>
-          <p className="text-xs text-muted-foreground">
-            La suppression est définitive : profil, disponibilités, préférences
-            et historique seront effacés. Cette action est irréversible.
-          </p>
-          <Button
-            variant="destructive"
-            className="mt-1 w-full sm:w-fit"
-            onClick={() => setDeleteOpen(true)}
-          >
-            <Trash2Icon className="size-4" />
-            Supprimer mon compte
-          </Button>
+
+          <div className="flex flex-col gap-2 rounded-lg border border-destructive/30 bg-destructive/5 p-4">
+            <div className="flex items-center gap-2">
+              <AlertTriangleIcon className="size-4 text-destructive" />
+              <p className="text-sm font-medium">Zone sensible</p>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              La suppression est définitive : profil, disponibilités,
+              préférences et historique seront effacés. Cette action est
+              irréversible.
+            </p>
+            <Button
+              variant="destructive"
+              className="mt-1 w-full sm:w-fit"
+              onClick={() => setDeleteOpen(true)}
+            >
+              <Trash2Icon className="size-4" />
+              Supprimer mon compte
+            </Button>
+          </div>
         </div>
-      </CardContent>
+      )}
 
       <Dialog open={deleteOpen} onOpenChange={setDeleteOpen}>
         <DialogContent className="sm:max-w-md">
@@ -223,6 +221,6 @@ export function DataCard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   );
 }

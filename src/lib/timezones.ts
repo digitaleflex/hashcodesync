@@ -27,3 +27,19 @@ export function getBrowserTimezone(): string {
     return DEFAULT_TIMEZONE;
   }
 }
+
+// Décalage UTC actuel d'un fuseau IANA, ex. « UTC+1 ». Client-safe.
+export function timezoneOffsetLabel(timezone: string): string {
+  try {
+    const dtf = new Intl.DateTimeFormat("fr-FR", {
+      timeZone: timezone,
+      timeZoneName: "shortOffset",
+    });
+    const parts = dtf
+      .formatToParts(new Date())
+      .find((p) => p.type === "timeZoneName");
+    return parts?.value ?? timezone;
+  } catch {
+    return timezone;
+  }
+}

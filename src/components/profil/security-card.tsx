@@ -3,23 +3,17 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { PasswordInput } from "@/components/ui/password-input";
+import { ProfileRow } from "@/components/profil/profile-row";
 import { authClient } from "@/lib/auth-client";
 import { formatDate } from "@/lib/format";
 import {
+  ShieldAlertIcon,
   KeyRoundIcon,
   Loader2Icon,
-  ShieldAlertIcon,
   MonitorIcon,
   LogOutIcon,
   LoaderIcon,
@@ -135,132 +129,127 @@ export function SecurityCard({ user }: { user: ProfileUser }) {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <ShieldAlertIcon className="size-4 text-accent" />
-          Sécurité
-        </CardTitle>
-        <CardDescription>Mot de passe et sessions actives.</CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {showPassword ? (
-          <div className="space-y-4">
+    <div>
+      <ProfileRow
+        icon={<ShieldAlertIcon className="size-4.5" />}
+        label="Sécurité"
+        value="Mot de passe et sessions actives"
+        action={showPassword ? "Fermer" : "Gérer"}
+        onClick={() => setShowPassword((v) => !v)}
+        expanded={showPassword}
+      />
+
+      {showPassword && (
+        <div className="space-y-4 rounded-b-xl border border-t-0 border-border bg-card p-4">
+          <div className="space-y-2">
+            <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+            <PasswordInput
+              id="currentPassword"
+              value={currentPassword}
+              onChange={setCurrentPassword}
+            />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword">Mot de passe actuel</Label>
+              <Label htmlFor="newPassword">Nouveau mot de passe</Label>
               <PasswordInput
-                id="currentPassword"
-                value={currentPassword}
-                onChange={setCurrentPassword}
+                id="newPassword"
+                value={newPassword}
+                onChange={setNewPassword}
               />
             </div>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div className="space-y-2">
-                <Label htmlFor="newPassword">Nouveau mot de passe</Label>
-                <PasswordInput
-                  id="newPassword"
-                  value={newPassword}
-                  onChange={setNewPassword}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="confirmPassword">Confirmer</Label>
-                <PasswordInput
-                  id="confirmPassword"
-                  value={confirmPassword}
-                  onChange={setConfirmPassword}
-                />
-              </div>
-            </div>
-
-            <Separator />
-
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label>Sessions actives</Label>
-                {sessions.length > 1 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => void revokeAllOthers()}
-                    disabled={revoking}
-                  >
-                    {revoking ? (
-                      <LoaderIcon className="size-4 animate-spin" />
-                    ) : (
-                      <LogOutIcon className="size-4" />
-                    )}
-                    Se déconnecter des autres
-                  </Button>
-                )}
-              </div>
+              <Label htmlFor="confirmPassword">Confirmer</Label>
+              <PasswordInput
+                id="confirmPassword"
+                value={confirmPassword}
+                onChange={setConfirmPassword}
+              />
+            </div>
+          </div>
 
-              {loadingSessions ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2Icon className="size-5 animate-spin text-accent" />
-                </div>
-              ) : sessionError ? (
-                <p className="py-2 text-xs text-muted-foreground">{sessionError}</p>
-              ) : sessions.length === 0 ? (
-                <p className="py-2 text-xs text-muted-foreground">
-                  Aucune session active.
-                </p>
-              ) : (
-                <ul className="space-y-2">
-                  {sessions.map((s) => (
-                    <li
-                      key={s.id}
-                      className="flex items-center justify-between gap-3 rounded-lg border p-3"
-                    >
-                      <div className="flex min-w-0 items-center gap-2.5">
-                        <MonitorIcon className="size-4 shrink-0 text-muted-foreground" />
-                        <div className="min-w-0">
-                          <p className="truncate text-xs font-medium">
-                            {s.userAgent ?? "Appareil inconnu"}
-                          </p>
-                          <p className="truncate text-xs text-muted-foreground">
-                            Connecté le{" "}
-                            {formatDate(s.createdAt)}
-                            {s.ipAddress ? ` · ${s.ipAddress}` : ""}
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => void revokeSession(s.token)}
-                        disabled={revoking}
-                      >
-                        Révoquer
-                      </Button>
-                    </li>
-                  ))}
-                </ul>
+          <Separator />
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <Label>Sessions actives</Label>
+              {sessions.length > 1 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => void revokeAllOthers()}
+                  disabled={revoking}
+                >
+                  {revoking ? (
+                    <LoaderIcon className="size-4 animate-spin" />
+                  ) : (
+                    <LogOutIcon className="size-4" />
+                  )}
+                  Se déconnecter des autres
+                </Button>
               )}
             </div>
 
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setShowPassword(false)}>
-                Annuler
-              </Button>
-              <Button onClick={changePassword} disabled={changing}>
-                {changing ? (
-                  <Loader2Icon className="size-4 animate-spin" />
-                ) : (
-                  <KeyRoundIcon className="size-4" />
-                )}
-                Modifier le mot de passe
-              </Button>
-            </div>
+            {loadingSessions ? (
+              <div className="flex items-center justify-center py-4">
+                <Loader2Icon className="size-5 animate-spin text-accent" />
+              </div>
+            ) : sessionError ? (
+              <p className="py-2 text-xs text-muted-foreground">{sessionError}</p>
+            ) : sessions.length === 0 ? (
+              <p className="py-2 text-xs text-muted-foreground">
+                Aucune session active.
+              </p>
+            ) : (
+              <ul className="space-y-2">
+                {sessions.map((s) => (
+                  <li
+                    key={s.id}
+                    className="flex items-center justify-between gap-3 rounded-lg border p-3"
+                  >
+                    <div className="flex min-w-0 items-center gap-2.5">
+                      <MonitorIcon className="size-4 shrink-0 text-muted-foreground" />
+                      <div className="min-w-0">
+                        <p className="truncate text-xs font-medium">
+                          {s.userAgent ?? "Appareil inconnu"}
+                        </p>
+                        <p className="truncate text-xs text-muted-foreground">
+                          Connecté le{" "}
+                          {formatDate(s.createdAt)}
+                          {s.ipAddress ? ` · ${s.ipAddress}` : ""}
+                        </p>
+                      </div>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => void revokeSession(s.token)}
+                      disabled={revoking}
+                    >
+                      Révoquer
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-        ) : (
-          <Button variant="outline" className="w-full" onClick={() => setShowPassword(true)}>
-            <KeyRoundIcon className="size-4" />
-            Modifier le mot de passe
-          </Button>
-        )}
-      </CardContent>
-    </Card>
+
+          <div className="flex gap-2">
+            <Button variant="outline" onClick={() => setShowPassword(false)}>
+              Annuler
+            </Button>
+            <Button onClick={changePassword} disabled={changing}>
+              {changing ? (
+                <Loader2Icon className="size-4 animate-spin" />
+              ) : (
+                <KeyRoundIcon className="size-4" />
+              )}
+              Modifier le mot de passe
+            </Button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

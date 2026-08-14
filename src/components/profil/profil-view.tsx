@@ -13,6 +13,7 @@ import { DataUsageCard } from "@/components/profil/data-usage-card";
 import { NotificationsCard } from "@/components/profil/notifications-card";
 import { SecurityCard } from "@/components/profil/security-card";
 import { DataCard } from "@/components/profil/data-card";
+import { ProfileSectionTitle } from "@/components/profil/profile-section";
 
 export function ProfilView(props: ProfilProps) {
   const router = useRouter();
@@ -22,38 +23,55 @@ export function ProfilView(props: ProfilProps) {
   const refresh = () => router.refresh();
 
   return (
-    <div className="space-y-6">
-      <IdentityCard user={props.user} groups={props.groups} onSaved={refresh} />
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <AvailabilityCard availability={props.availability} />
-        <PreferencesCard
-          preferences={props.planningPreferences}
-          onSaved={refresh}
-        />
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2">
-        <LimitsCard preferences={props.planningPreferences} onSaved={refresh} />
-        <TimezoneCard user={props.user} onSaved={refresh} />
-      </div>
-
-      <AbsencesCard
-        unavailabilities={props.unavailabilities}
+    <div className="space-y-8">
+      <IdentityCard
+        user={props.user}
+        groups={props.groups}
+        availability={props.availability}
         onSaved={refresh}
       />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <ReliabilityCard reliability={props.reliability} />
-        <DataUsageCard />
-      </div>
+      <section aria-label="Ma planification" className="space-y-4">
+        <ProfileSectionTitle
+          title="Ma planification"
+          description="Vos disponibilités, préférences, limites, fuseau et absences définissent les créneaux que Sync recherche pour vous."
+        />
+        <div className="space-y-3">
+          <AvailabilityCard availability={props.availability} />
 
-      <div className="grid gap-4 md:grid-cols-2">
-        <NotificationsCard />
-        <SecurityCard user={props.user} />
-      </div>
+          <div className="grid gap-3 md:grid-cols-2">
+            <PreferencesCard
+              preferences={props.planningPreferences}
+              onSaved={refresh}
+            />
+            <LimitsCard
+              preferences={props.planningPreferences}
+              onSaved={refresh}
+            />
+            <TimezoneCard user={props.user} onSaved={refresh} />
+            <AbsencesCard
+              unavailabilities={props.unavailabilities}
+              onSaved={refresh}
+            />
+          </div>
+        </div>
+      </section>
 
-      <DataCard />
+      <ReliabilityCard reliability={props.reliability} />
+
+      <DataUsageCard />
+
+      <section aria-label="Compte" className="space-y-4">
+        <ProfileSectionTitle
+          title="Compte"
+          description="Notifications, sécurité et vos données."
+        />
+        <div className="space-y-3">
+          <NotificationsCard />
+          <SecurityCard user={props.user} />
+          <DataCard />
+        </div>
+      </section>
     </div>
   );
 }

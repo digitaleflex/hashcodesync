@@ -4,13 +4,6 @@ import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -20,7 +13,8 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GaugeIcon, Loader2Icon, SaveIcon, PencilIcon } from "lucide-react";
+import { ProfileRow } from "@/components/profil/profile-row";
+import { GaugeIcon, Loader2Icon, SaveIcon } from "lucide-react";
 import type { PlanningPreferencesData } from "@/components/profil/types";
 
 const DEFAULT_LIMITS = {
@@ -28,10 +22,6 @@ const DEFAULT_LIMITS = {
   maxWorkshopsPerWeek: null as number | null,
   maxMentorshipPerWeek: null as number | null,
 };
-
-function fmt(n: number | null, unit: string): string {
-  return n === null ? "Illimité" : `${n} ${unit}${n > 1 ? "s" : ""}`;
-}
 
 export function LimitsCard({
   preferences,
@@ -58,6 +48,16 @@ export function LimitsCard({
     p.maxMentorshipPerWeek ? String(p.maxMentorshipPerWeek) : ""
   );
 
+  const limits: Array<{ n: number | null; label: string; unit: string }> = [
+    { n: p.maxHoursPerWeek, label: "heures", unit: "h" },
+    { n: p.maxWorkshopsPerWeek, label: "ateliers", unit: "atelier" },
+    { n: p.maxMentorshipPerWeek, label: "mentorats", unit: "mentorat" },
+  ];
+  const active = limits.filter((l) => l.n !== null);
+  const summary = active.length
+    ? active.map((l) => `${l.n} ${l.n! > 1 ? l.label : l.unit} / semaine`).join(" · ")
+    : "Aucune limite configurée";
+
   const save = async () => {
     setSaving(true);
     try {
@@ -83,43 +83,14 @@ export function LimitsCard({
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <GaugeIcon className="size-4 text-warning" />
-          Mes limites
-        </CardTitle>
-        <CardDescription>
-          Des limites dures : la planification ne les dépassera jamais.
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <div>
-            <p className="font-heading text-2xl font-semibold">
-              {fmt(p.maxHoursPerWeek, "h")}
-            </p>
-            <p className="text-xs text-muted-foreground">par semaine</p>
-          </div>
-          <div>
-            <p className="font-heading text-2xl font-semibold">
-              {fmt(p.maxWorkshopsPerWeek, "atelier")}
-            </p>
-            <p className="text-xs text-muted-foreground">ateliers / semaine</p>
-          </div>
-          <div>
-            <p className="font-heading text-2xl font-semibold">
-              {fmt(p.maxMentorshipPerWeek, "session")}
-            </p>
-            <p className="text-xs text-muted-foreground">mentorats / semaine</p>
-          </div>
-        </div>
-
-        <Button variant="outline" className="w-full" onClick={() => setOpen(true)}>
-          <PencilIcon className="size-4" />
-          Modifier
-        </Button>
-      </CardContent>
+    <>
+      <ProfileRow
+        icon={<GaugeIcon className="size-4.5" />}
+        label="Limites"
+        value={summary}
+        action="Modifier"
+        onClick={() => setOpen(true)}
+      />
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
@@ -188,6 +159,6 @@ export function LimitsCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </Card>
+    </>
   );
 }

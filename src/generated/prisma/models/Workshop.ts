@@ -47,6 +47,8 @@ export type WorkshopMinAggregateOutputType = {
   seriesId: string | null
   type: string | null
   menteeId: string | null
+  activityId: string | null
+  requiresMentor: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -64,6 +66,8 @@ export type WorkshopMaxAggregateOutputType = {
   seriesId: string | null
   type: string | null
   menteeId: string | null
+  activityId: string | null
+  requiresMentor: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -81,6 +85,8 @@ export type WorkshopCountAggregateOutputType = {
   seriesId: number
   type: number
   menteeId: number
+  activityId: number
+  requiresMentor: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -108,6 +114,8 @@ export type WorkshopMinAggregateInputType = {
   seriesId?: true
   type?: true
   menteeId?: true
+  activityId?: true
+  requiresMentor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -125,6 +133,8 @@ export type WorkshopMaxAggregateInputType = {
   seriesId?: true
   type?: true
   menteeId?: true
+  activityId?: true
+  requiresMentor?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -142,6 +152,8 @@ export type WorkshopCountAggregateInputType = {
   seriesId?: true
   type?: true
   menteeId?: true
+  activityId?: true
+  requiresMentor?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -246,6 +258,8 @@ export type WorkshopGroupByOutputType = {
   seriesId: string | null
   type: string
   menteeId: string | null
+  activityId: string | null
+  requiresMentor: boolean
   createdAt: Date
   updatedAt: Date
   _count: WorkshopCountAggregateOutputType | null
@@ -286,11 +300,14 @@ export type WorkshopWhereInput = {
   seriesId?: Prisma.StringNullableFilter<"Workshop"> | string | null
   type?: Prisma.StringFilter<"Workshop"> | string
   menteeId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  requiresMentor?: Prisma.BoolFilter<"Workshop"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   series?: Prisma.XOR<Prisma.WorkshopSeriesNullableScalarRelationFilter, Prisma.WorkshopSeriesWhereInput> | null
   mentee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  activity?: Prisma.XOR<Prisma.GroupActivityNullableScalarRelationFilter, Prisma.GroupActivityWhereInput> | null
   participants?: Prisma.ParticipantListRelationFilter
   attendance?: Prisma.AttendanceListRelationFilter
   waitlist?: Prisma.WaitlistListRelationFilter
@@ -310,11 +327,14 @@ export type WorkshopOrderByWithRelationInput = {
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   menteeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  requiresMentor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   creator?: Prisma.UserOrderByWithRelationInput
   series?: Prisma.WorkshopSeriesOrderByWithRelationInput
   mentee?: Prisma.UserOrderByWithRelationInput
+  activity?: Prisma.GroupActivityOrderByWithRelationInput
   participants?: Prisma.ParticipantOrderByRelationAggregateInput
   attendance?: Prisma.AttendanceOrderByRelationAggregateInput
   waitlist?: Prisma.WaitlistOrderByRelationAggregateInput
@@ -337,11 +357,14 @@ export type WorkshopWhereUniqueInput = Prisma.AtLeast<{
   seriesId?: Prisma.StringNullableFilter<"Workshop"> | string | null
   type?: Prisma.StringFilter<"Workshop"> | string
   menteeId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  requiresMentor?: Prisma.BoolFilter<"Workshop"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   creator?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
   series?: Prisma.XOR<Prisma.WorkshopSeriesNullableScalarRelationFilter, Prisma.WorkshopSeriesWhereInput> | null
   mentee?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
+  activity?: Prisma.XOR<Prisma.GroupActivityNullableScalarRelationFilter, Prisma.GroupActivityWhereInput> | null
   participants?: Prisma.ParticipantListRelationFilter
   attendance?: Prisma.AttendanceListRelationFilter
   waitlist?: Prisma.WaitlistListRelationFilter
@@ -361,6 +384,8 @@ export type WorkshopOrderByWithAggregationInput = {
   seriesId?: Prisma.SortOrderInput | Prisma.SortOrder
   type?: Prisma.SortOrder
   menteeId?: Prisma.SortOrderInput | Prisma.SortOrder
+  activityId?: Prisma.SortOrderInput | Prisma.SortOrder
+  requiresMentor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.WorkshopCountOrderByAggregateInput
@@ -386,6 +411,8 @@ export type WorkshopScalarWhereWithAggregatesInput = {
   seriesId?: Prisma.StringNullableWithAggregatesFilter<"Workshop"> | string | null
   type?: Prisma.StringWithAggregatesFilter<"Workshop"> | string
   menteeId?: Prisma.StringNullableWithAggregatesFilter<"Workshop"> | string | null
+  activityId?: Prisma.StringNullableWithAggregatesFilter<"Workshop"> | string | null
+  requiresMentor?: Prisma.BoolWithAggregatesFilter<"Workshop"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Workshop"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Workshop"> | Date | string
 }
@@ -400,11 +427,13 @@ export type WorkshopCreateInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
@@ -424,6 +453,8 @@ export type WorkshopUncheckedCreateInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -442,11 +473,13 @@ export type WorkshopUpdateInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
@@ -466,6 +499,8 @@ export type WorkshopUncheckedUpdateInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -487,6 +522,8 @@ export type WorkshopCreateManyInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -501,6 +538,7 @@ export type WorkshopUpdateManyMutationInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -518,6 +556,8 @@ export type WorkshopUncheckedUpdateManyInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -545,6 +585,8 @@ export type WorkshopCountOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   menteeId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
+  requiresMentor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -566,6 +608,8 @@ export type WorkshopMaxOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   menteeId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
+  requiresMentor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -583,6 +627,8 @@ export type WorkshopMinOrderByAggregateInput = {
   seriesId?: Prisma.SortOrder
   type?: Prisma.SortOrder
   menteeId?: Prisma.SortOrder
+  activityId?: Prisma.SortOrder
+  requiresMentor?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -677,6 +723,48 @@ export type WorkshopUncheckedUpdateManyWithoutMenteeNestedInput = {
   connect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
   update?: Prisma.WorkshopUpdateWithWhereUniqueWithoutMenteeInput | Prisma.WorkshopUpdateWithWhereUniqueWithoutMenteeInput[]
   updateMany?: Prisma.WorkshopUpdateManyWithWhereWithoutMenteeInput | Prisma.WorkshopUpdateManyWithWhereWithoutMenteeInput[]
+  deleteMany?: Prisma.WorkshopScalarWhereInput | Prisma.WorkshopScalarWhereInput[]
+}
+
+export type WorkshopCreateNestedManyWithoutActivityInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput> | Prisma.WorkshopCreateWithoutActivityInput[] | Prisma.WorkshopUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutActivityInput | Prisma.WorkshopCreateOrConnectWithoutActivityInput[]
+  createMany?: Prisma.WorkshopCreateManyActivityInputEnvelope
+  connect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+}
+
+export type WorkshopUncheckedCreateNestedManyWithoutActivityInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput> | Prisma.WorkshopCreateWithoutActivityInput[] | Prisma.WorkshopUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutActivityInput | Prisma.WorkshopCreateOrConnectWithoutActivityInput[]
+  createMany?: Prisma.WorkshopCreateManyActivityInputEnvelope
+  connect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+}
+
+export type WorkshopUpdateManyWithoutActivityNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput> | Prisma.WorkshopCreateWithoutActivityInput[] | Prisma.WorkshopUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutActivityInput | Prisma.WorkshopCreateOrConnectWithoutActivityInput[]
+  upsert?: Prisma.WorkshopUpsertWithWhereUniqueWithoutActivityInput | Prisma.WorkshopUpsertWithWhereUniqueWithoutActivityInput[]
+  createMany?: Prisma.WorkshopCreateManyActivityInputEnvelope
+  set?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  disconnect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  delete?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  connect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  update?: Prisma.WorkshopUpdateWithWhereUniqueWithoutActivityInput | Prisma.WorkshopUpdateWithWhereUniqueWithoutActivityInput[]
+  updateMany?: Prisma.WorkshopUpdateManyWithWhereWithoutActivityInput | Prisma.WorkshopUpdateManyWithWhereWithoutActivityInput[]
+  deleteMany?: Prisma.WorkshopScalarWhereInput | Prisma.WorkshopScalarWhereInput[]
+}
+
+export type WorkshopUncheckedUpdateManyWithoutActivityNestedInput = {
+  create?: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput> | Prisma.WorkshopCreateWithoutActivityInput[] | Prisma.WorkshopUncheckedCreateWithoutActivityInput[]
+  connectOrCreate?: Prisma.WorkshopCreateOrConnectWithoutActivityInput | Prisma.WorkshopCreateOrConnectWithoutActivityInput[]
+  upsert?: Prisma.WorkshopUpsertWithWhereUniqueWithoutActivityInput | Prisma.WorkshopUpsertWithWhereUniqueWithoutActivityInput[]
+  createMany?: Prisma.WorkshopCreateManyActivityInputEnvelope
+  set?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  disconnect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  delete?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  connect?: Prisma.WorkshopWhereUniqueInput | Prisma.WorkshopWhereUniqueInput[]
+  update?: Prisma.WorkshopUpdateWithWhereUniqueWithoutActivityInput | Prisma.WorkshopUpdateWithWhereUniqueWithoutActivityInput[]
+  updateMany?: Prisma.WorkshopUpdateManyWithWhereWithoutActivityInput | Prisma.WorkshopUpdateManyWithWhereWithoutActivityInput[]
   deleteMany?: Prisma.WorkshopScalarWhereInput | Prisma.WorkshopScalarWhereInput[]
 }
 
@@ -788,10 +876,12 @@ export type WorkshopCreateWithoutCreatorInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
@@ -810,6 +900,8 @@ export type WorkshopUncheckedCreateWithoutCreatorInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -838,10 +930,12 @@ export type WorkshopCreateWithoutMenteeInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
@@ -860,6 +954,8 @@ export type WorkshopUncheckedCreateWithoutMenteeInput = {
   createdBy: string
   seriesId?: string | null
   type?: string
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -910,6 +1006,8 @@ export type WorkshopScalarWhereInput = {
   seriesId?: Prisma.StringNullableFilter<"Workshop"> | string | null
   type?: Prisma.StringFilter<"Workshop"> | string
   menteeId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  activityId?: Prisma.StringNullableFilter<"Workshop"> | string | null
+  requiresMentor?: Prisma.BoolFilter<"Workshop"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Workshop"> | Date | string
 }
@@ -930,6 +1028,76 @@ export type WorkshopUpdateManyWithWhereWithoutMenteeInput = {
   data: Prisma.XOR<Prisma.WorkshopUpdateManyMutationInput, Prisma.WorkshopUncheckedUpdateManyWithoutMenteeInput>
 }
 
+export type WorkshopCreateWithoutActivityInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt: Date | string
+  capacity?: number | null
+  location?: string | null
+  meetingUrl?: string | null
+  type?: string
+  requiresMentor?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
+  series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
+  mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
+  waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
+  feedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutWorkshopInput
+}
+
+export type WorkshopUncheckedCreateWithoutActivityInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt: Date | string
+  capacity?: number | null
+  location?: string | null
+  meetingUrl?: string | null
+  createdBy: string
+  seriesId?: string | null
+  type?: string
+  menteeId?: string | null
+  requiresMentor?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
+  attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutWorkshopInput
+  waitlist?: Prisma.WaitlistUncheckedCreateNestedManyWithoutWorkshopInput
+  feedbacks?: Prisma.WorkshopFeedbackUncheckedCreateNestedManyWithoutWorkshopInput
+}
+
+export type WorkshopCreateOrConnectWithoutActivityInput = {
+  where: Prisma.WorkshopWhereUniqueInput
+  create: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput>
+}
+
+export type WorkshopCreateManyActivityInputEnvelope = {
+  data: Prisma.WorkshopCreateManyActivityInput | Prisma.WorkshopCreateManyActivityInput[]
+  skipDuplicates?: boolean
+}
+
+export type WorkshopUpsertWithWhereUniqueWithoutActivityInput = {
+  where: Prisma.WorkshopWhereUniqueInput
+  update: Prisma.XOR<Prisma.WorkshopUpdateWithoutActivityInput, Prisma.WorkshopUncheckedUpdateWithoutActivityInput>
+  create: Prisma.XOR<Prisma.WorkshopCreateWithoutActivityInput, Prisma.WorkshopUncheckedCreateWithoutActivityInput>
+}
+
+export type WorkshopUpdateWithWhereUniqueWithoutActivityInput = {
+  where: Prisma.WorkshopWhereUniqueInput
+  data: Prisma.XOR<Prisma.WorkshopUpdateWithoutActivityInput, Prisma.WorkshopUncheckedUpdateWithoutActivityInput>
+}
+
+export type WorkshopUpdateManyWithWhereWithoutActivityInput = {
+  where: Prisma.WorkshopScalarWhereInput
+  data: Prisma.XOR<Prisma.WorkshopUpdateManyMutationInput, Prisma.WorkshopUncheckedUpdateManyWithoutActivityInput>
+}
+
 export type WorkshopCreateWithoutSeriesInput = {
   id?: string
   title: string
@@ -940,10 +1108,12 @@ export type WorkshopCreateWithoutSeriesInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
@@ -962,6 +1132,8 @@ export type WorkshopUncheckedCreateWithoutSeriesInput = {
   createdBy: string
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -1006,11 +1178,13 @@ export type WorkshopCreateWithoutParticipantsInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
   feedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutWorkshopInput
@@ -1029,6 +1203,8 @@ export type WorkshopUncheckedCreateWithoutParticipantsInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   attendance?: Prisma.AttendanceUncheckedCreateNestedManyWithoutWorkshopInput
@@ -1062,11 +1238,13 @@ export type WorkshopUpdateWithoutParticipantsInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
   feedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutWorkshopNestedInput
@@ -1085,6 +1263,8 @@ export type WorkshopUncheckedUpdateWithoutParticipantsInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1102,11 +1282,13 @@ export type WorkshopCreateWithoutAttendanceInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
   feedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutWorkshopInput
@@ -1125,6 +1307,8 @@ export type WorkshopUncheckedCreateWithoutAttendanceInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -1158,11 +1342,13 @@ export type WorkshopUpdateWithoutAttendanceInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
   feedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutWorkshopNestedInput
@@ -1181,6 +1367,8 @@ export type WorkshopUncheckedUpdateWithoutAttendanceInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1198,11 +1386,13 @@ export type WorkshopCreateWithoutWaitlistInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   feedbacks?: Prisma.WorkshopFeedbackCreateNestedManyWithoutWorkshopInput
@@ -1221,6 +1411,8 @@ export type WorkshopUncheckedCreateWithoutWaitlistInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -1254,11 +1446,13 @@ export type WorkshopUpdateWithoutWaitlistInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   feedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutWorkshopNestedInput
@@ -1277,6 +1471,8 @@ export type WorkshopUncheckedUpdateWithoutWaitlistInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1294,11 +1490,13 @@ export type WorkshopCreateWithoutFeedbacksInput = {
   location?: string | null
   meetingUrl?: string | null
   type?: string
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   creator: Prisma.UserCreateNestedOneWithoutWorkshopsInput
   series?: Prisma.WorkshopSeriesCreateNestedOneWithoutWorkshopsInput
   mentee?: Prisma.UserCreateNestedOneWithoutMentoredWorkshopsInput
+  activity?: Prisma.GroupActivityCreateNestedOneWithoutWorkshopsInput
   participants?: Prisma.ParticipantCreateNestedManyWithoutWorkshopInput
   attendance?: Prisma.AttendanceCreateNestedManyWithoutWorkshopInput
   waitlist?: Prisma.WaitlistCreateNestedManyWithoutWorkshopInput
@@ -1317,6 +1515,8 @@ export type WorkshopUncheckedCreateWithoutFeedbacksInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
   participants?: Prisma.ParticipantUncheckedCreateNestedManyWithoutWorkshopInput
@@ -1350,11 +1550,13 @@ export type WorkshopUpdateWithoutFeedbacksInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
@@ -1373,6 +1575,8 @@ export type WorkshopUncheckedUpdateWithoutFeedbacksInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1392,6 +1596,8 @@ export type WorkshopCreateManyCreatorInput = {
   seriesId?: string | null
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1408,6 +1614,8 @@ export type WorkshopCreateManyMenteeInput = {
   createdBy: string
   seriesId?: string | null
   type?: string
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1422,10 +1630,12 @@ export type WorkshopUpdateWithoutCreatorInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
@@ -1444,6 +1654,8 @@ export type WorkshopUncheckedUpdateWithoutCreatorInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1464,6 +1676,8 @@ export type WorkshopUncheckedUpdateManyWithoutCreatorInput = {
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1478,10 +1692,12 @@ export type WorkshopUpdateWithoutMenteeInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
@@ -1500,6 +1716,8 @@ export type WorkshopUncheckedUpdateWithoutMenteeInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1520,6 +1738,88 @@ export type WorkshopUncheckedUpdateManyWithoutMenteeInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+}
+
+export type WorkshopCreateManyActivityInput = {
+  id?: string
+  title: string
+  description?: string | null
+  startAt: Date | string
+  endAt: Date | string
+  capacity?: number | null
+  location?: string | null
+  meetingUrl?: string | null
+  createdBy: string
+  seriesId?: string | null
+  type?: string
+  menteeId?: string | null
+  requiresMentor?: boolean
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type WorkshopUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
+  series?: Prisma.WorkshopSeriesUpdateOneWithoutWorkshopsNestedInput
+  mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
+  waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
+  feedbacks?: Prisma.WorkshopFeedbackUpdateManyWithoutWorkshopNestedInput
+}
+
+export type WorkshopUncheckedUpdateWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
+  attendance?: Prisma.AttendanceUncheckedUpdateManyWithoutWorkshopNestedInput
+  waitlist?: Prisma.WaitlistUncheckedUpdateManyWithoutWorkshopNestedInput
+  feedbacks?: Prisma.WorkshopFeedbackUncheckedUpdateManyWithoutWorkshopNestedInput
+}
+
+export type WorkshopUncheckedUpdateManyWithoutActivityInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  startAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  endAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  capacity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdBy?: Prisma.StringFieldUpdateOperationsInput | string
+  seriesId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  type?: Prisma.StringFieldUpdateOperationsInput | string
+  menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1536,6 +1836,8 @@ export type WorkshopCreateManySeriesInput = {
   createdBy: string
   type?: string
   menteeId?: string | null
+  activityId?: string | null
+  requiresMentor?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -1550,10 +1852,12 @@ export type WorkshopUpdateWithoutSeriesInput = {
   location?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   meetingUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   type?: Prisma.StringFieldUpdateOperationsInput | string
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   creator?: Prisma.UserUpdateOneRequiredWithoutWorkshopsNestedInput
   mentee?: Prisma.UserUpdateOneWithoutMentoredWorkshopsNestedInput
+  activity?: Prisma.GroupActivityUpdateOneWithoutWorkshopsNestedInput
   participants?: Prisma.ParticipantUpdateManyWithoutWorkshopNestedInput
   attendance?: Prisma.AttendanceUpdateManyWithoutWorkshopNestedInput
   waitlist?: Prisma.WaitlistUpdateManyWithoutWorkshopNestedInput
@@ -1572,6 +1876,8 @@ export type WorkshopUncheckedUpdateWithoutSeriesInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   participants?: Prisma.ParticipantUncheckedUpdateManyWithoutWorkshopNestedInput
@@ -1592,6 +1898,8 @@ export type WorkshopUncheckedUpdateManyWithoutSeriesInput = {
   createdBy?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.StringFieldUpdateOperationsInput | string
   menteeId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  activityId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requiresMentor?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -1667,11 +1975,14 @@ export type WorkshopSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   seriesId?: boolean
   type?: boolean
   menteeId?: boolean
+  activityId?: boolean
+  requiresMentor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
   participants?: boolean | Prisma.Workshop$participantsArgs<ExtArgs>
   attendance?: boolean | Prisma.Workshop$attendanceArgs<ExtArgs>
   waitlist?: boolean | Prisma.Workshop$waitlistArgs<ExtArgs>
@@ -1692,11 +2003,14 @@ export type WorkshopSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exte
   seriesId?: boolean
   type?: boolean
   menteeId?: boolean
+  activityId?: boolean
+  requiresMentor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
 }, ExtArgs["result"]["workshop"]>
 
 export type WorkshopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1712,11 +2026,14 @@ export type WorkshopSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
   seriesId?: boolean
   type?: boolean
   menteeId?: boolean
+  activityId?: boolean
+  requiresMentor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
 }, ExtArgs["result"]["workshop"]>
 
 export type WorkshopSelectScalar = {
@@ -1732,15 +2049,18 @@ export type WorkshopSelectScalar = {
   seriesId?: boolean
   type?: boolean
   menteeId?: boolean
+  activityId?: boolean
+  requiresMentor?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type WorkshopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "startAt" | "endAt" | "capacity" | "location" | "meetingUrl" | "createdBy" | "seriesId" | "type" | "menteeId" | "createdAt" | "updatedAt", ExtArgs["result"]["workshop"]>
+export type WorkshopOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "title" | "description" | "startAt" | "endAt" | "capacity" | "location" | "meetingUrl" | "createdBy" | "seriesId" | "type" | "menteeId" | "activityId" | "requiresMentor" | "createdAt" | "updatedAt", ExtArgs["result"]["workshop"]>
 export type WorkshopInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
   participants?: boolean | Prisma.Workshop$participantsArgs<ExtArgs>
   attendance?: boolean | Prisma.Workshop$attendanceArgs<ExtArgs>
   waitlist?: boolean | Prisma.Workshop$waitlistArgs<ExtArgs>
@@ -1751,11 +2071,13 @@ export type WorkshopIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Ext
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
 }
 export type WorkshopIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   creator?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   series?: boolean | Prisma.Workshop$seriesArgs<ExtArgs>
   mentee?: boolean | Prisma.Workshop$menteeArgs<ExtArgs>
+  activity?: boolean | Prisma.Workshop$activityArgs<ExtArgs>
 }
 
 export type $WorkshopPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1764,6 +2086,7 @@ export type $WorkshopPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     creator: Prisma.$UserPayload<ExtArgs>
     series: Prisma.$WorkshopSeriesPayload<ExtArgs> | null
     mentee: Prisma.$UserPayload<ExtArgs> | null
+    activity: Prisma.$GroupActivityPayload<ExtArgs> | null
     participants: Prisma.$ParticipantPayload<ExtArgs>[]
     attendance: Prisma.$AttendancePayload<ExtArgs>[]
     waitlist: Prisma.$WaitlistPayload<ExtArgs>[]
@@ -1782,6 +2105,8 @@ export type $WorkshopPayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     seriesId: string | null
     type: string
     menteeId: string | null
+    activityId: string | null
+    requiresMentor: boolean
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["workshop"]>
@@ -2181,6 +2506,7 @@ export interface Prisma__WorkshopClient<T, Null = never, ExtArgs extends runtime
   creator<T extends Prisma.UserDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.UserDefaultArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   series<T extends Prisma.Workshop$seriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$seriesArgs<ExtArgs>>): Prisma.Prisma__WorkshopSeriesClient<runtime.Types.Result.GetResult<Prisma.$WorkshopSeriesPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   mentee<T extends Prisma.Workshop$menteeArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$menteeArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  activity<T extends Prisma.Workshop$activityArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$activityArgs<ExtArgs>>): Prisma.Prisma__GroupActivityClient<runtime.Types.Result.GetResult<Prisma.$GroupActivityPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   participants<T extends Prisma.Workshop$participantsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$participantsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   attendance<T extends Prisma.Workshop$attendanceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$attendanceArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AttendancePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   waitlist<T extends Prisma.Workshop$waitlistArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Workshop$waitlistArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$WaitlistPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -2226,6 +2552,8 @@ export interface WorkshopFieldRefs {
   readonly seriesId: Prisma.FieldRef<"Workshop", 'String'>
   readonly type: Prisma.FieldRef<"Workshop", 'String'>
   readonly menteeId: Prisma.FieldRef<"Workshop", 'String'>
+  readonly activityId: Prisma.FieldRef<"Workshop", 'String'>
+  readonly requiresMentor: Prisma.FieldRef<"Workshop", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Workshop", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Workshop", 'DateTime'>
 }
@@ -2664,6 +2992,25 @@ export type Workshop$menteeArgs<ExtArgs extends runtime.Types.Extensions.Interna
    */
   include?: Prisma.UserInclude<ExtArgs> | null
   where?: Prisma.UserWhereInput
+}
+
+/**
+ * Workshop.activity
+ */
+export type Workshop$activityArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the GroupActivity
+   */
+  select?: Prisma.GroupActivitySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the GroupActivity
+   */
+  omit?: Prisma.GroupActivityOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.GroupActivityInclude<ExtArgs> | null
+  where?: Prisma.GroupActivityWhereInput
 }
 
 /**

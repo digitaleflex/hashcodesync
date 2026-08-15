@@ -29,6 +29,7 @@ type CandSlotLike = {
   score: number;
   breakdown: { coverage: number; mentorFit: number; capacityFit: number; preference: number; fairness: number; conflict: number };
   covering: SlotAvail[];
+  mentorCovered: boolean;
 };
 
 // Deux membres couvrant entièrement le créneau de 2 h testé (lundi 8h-12h).
@@ -186,6 +187,7 @@ test("selectNonOverlappingHours: parité dichotomie vs O(n²) sur 1000 cas aléa
         score: weight,
         breakdown: { coverage: weight, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 },
         covering: [],
+        mentorCovered: false,
       });
     }
     const got = selectNonOverlappingHours(slots).map((s) => `${s.startMin}-${s.endMin}`).sort();
@@ -278,4 +280,80 @@ test("detectGaps: seuil 0 ne signale que les plages strictement vides", () => {
   const lundi = gaps.find((g) => g.day === 0)!;
   // threshold=0 → gapLevel=0 : seul 10h (count=0) est un gap.
   assert.deepEqual(lundi.gaps, [{ startHour: 10, endHour: 11, duration: 1 }]);
+});
+
+// --- Issues #54 / #55 : mentor et capacité dans le score composé ---
+
+// Deux créneaux de couverture identique : l'un couvert par un mentor (lundi),
+// l'autre non (mardi). Avec requiresMentor, le mentor doit être favorisé.
+const twoDayRows: SlotAvail[] = [
+  { day: 0, startMin: 480, endMin: 720, weight: 0.8, userId: "a", mentor: true },
+  { day: 0, startMin: 480, endMin: 720, weight: 0.6, userId: "b" },
+  { day: 1, startMin: 480, endMin: 720, weight: 0.8, userId: "c" },
+  { day: 1, startMin: 480, endMin: 720, weight: 0.6, userId: "d" },
+];
+
+test("computeScheduling: requiresMentor favorise le créneau couvert par un mentor (#54)", () => {
+  // Sans cible : parité, les deux jours sont à égalité.
+  const base = computeScheduling(twoDayRows, 4, 2);
+  const byDay = (s: typeof base) =>
+    s.recommendation.find((r) => r.day === 0)!.score -
+    s.recommendation.find((r) => r.day === 1)!.score;
+  assert.equal(byDay(base), 0);
+  assert.equal(base.recommendation[0].scoreBreakdown.mentorFit, 0);
+
+  // Avec requiresMentor : le créneau du lundi (mentor) score plus haut.
+  const withMentor = computeScheduling(twoDayRows, 4, 2, { requiresMentor: true });
+  assert.equal(withMentor.recommendation[0].day, 0);
+  const lundi = withMentor.recommendation.find((r) => r.day === 0)!;
+  const mardi = withMentor.recommendation.find((r) => r.day === 1)!;
+  assert.equal(lundi.scoreBreakdown.mentorFit, 1);
+  assert.equal(mardi.scoreBreakdown.mentorFit, 0);
+  assert.ok(lundi.score > mardi.score);
+  // Le facteur explicatif « mentor » est présent.
+  assert.ok(lundi.factors.some((f) => f.kind === "mentor"));
+  assert.ok(lundi.factors.some((f) => f.kind === "mentor" && f.label === "Mentor disponible"));
+});
+
+test("computeScheduling: capacity active capacityFit et signale la sous-capacité (#55)", () => {
+  // Capacité 3 > 2 membres couvrants : couverture 1.4 sur 3 → f_cap = 0.47.
+  const withCap = computeScheduling(rows, 4, 2, { capacity: 3 });
+  const top = withCap.recommendation[0];
+  assert.equal(top.capacityInsufficient, true);
+  assert.equal(Math.round(top.scoreBreakdown.capacityFit * 100), 47);
+  assert.equal(top.scoreBreakdown.mentorFit, 0);
+  assert.ok(top.factors.some((f) => f.kind === "capacity" && f.label === "Capacité insuffisante"));
+
+  // Capacité 1 : 2 membres couvrants ≥ 1 → pas de sous-capacité, f_cap = 1.
+  const ok = computeScheduling(rows, 4, 2, { capacity: 1 });
+  assert.equal(ok.recommendation[0].capacityInsufficient, false);
+  assert.equal(ok.recommendation[0].scoreBreakdown.capacityFit, 1);
+  assert.ok(ok.recommendation[0].factors.some((f) => f.kind === "capacity" && f.label === "Capacité OK"));
+
+  // Sans capacité : aucun terme capacité, flag absent (rétrocompat).
+  const none = computeScheduling(rows, 4, 2);
+  assert.equal(none.recommendation[0].scoreBreakdown.capacityFit, 0);
+  assert.equal(none.recommendation[0].capacityInsufficient, undefined);
+});
+
+test("configForTarget: config par défaut sans cible, termes activés sinon", async () => {
+  const { configForTarget, DEFAULT_SCORE_CONFIG } = await import("../src/lib/scoring");
+  // Sans mentor ni capacité → config par défaut (parité).
+  assert.deepEqual(configForTarget({}), DEFAULT_SCORE_CONFIG);
+  assert.deepEqual(configForTarget({ capacity: null, requiresMentor: false }), DEFAULT_SCORE_CONFIG);
+  // Mentor seul → w_men = 0.4, capacité à 0.
+  const mentor = configForTarget({ requiresMentor: true });
+  assert.equal(mentor.weights.mentorFit, 0.4);
+  assert.equal(mentor.weights.capacityFit, 0);
+  // Capacité seule → w_cap = 0.3.
+  const cap = configForTarget({ capacity: 5 });
+  assert.equal(cap.weights.capacityFit, 0.3);
+  assert.equal(cap.weights.mentorFit, 0);
+  // Les deux.
+  const both = configForTarget({ requiresMentor: true, capacity: 5 });
+  assert.equal(both.weights.mentorFit, 0.4);
+  assert.equal(both.weights.capacityFit, 0.3);
+  // Capacité non positive → ignorée (pas de w_cap).
+  const bad = configForTarget({ capacity: 0 });
+  assert.equal(bad.weights.capacityFit, 0);
 });

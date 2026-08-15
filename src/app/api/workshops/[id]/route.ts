@@ -9,6 +9,7 @@ const include = {
   creator: { select: { id: true, name: true, email: true } },
   series: { select: { id: true, name: true } },
   mentee: { select: { id: true, name: true, email: true } },
+  activity: { select: { id: true, name: true, type: true } },
   participants: {
     select: {
       id: true,
@@ -33,6 +34,8 @@ type Body = {
   seriesId?: unknown;
   type?: unknown;
   menteeId?: unknown;
+  activityId?: unknown;
+  requiresMentor?: unknown;
 };
 
 function parseBody(body: Body) {
@@ -50,7 +53,9 @@ function parseBody(body: Body) {
   const rawType = String(body.type ?? "atelier").trim();
   const type = rawType === "mentorship_session" ? "mentorship_session" : "atelier";
   const menteeId = String(body.menteeId ?? "").trim() || null;
-  return { title, description, startAt, endAt, capacity, location, meetingUrl, seriesId, type, menteeId };
+  const activityId = String(body.activityId ?? "").trim() || null;
+  const requiresMentor = body.requiresMentor === true || body.requiresMentor === "true";
+  return { title, description, startAt, endAt, capacity, location, meetingUrl, seriesId, type, menteeId, activityId, requiresMentor };
 }
 
 export async function GET(
@@ -116,6 +121,8 @@ export async function PATCH(
       seriesId,
       type,
       menteeId,
+      activityId,
+      requiresMentor,
     } = parseBody(body);
 
     if (!title) {
@@ -142,6 +149,8 @@ export async function PATCH(
       seriesId?: string | null;
       type?: string;
       menteeId?: string | null;
+      activityId?: string | null;
+      requiresMentor?: boolean;
     } = { title, description, startAt, endAt };
     if (capacity !== undefined) data.capacity = capacity;
     if (location !== undefined) data.location = location;
@@ -149,6 +158,8 @@ export async function PATCH(
     if (seriesId !== undefined) data.seriesId = seriesId;
     if (type !== undefined) data.type = type;
     if (menteeId !== undefined) data.menteeId = type === "mentorship_session" ? menteeId : null;
+    if (activityId !== undefined) data.activityId = activityId;
+    if (requiresMentor !== undefined) data.requiresMentor = requiresMentor;
 
     const updated = await prisma.workshop.update({
       where: { id },

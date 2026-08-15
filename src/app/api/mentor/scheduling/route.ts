@@ -33,6 +33,9 @@ export async function GET(req: NextRequest) {
     );
     const groupId = req.nextUrl.searchParams.get("groupId") || null;
     const activityId = req.nextUrl.searchParams.get("activityId") || null;
+    const requiresMentor = req.nextUrl.searchParams.get("mentor") === "true";
+    const capacityRaw = Number(req.nextUrl.searchParams.get("capacity") ?? "");
+    const capacity = Number.isFinite(capacityRaw) && capacityRaw > 0 ? capacityRaw : null;
 
     const groups = await prisma.group.findMany({
       orderBy: { name: "asc" },
@@ -61,7 +64,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth: true });
+    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth: true, requiresMentor, capacity });
     const hit = cache.get(key);
     const now = Date.now();
     if (hit && hit.expires > now) {
@@ -97,6 +100,7 @@ export async function GET(req: NextRequest) {
       }[];
       p?: number;
       reliability?: number;
+      mentor?: boolean;
     }[] = [];
     let totalUsers = 0;
     let coverage = 0;
@@ -115,6 +119,7 @@ export async function GET(req: NextRequest) {
           user: {
             select: {
               id: true,
+              role: true,
               firstname: true,
               lastname: true,
               email: true,
@@ -176,6 +181,7 @@ export async function GET(req: NextRequest) {
               startTime: a.startTime,
               endTime: a.endTime,
             })),
+            mentor: mem.user.role === "mentor",
             p,
           };
         });
@@ -187,6 +193,7 @@ export async function GET(req: NextRequest) {
           userTz: m.timezone,
           userId: m.id,
           weight: m.p,
+          mentor: m.mentor,
         }))
       );
       mentees.forEach((m) => {
@@ -199,6 +206,7 @@ export async function GET(req: NextRequest) {
           where: { availabilities: { some: {} } },
           select: {
             id: true,
+            role: true,
             timezone: true,
             attendances: { select: { status: true } },
             availabilities: {
@@ -270,6 +278,7 @@ export async function GET(req: NextRequest) {
           userTz: u.timezone,
           userId: u.id,
           weight: w,
+          mentor: u.role === "mentor",
         }));
       });
       mentees.forEach((m) => {
@@ -282,7 +291,7 @@ export async function GET(req: NextRequest) {
 
     const merged = mergePerUserIntervals(
       availabilities.map(
-        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId })
+        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId, mentor: a.mentor })
       )
     );
 
@@ -290,7 +299,7 @@ export async function GET(req: NextRequest) {
       merged,
       Math.max(coverage, 1),
       windowHours,
-      { smooth: true, smoothSigma: 1.2 }
+      { smooth: true, smoothSigma: 1.2, requiresMentor, capacity }
     );
 
     const payload: Record<string, unknown> = {
@@ -301,6 +310,8 @@ export async function GET(req: NextRequest) {
       mentees,
       groupId: groupId ?? undefined,
       groupName,
+      capacity,
+      requiresMentor,
     };
     cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
 

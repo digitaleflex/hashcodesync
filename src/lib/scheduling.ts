@@ -1,4 +1,4 @@
-import { DEFAULT_SCORE_CONFIG, computeSlotScore, type ScoreConfig, type ScoreBreakdown } from "@/lib/scoring";
+import { configForTarget, computeSlotScore, type ScoreConfig, type ScoreBreakdown } from "@/lib/scoring";
 
 export function toMin(t: string) {
   const [h, m] = t.split(":").map(Number);
@@ -20,6 +20,8 @@ export type SlotAvail = {
   // Identifiant du membre propriétaire du créneau : permet de fusionner les
   // intervalles d'un même membre avant comptage (évite le double-comptage).
   userId?: string;
+  // Le membre couvrant a le rôle mentor (terme mentorFit, issue #54).
+  mentor?: boolean;
 };
 
 type HeatmapData = {
@@ -41,6 +43,7 @@ type HeatmapData = {
     expectedAttendance: number;
     coveragePercent: number;
     memberCount: number;
+    capacityInsufficient?: boolean;
     topContributors: { userId: string | null; weight: number }[];
     score: number;
     scoreBreakdown: ScoreBreakdown;
@@ -58,6 +61,7 @@ type CandSlot = {
   score: number;
   breakdown: ScoreBreakdown;
   covering: SlotAvail[];
+  mentorCovered: boolean;
 };
 
 // Membres (créneaux) couvrant entièrement la fenêtre — sert à compter les
@@ -104,7 +108,7 @@ export function mergePerUserIntervals(slots: SlotAvail[]): SlotAvail[] {
   const hasIds = slots.length > 0 && slots.every((s) => s.userId);
   if (!hasIds) return slots;
 
-  const byUser = new Map<string, Map<number, { startMin: number; endMin: number; weight?: number }[]>>();
+  const byUser = new Map<string, Map<number, { startMin: number; endMin: number; weight?: number; mentor?: boolean }[]>>();
   for (const s of slots) {
     let byDay = byUser.get(s.userId!);
     if (!byDay) {
@@ -112,7 +116,7 @@ export function mergePerUserIntervals(slots: SlotAvail[]): SlotAvail[] {
       byUser.set(s.userId!, byDay);
     }
     const arr = byDay.get(s.day) ?? [];
-    arr.push({ startMin: s.startMin, endMin: s.endMin, weight: s.weight });
+    arr.push({ startMin: s.startMin, endMin: s.endMin, weight: s.weight, mentor: s.mentor });
     byDay.set(s.day, arr);
   }
 
@@ -123,7 +127,7 @@ export function mergePerUserIntervals(slots: SlotAvail[]): SlotAvail[] {
       let cur = intervals[0];
       let weight = cur.weight ?? 1;
       const flush = () => {
-        merged.push({ day, startMin: cur.startMin, endMin: cur.endMin, userId, weight });
+        merged.push({ day, startMin: cur.startMin, endMin: cur.endMin, userId, weight, mentor: cur.mentor });
       };
       for (let i = 1; i < intervals.length; i++) {
         const next = intervals[i];
@@ -160,7 +164,7 @@ function candidateSlots(
       const covering = coveringMembers(members, day, start, end);
       const weight = covering.reduce((sum, c) => sum + (c.weight ?? 1), 0);
       if (weight > 0) {
-        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight, score: weight, breakdown: { coverage: weight, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 }, covering });
+        out.push({ day, startMin: start, endMin: end, startHour, endHour: end / 60, weight, score: weight, breakdown: { coverage: weight, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 }, covering, mentorCovered: covering.some((c) => c.mentor) });
       }
     }
   }
@@ -282,7 +286,16 @@ export function computeScheduling(
   availabilities: SlotAvail[],
   totalMembers: number,
   windowHours: number,
-  opts: { smooth?: boolean; smoothSigma?: number; scoreConfig?: ScoreConfig; scoreContext?: import("@/lib/scoring").SlotScoreContext } = {}
+  opts: {
+    smooth?: boolean;
+    smoothSigma?: number;
+    scoreConfig?: ScoreConfig;
+    scoreContext?: import("@/lib/scoring").SlotScoreContext;
+    // Cible (atelier/activité) : active les termes mentorFit (#54) et
+    // capacityFit (#55) sans pénaliser les autres cas (config par défaut).
+    requiresMentor?: boolean;
+    capacity?: number | null;
+  } = {}
 ): HeatmapData {
   const heatmap: { day: number; hour: number; count: number; memberCount: number }[] = [];
   let minHour = 24;
@@ -313,11 +326,20 @@ export function computeScheduling(
 
   // Score composé multi-critères (V2-01). Avec la config par défaut le score
   // reproduit exactement Σ pᵢ (test de parité) ; le WIS sélectionne sur `score`.
-  const cfg = opts.scoreConfig ?? DEFAULT_SCORE_CONFIG;
+  // Une cible mentor/capacité active les termes correspondants (issues #54/#55).
+  const cfg =
+    opts.scoreConfig ??
+    configForTarget({ capacity: opts.capacity, requiresMentor: opts.requiresMentor });
   for (const s of slots) {
     const { score, breakdown } = computeSlotScore(
       s.covering.map((c) => c.weight ?? 1),
-      opts.scoreContext ?? {},
+      {
+        ...(opts.scoreContext ?? {}),
+        // Donnée de mentor uniquement quand la cible l'exige : sinon le terme
+        // mentorFit reste inactif (poids ET valeur = 0) — parité et UI claire.
+        mentorAvailable: opts.requiresMentor ? s.mentorCovered : opts.scoreContext?.mentorAvailable,
+        capacity: opts.capacity ?? opts.scoreContext?.capacity,
+      },
       cfg
     );
     s.score = score;
@@ -360,6 +382,29 @@ export function computeScheduling(
         detail: `≈ ${Math.round(s.weight * 10) / 10} présent(s) attendu(s)`,
       },
     ];
+    if (opts.requiresMentor) {
+      factors.push(
+        s.mentorCovered
+          ? {
+              kind: "mentor",
+              label: "Mentor disponible",
+              detail: "Un mentor couvre ce créneau",
+            }
+          : {
+              kind: "mentor",
+              label: "Aucun mentor",
+              detail: "Aucun mentor disponible sur ce créneau",
+            }
+      );
+    }
+    if (opts.capacity && opts.capacity > 0) {
+      const insufficient = memberCount < opts.capacity;
+      factors.push({
+        kind: "capacity",
+        label: insufficient ? "Capacité insuffisante" : "Capacité OK",
+        detail: `${memberCount} couvrant(s) pour une capacité de ${opts.capacity}`,
+      });
+    }
     if (topContributors.length > 0) {
       factors.push({
         kind: "top-contributors",
@@ -384,6 +429,8 @@ export function computeScheduling(
       percent: totalMembers ? Math.round((s.weight / totalMembers) * 100) : 0,
       coveragePercent: totalMembers ? Math.round((memberCount / totalMembers) * 100) : 0,
       memberCount,
+      capacityInsufficient:
+        opts.capacity && opts.capacity > 0 ? memberCount < opts.capacity : undefined,
       topContributors,
       score: Math.round(s.score * 100) / 100,
       scoreBreakdown: s.breakdown,

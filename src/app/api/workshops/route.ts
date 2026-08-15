@@ -19,11 +19,14 @@ const select = {
   seriesId: true,
   type: true,
   menteeId: true,
+  activityId: true,
+  requiresMentor: true,
   createdAt: true,
   updatedAt: true,
   creator: { select: { id: true, name: true, email: true } },
   series: { select: { id: true, name: true } },
   mentee: { select: { id: true, name: true, email: true } },
+  activity: { select: { id: true, name: true, type: true } },
   participants: {
     select: {
       id: true,
@@ -88,6 +91,8 @@ export async function POST(req: NextRequest) {
       seriesId?: unknown;
       type?: unknown;
       menteeId?: unknown;
+      activityId?: unknown;
+      requiresMentor?: unknown;
     };
     try {
       body = await req.json();
@@ -109,6 +114,8 @@ export async function POST(req: NextRequest) {
     const rawType = String(body.type ?? "atelier").trim();
     const type = rawType === "mentorship_session" ? "mentorship_session" : "atelier";
     const menteeId = String(body.menteeId ?? "").trim() || null;
+    const activityId = String(body.activityId ?? "").trim() || null;
+    const requiresMentor = body.requiresMentor === true || body.requiresMentor === "true";
 
     if (!title) {
       return NextResponse.json({ error: "Le titre est requis" }, { status: 400 });
@@ -149,6 +156,8 @@ export async function POST(req: NextRequest) {
         seriesId,
         type,
         menteeId: type === "mentorship_session" ? menteeId : null,
+        activityId,
+        requiresMentor,
         createdBy: session.user.id,
       },
       select,

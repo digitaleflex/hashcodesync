@@ -31,16 +31,21 @@ export interface SchedulingCacheKeyArgs {
   groupId: string | null;
   activityId: string | null;
   smooth: boolean;
+  requiresMentor?: boolean;
+  capacity?: number | null;
 }
 
 // Clé de cache partagée du calcul de scheduling : doit couvrir TOUS les
-// paramètres qui modifient le payload (fenêtre, périmètre, lissage, fuseau).
+// paramètres qui modifient le payload (fenêtre, périmètre, lissage, fuseau,
+// cible mentor/capacité issues #54/#55).
 export function schedulingCacheKey(args: SchedulingCacheKeyArgs) {
   return [
     args.windowHours,
     args.groupId ?? "",
     args.activityId ?? "",
     args.smooth ? "1" : "0",
+    args.requiresMentor ? "1" : "0",
+    args.capacity && args.capacity > 0 ? args.capacity : "",
     REFERENCE_TIMEZONE,
   ].join("|");
 }

@@ -10,6 +10,7 @@ import { schedulingCacheKey } from "@/lib/cache";
 
 type UserSlots = {
   id: string;
+  role: string;
   timezone: string;
   attendance: { present: number; absent: number };
   availabilities: { day: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
@@ -35,6 +36,7 @@ function weightedRows(u: UserSlots, groupScope: string | null, activityId: strin
     userTz: u.timezone,
     userId: u.id,
     weight,
+    mentor: u.role === "mentor",
   }));
 }
 
@@ -61,6 +63,9 @@ export async function GET(req: NextRequest) {
     const groupId = req.nextUrl.searchParams.get("groupId") || null;
     const activityId = req.nextUrl.searchParams.get("activityId") || null;
     const smooth = req.nextUrl.searchParams.get("smooth") !== "false";
+    const requiresMentor = req.nextUrl.searchParams.get("mentor") === "true";
+    const capacityRaw = Number(req.nextUrl.searchParams.get("capacity") ?? "");
+    const capacity = Number.isFinite(capacityRaw) && capacityRaw > 0 ? capacityRaw : null;
 
     const groups = await prisma.group.findMany({
       orderBy: { name: "asc" },
@@ -71,7 +76,7 @@ export async function GET(req: NextRequest) {
       },
     });
 
-    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth });
+    const key = schedulingCacheKey({ windowHours, groupId, activityId, smooth, requiresMentor, capacity });
     const hit = cache.get(key);
     const now = Date.now();
     if (hit && hit.expires > now) {
@@ -103,6 +108,7 @@ export async function GET(req: NextRequest) {
           user: {
             select: {
               id: true,
+              role: true,
               timezone: true,
               attendances: { select: { status: true } },
               availabilities: {
@@ -130,6 +136,7 @@ export async function GET(req: NextRequest) {
       totalMembers = members.length;
       users = members.map((m) => ({
         id: m.user.id,
+        role: m.user.role,
         timezone: m.user.timezone,
         attendance: countAttendance(m.user.attendances),
         availabilities: m.user.availabilities,
@@ -140,6 +147,7 @@ export async function GET(req: NextRequest) {
         where: { availabilities: { some: {} } },
         select: {
           id: true,
+          role: true,
           timezone: true,
           attendances: { select: { status: true } },
           availabilities: {
@@ -165,6 +173,7 @@ export async function GET(req: NextRequest) {
       totalMembers = all.length;
       users = all.map((u) => ({
         id: u.id,
+        role: u.role,
         timezone: u.timezone,
         attendance: countAttendance(u.attendances),
         availabilities: u.availabilities,
@@ -185,7 +194,7 @@ export async function GET(req: NextRequest) {
 
     const merged = mergePerUserIntervals(
       availabilities.map(
-        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId })
+        (a): SlotAvail => ({ day: a.day, startMin: a.startMin, endMin: a.endMin, weight: a.weight, userId: a.userId, mentor: a.mentor })
       )
     );
 
@@ -193,7 +202,7 @@ export async function GET(req: NextRequest) {
       merged,
       Math.max(totalMembers, 1),
       windowHours,
-      { smooth, smoothSigma: 1.2 }
+      { smooth, smoothSigma: 1.2, requiresMentor, capacity }
     );
 
     const payload: Record<string, unknown> = {
@@ -202,6 +211,8 @@ export async function GET(req: NextRequest) {
       groupId: groupId ?? undefined,
       groupName,
       maxSlotsPerUser,
+      capacity,
+      requiresMentor,
     };
     cache.set(key, { payload, expires: Date.now() + CACHE_TTL_MS });
 

@@ -51,7 +51,10 @@ export async function GET() {
           },
         },
       },
-      activities: { orderBy: { createdAt: "asc" } },
+      activities: {
+        orderBy: { createdAt: "asc" },
+        include: { _count: { select: { workshops: true } } },
+      },
       joinRequests: {
         where: { status: "pending" },
         include: { user: { select: { id: true, firstname: true, lastname: true, email: true } } },

@@ -25,6 +25,14 @@ export const DAY_NAMES_FULL = [
 
 export type HeatCell = { day: number; hour: number; count: number; memberCount?: number };
 export type RecFactor = { kind: string; label: string; detail: string };
+export type RecBreakdown = {
+  coverage: number;
+  mentorFit: number;
+  capacityFit: number;
+  preference: number;
+  fairness: number;
+  conflict: number;
+};
 export type Rec = {
   day: number;
   startTime: string;
@@ -34,6 +42,9 @@ export type Rec = {
   expectedAttendance?: number;
   coveragePercent?: number;
   memberCount?: number;
+  capacityInsufficient?: boolean;
+  score?: number;
+  scoreBreakdown?: RecBreakdown;
   factors?: RecFactor[];
 };
 
@@ -450,7 +461,10 @@ export function RecommendationCard({
                   </div>
                 </div>
                 {i === 0 && (
-                  <div className="mt-2 space-y-1.5">
+                  <div className="mt-2 space-y-1.5 rounded-md bg-background/60 p-2">
+                    <p className="text-xs font-medium text-foreground">
+                      Pourquoi ce créneau&nbsp;?
+                    </p>
                     <p className="text-xs text-muted-foreground">
                       Meilleur compromis disponibilité / assiduité.
                     </p>
@@ -466,6 +480,16 @@ export function RecommendationCard({
                           <span className="font-medium text-foreground">{r.coveragePercent}%</span> de couverture
                         </span>
                       </div>
+                    )}
+                    {r.capacityInsufficient !== undefined && (
+                      <p className="text-xs text-destructive">
+                        {r.capacityInsufficient
+                          ? "Capacité insuffisante : moins de membres disponibles que la capacité visée."
+                          : "Capacité atteignable : la couverture suffit pour la capacité visée."}
+                      </p>
+                    )}
+                    {r.score !== undefined && r.scoreBreakdown && (
+                      <BreakdownRows r={r} />
                     )}
                     {r.factors && r.factors.length > 0 && (
                       <ul className="flex flex-wrap gap-1.5">
@@ -488,5 +512,50 @@ export function RecommendationCard({
         )}
       </CardContent>
     </Card>
+  );
+}
+
+// Décomposition du score composé du meilleur créneau (#62) : chaque terme actif
+// est affiché avec une mini-barre relative à la valeur max du créneau.
+function BreakdownRows({ r }: { r: Rec }) {
+  const b = r.scoreBreakdown!;
+  const rows: { key: string; label: string; raw: number; display: string }[] = [
+    { key: "coverage", label: "Couverture", raw: b.coverage, display: `${Math.round(b.coverage * 10) / 10} présent(s) attendu(s)` },
+    ...(b.mentorFit > 0
+      ? [{ key: "mentorFit", label: "Mentor", raw: b.mentorFit, display: b.mentorFit >= 1 ? "Mentor disponible" : "Aucun mentor" }]
+      : []),
+    ...(b.capacityFit > 0
+      ? [{ key: "capacityFit", label: "Capacité", raw: b.capacityFit, display: `${Math.round(b.capacityFit * 100)}% de la capacité visée` }]
+      : []),
+    ...(b.preference > 0
+      ? [{ key: "preference", label: "Préférences", raw: b.preference, display: `${Math.round(b.preference * 100)}% des préférences` }]
+      : []),
+    ...(b.fairness > 0
+      ? [{ key: "fairness", label: "Équité", raw: b.fairness, display: `${Math.round(b.fairness * 100)}%` }]
+      : []),
+    ...(b.conflict > 0
+      ? [{ key: "conflict", label: "Conflit", raw: b.conflict, display: `${Math.round(b.conflict * 100)}%` }]
+      : []),
+  ];
+  const max = Math.max(...rows.map((x) => x.raw), 0.0001);
+  return (
+    <div className="space-y-1 pt-0.5">
+      <div className="flex items-center justify-between text-[11px] text-muted-foreground">
+        <span>Décomposition du score</span>
+        <span className="font-medium text-foreground">Score {Math.round((r.score ?? 0) * 100) / 100}</span>
+      </div>
+      {rows.map((x) => (
+        <div key={x.key} className="flex items-center gap-2 text-[11px]">
+          <span className="w-24 shrink-0 text-muted-foreground">{x.label}</span>
+          <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full rounded-full bg-accent"
+              style={{ width: `${Math.max(4, (x.raw / max) * 100)}%` }}
+            />
+          </div>
+          <span className="w-40 shrink-0 text-right text-foreground">{x.display}</span>
+        </div>
+      ))}
+    </div>
   );
 }

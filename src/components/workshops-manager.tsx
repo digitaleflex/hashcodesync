@@ -55,6 +55,8 @@ export type PublicWorkshop = {
   menteeId?: string | null;
   mentee?: { id: string; name: string; email: string; firstname?: string; lastname?: string } | null;
   series?: { id: string; name: string } | null;
+  activity?: { id: string; name: string; type: string } | null;
+  requiresMentor?: boolean;
   creator: { id: string; name: string; email: string };
   participants: {
     id: string;
@@ -232,6 +234,16 @@ export function WorkshopsManager({ initial }: { initial: PublicWorkshop[] }) {
                 <Badge variant="secondary" className="text-[10px] font-medium">
                   <CalendarDaysIcon className="mr-1 size-3" />
                   {w.series.name}
+                </Badge>
+              )}
+              {w.activity && (
+                <Badge variant="secondary" className="text-[10px] font-medium">
+                  {w.activity.name}
+                </Badge>
+              )}
+              {w.requiresMentor && (
+                <Badge variant="outline" className="text-[10px] font-medium">
+                  Mentor requis
                 </Badge>
               )}
               {isMentorship && (

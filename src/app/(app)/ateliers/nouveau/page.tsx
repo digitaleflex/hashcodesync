@@ -59,8 +59,11 @@ export default function NewWorkshopPage() {
   const [meetingUrl, setMeetingUrl] = useState("");
   const [seriesId, setSeriesId] = useState("");
   const [menteeId, setMenteeId] = useState("");
+  const [activityId, setActivityId] = useState("");
+  const [requiresMentor, setRequiresMentor] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [seriesOptions, setSeriesOptions] = useState<{ id: string; name: string }[]>([]);
+  const [activityOptions, setActivityOptions] = useState<{ id: string; name: string; groupName: string }[]>([]);
   const [members, setMembers] = useState<Member[]>([]);
   const [loadingMembers, setLoadingMembers] = useState(false);
 
@@ -76,6 +79,22 @@ export default function NewWorkshopPage() {
       .then((r) => r.ok ? r.json() : Promise.resolve([]))
       .then((data) => setSeriesOptions(Array.isArray(data) ? data : []))
       .catch(() => setSeriesOptions([]));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/admin/groups")
+      .then((r) => (r.ok ? r.json() : Promise.resolve([])))
+      .then((data) => {
+        if (!Array.isArray(data)) return;
+        const options: { id: string; name: string; groupName: string }[] = [];
+        for (const g of data) {
+          for (const a of g.activities ?? []) {
+            options.push({ id: a.id, name: a.name, groupName: g.name });
+          }
+        }
+        setActivityOptions(options);
+      })
+      .catch(() => setActivityOptions([]));
   }, []);
 
   useEffect(() => {
@@ -109,6 +128,8 @@ export default function NewWorkshopPage() {
         meetingUrl: meetingUrl || null,
         seriesId: seriesId || null,
         type,
+        activityId: activityId || null,
+        requiresMentor,
         menteeId: type === "mentorship_session" ? menteeId : null,
       }),
     });
@@ -266,6 +287,35 @@ export default function NewWorkshopPage() {
                   </SelectContent>
                 </Select>
               </div>
+              {activityOptions.length > 0 && type !== "mentorship_session" && (
+                <div className="flex flex-col gap-2">
+                  <Label>Activité liée (optionnel)</Label>
+                  <Select value={activityId} onValueChange={(value) => setActivityId(value ?? "")}>
+                    <SelectTrigger className="h-10 w-full">
+                      <SelectValue placeholder="Aucune activité" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="">Aucune activité</SelectItem>
+                      {activityOptions.map((a) => (
+                        <SelectItem key={a.id} value={a.id}>
+                          {a.name} · {a.groupName}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+              {type !== "mentorship_session" && (
+                <label className="flex items-center gap-2 text-sm">
+                  <input
+                    type="checkbox"
+                    checked={requiresMentor}
+                    onChange={(e) => setRequiresMentor(e.target.checked)}
+                    className="size-4 accent-[var(--accent)]"
+                  />
+                  L&apos;atelier nécessite un mentor disponible
+                </label>
+              )}
               <Button type="submit" disabled={submitting || !valid} className="mt-2">
                 {submitting ? <Loader2Icon className="animate-spin" /> : null}
                 {type === "mentorship_session" ? "Créer la session de mentorat" : "Créer l'atelier"}

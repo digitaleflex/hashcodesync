@@ -223,6 +223,12 @@ export default function WorkshopDetailPage() {
                       Programme : {workshop.series.name}
                     </Badge>
                   )}
+                  {workshop.activity && (
+                    <Badge variant="secondary">Activité : {workshop.activity.name}</Badge>
+                  )}
+                  {workshop.requiresMentor && (
+                    <Badge variant="outline">Mentor requis</Badge>
+                  )}
                   {workshop.type === "mentorship_session" && workshop.mentee && (
                     <span className="text-xs text-muted-foreground">
                       Avec {workshop.mentee.firstname} {workshop.mentee.lastname}
@@ -489,6 +495,7 @@ function EditDialog({
   const [capacity, setCapacity] = useState(workshop.capacity ?? "");
   const [location, setLocation] = useState(workshop.location ?? "");
   const [meetingUrl, setMeetingUrl] = useState(workshop.meetingUrl ?? "");
+  const [requiresMentor, setRequiresMentor] = useState(Boolean(workshop.requiresMentor));
   const [saving, setSaving] = useState(false);
 
   async function handleSave() {
@@ -504,6 +511,7 @@ function EditDialog({
         capacity: capacity ? Number(capacity) : null,
         location: location || null,
         meetingUrl: meetingUrl || null,
+        requiresMentor,
       }),
     });
     setSaving(false);
@@ -590,6 +598,15 @@ function EditDialog({
               onChange={(e) => setMeetingUrl(e.target.value)}
             />
           </div>
+          <label className="flex items-center gap-2 text-sm">
+            <input
+              type="checkbox"
+              checked={requiresMentor}
+              onChange={(e) => setRequiresMentor(e.target.checked)}
+              className="size-4 accent-[var(--accent)]"
+            />
+            L&apos;atelier nécessite un mentor disponible
+          </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={handleSave} disabled={saving}>

@@ -32,6 +32,27 @@ export const DEFAULT_SCORE_CONFIG: ScoreConfig = {
   },
 };
 
+// Poids recommandés par docs/scheduling-score.md (§6) pour un atelier ciblé :
+// « nécessite un mentor » (issues #54) et « capacité définie » (issue #55).
+export const DEFAULT_MENTOR_WEIGHT = 0.4;
+export const DEFAULT_CAPACITY_WEIGHT = 0.3;
+
+// Construit une config de score activant mentor/capacité seulement quand la
+// cible (atelier/activité) l'exige. Sans cible, la config par défaut s'applique
+// et la parité historique (score = Σ pᵢ) est conservée.
+export function configForTarget(opts: {
+  capacity?: number | null;
+  requiresMentor?: boolean;
+}): ScoreConfig {
+  if (!opts.requiresMentor && !(opts.capacity && opts.capacity > 0)) {
+    return DEFAULT_SCORE_CONFIG;
+  }
+  const weights: ScoreWeights = { ...DEFAULT_SCORE_CONFIG.weights };
+  if (opts.requiresMentor) weights.mentorFit = DEFAULT_MENTOR_WEIGHT;
+  if (opts.capacity && opts.capacity > 0) weights.capacityFit = DEFAULT_CAPACITY_WEIGHT;
+  return { weights };
+}
+
 // Contexte d'un créneau candidat. Les dimensions absentes en V1 sont optionnelles
 // et produisent f_k = 0 (poids à 0 en l'état, voir docs/scheduling-score.md §9).
 export type SlotScoreContext = {

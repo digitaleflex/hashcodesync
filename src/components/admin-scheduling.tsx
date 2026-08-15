@@ -91,11 +91,15 @@ export function SchedulingDashboard() {
   const [showSmoothed, setShowSmoothed] = useState(false);
   const [showGaps, setShowGaps] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [requiresMentor, setRequiresMentor] = useState(false);
+  const [capacity, setCapacity] = useState("");
 
-  const load = useCallback(async (window: number, gid: string) => {
+  const load = useCallback(async (window: number, gid: string, mentor: boolean, cap: string) => {
     setLoading(true);
     const params = new URLSearchParams({ window: String(window), smooth: "true" });
     if (gid) params.set("groupId", gid);
+    if (mentor) params.set("mentor", "true");
+    if (cap && Number(cap) > 0) params.set("capacity", cap);
     const res = await fetch(`/api/admin/scheduling?${params}`);
     if (res.ok) setData(await res.json());
     else toast.error("Impossible de charger les statistiques");
@@ -125,8 +129,8 @@ export function SchedulingDashboard() {
   }, []);
 
   useEffect(() => {
-    load(windowHours, groupId);
-  }, [load, windowHours, groupId]);
+    load(windowHours, groupId, requiresMentor, capacity);
+  }, [load, windowHours, groupId, requiresMentor, capacity]);
 
   useEffect(() => {
     loadGaps(windowHours, groupId);
@@ -216,7 +220,33 @@ export function SchedulingDashboard() {
             ? `Groupe affiché : ${selectedGroupName}`
             : "Toutes les cohortes"}
         </p>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="flex items-center gap-1.5 rounded-md border bg-card px-2 py-1.5 text-xs text-muted-foreground">
+            <input
+              type="checkbox"
+              checked={requiresMentor}
+              onChange={(e) => {
+                setRequiresMentor(e.target.checked);
+                setSelectedCell(null);
+              }}
+              className="size-3.5 accent-[var(--accent)]"
+            />
+            Atelier avec mentor
+          </label>
+          <label className="flex items-center gap-1.5 rounded-md border bg-card px-2 py-1 text-xs text-muted-foreground">
+            Capacité
+            <input
+              type="number"
+              min={1}
+              value={capacity}
+              onChange={(e) => {
+                setCapacity(e.target.value);
+                setSelectedCell(null);
+              }}
+              placeholder="—"
+              className="w-16 rounded bg-muted px-1.5 py-0.5 text-xs text-foreground"
+            />
+          </label>
           <Select
             value={groupId}
             onValueChange={(v) => {

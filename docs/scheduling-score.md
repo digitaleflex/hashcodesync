@@ -101,6 +101,23 @@ Chaque créneau recommandé expose dans la réponse API :
 La décomposition permet à un admin de répondre « pourquoi ce créneau ? » et de
 contester un classement (ex. « la couverture est bonne mais le mentor manque »).
 
+## 7bis. Activation des termes mentor / capacité (issues #34, #54, #55)
+
+Les termes `f_men` et `f_cap` sont branchés sur les routes scheduling
+(`/api/admin/scheduling`, `/api/mentor/scheduling`) via deux query params :
+
+- `?mentor=true` : active `w_men = 0.4`. Un membre est un mentor s'il a le rôle
+  `mentor` ; `f_men = 1` quand un mentor couvre la fenêtre. Le meilleur créneau
+  devient le compromis couverture × mentor.
+- `?capacity=N` : active `w_cap = 0.3` (et expose `capacityInsufficient` quand
+  le nombre de couvrants < capacité).
+
+Sans ces params, `configForTarget` renvoie la config par défaut : le score reste
+exactement `Σ pᵢ` (aucune pénalité pour les ateliers sans cible). Les créneaux
+recommandés exposent `score`, `scoreBreakdown` et des `factors` dédiés
+(« Mentor disponible », « Capacité insuffisante »), utilisés par le panneau
+« Pourquoi ce créneau ? » du cockpit admin (issue #62).
+
 ## 8. Critères d'acceptation d'un « bon score »
 
 1. **Parité** : config par défaut ⇒ `score = Σ pᵢ` exactement (test de régression).

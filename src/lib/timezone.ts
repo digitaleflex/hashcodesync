@@ -14,6 +14,7 @@ export type RefAvailability = {
   userTz: string;
   weight?: number; // probabilité pᵢ de présence (optionnel)
   userId?: string; // identifiant du membre (fusion des intervalles)
+  mentor?: boolean; // le membre a le rôle mentor (terme mentorFit, issue #54)
 };
 
 type ZoneClock = {
@@ -140,6 +141,7 @@ export function convertToReference(
     userTz: string;
     weight?: number;
     userId?: string;
+    mentor?: boolean;
   }[],
   refTz = REFERENCE_TIMEZONE,
   now = new Date()
@@ -160,6 +162,7 @@ export function convertToReference(
       };
       if (r.weight !== undefined) a.weight = r.weight;
       if (r.userId !== undefined) a.userId = r.userId;
+      if (r.mentor !== undefined) a.mentor = r.mentor;
       return a;
     });
   }
@@ -167,6 +170,7 @@ export function convertToReference(
     const a = convertAvailability(r.day, r.startTime, r.endTime, r.userTz, refTz, now);
     if (r.weight !== undefined) a.weight = r.weight;
     if (r.userId !== undefined) a.userId = r.userId;
+    if (r.mentor !== undefined) a.mentor = r.mentor;
     return a;
   });
 }

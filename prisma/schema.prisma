@@ -151,6 +151,7 @@ model GroupActivity {
   group       Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
   availabilities Availability[]
   recurringAvailabilities RecurringAvailability[]
+  workshops   Workshop[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -302,33 +303,37 @@ model SlotSnapshot {
 }
 
 model Workshop {
-  id          String           @id @default(cuid())
-  title       String
-  description String?
-  startAt     DateTime
-  endAt       DateTime
-  capacity    Int?
-  location    String?
-  meetingUrl  String?
-  createdBy   String
-  seriesId    String?
-  type        String           @default("atelier") // atelier | mentorship_session
-  menteeId    String?
-  creator     User             @relation(fields: [createdBy], references: [id], onDelete: Restrict)
-  series      WorkshopSeries?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
-  mentee      User?            @relation("MenteeWorkshops", fields: [menteeId], references: [id], onDelete: SetNull)
-  participants Participant[]
-  attendance  Attendance[]
-  waitlist    Waitlist[]
-  feedbacks   WorkshopFeedback[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
+  id            String           @id @default(cuid())
+  title         String
+  description   String?
+  startAt       DateTime
+  endAt         DateTime
+  capacity      Int?
+  location      String?
+  meetingUrl    String?
+  createdBy     String
+  seriesId      String?
+  type          String           @default("atelier") // atelier | mentorship_session
+  menteeId      String?
+  activityId    String?
+  requiresMentor Boolean          @default(false)
+  creator       User             @relation(fields: [createdBy], references: [id], onDelete: Restrict)
+  series        WorkshopSeries?  @relation(fields: [seriesId], references: [id], onDelete: SetNull)
+  mentee        User?            @relation("MenteeWorkshops", fields: [menteeId], references: [id], onDelete: SetNull)
+  activity      GroupActivity?   @relation(fields: [activityId], references: [id], onDelete: SetNull)
+  participants  Participant[]
+  attendance    Attendance[]
+  waitlist      Waitlist[]
+  feedbacks     WorkshopFeedback[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
 
   @@index([createdBy])
   @@index([startAt])
   @@index([seriesId])
   @@index([type])
   @@index([menteeId])
+  @@index([activityId])
 }
 
 // Un programme regroupé (bootcamp, cycle de mentorat...) qui rassemble

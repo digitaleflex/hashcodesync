@@ -58,7 +58,13 @@ type GroupMember = {
   user: Creator;
 };
 
-type GroupActivity = { id: string; name: string; type: string; description: string | null };
+type GroupActivity = {
+  id: string;
+  name: string;
+  type: string;
+  description: string | null;
+  _count?: { workshops: number };
+};
 
 type JoinRequest = {
   id: string;
@@ -359,6 +365,14 @@ export function AdminGroups() {
                           <Badge variant="secondary">
                             {TYPE_LABELS[activity.type] ?? activity.type}
                           </Badge>
+                          {(() => {
+                            const count = activity._count?.workshops ?? 0;
+                            return count > 0 ? (
+                              <Badge variant="outline">
+                                {count} atelier{count > 1 ? "s" : ""} lié{count > 1 ? "s" : ""}
+                              </Badge>
+                            ) : null;
+                          })()}
                         </div>
                         <button
                           type="button"

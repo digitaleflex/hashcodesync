@@ -302,6 +302,28 @@ model SlotSnapshot {
   @@map("slot_snapshot")
 }
 
+// Snapshot pré-calculé du scheduling (issue #67) : stocke la heatmap et les
+// recommandations pour une semaine donnée + paramètres de calcul. Généré
+// post-validation ou via job de rattrapage, servi par la route scheduling
+// en priorité (évite le recalcul à chaud).
+model SchedulingSnapshot {
+  id              String   @id @default(cuid())
+  weekStart       DateTime // lundi 00:00 de la semaine cible
+  windowHours     Int      // fenêtre de calcul (1-4h)
+  groupId         String?  // périmètre groupe (null = tous)
+  activityId      String?  // périmètre activité (null = toutes)
+  smooth          Boolean  @default(true)
+  requiresMentor  Boolean  @default(false)
+  capacity        Int?
+  maxPerDay       Int?
+  payload         Json     // heatmap + recommendation (résultat complet)
+  generatedAt     DateTime @default(now())
+
+  @@unique([weekStart, windowHours, groupId, activityId])
+  @@index([weekStart])
+  @@map("scheduling_snapshot")
+}
+
 model Workshop {
   id            String           @id @default(cuid())
   title         String

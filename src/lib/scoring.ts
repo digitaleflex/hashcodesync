@@ -37,19 +37,34 @@ export const DEFAULT_SCORE_CONFIG: ScoreConfig = {
 export const DEFAULT_MENTOR_WEIGHT = 0.4;
 export const DEFAULT_CAPACITY_WEIGHT = 0.3;
 
-// Construit une config de score activant mentor/capacité seulement quand la
-// cible (atelier/activité) l'exige. Sans cible, la config par défaut s'applique
-// et la parité historique (score = Σ pᵢ) est conservée.
+// Poids V2 (issues #57/#58) : préférences et équité activés quand la donnée
+// est disponible, avec des poids modérés pour ne pas dominer la couverture.
+export const DEFAULT_PREFERENCE_WEIGHT = 0.15;
+export const DEFAULT_FAIRNESS_WEIGHT = 0.1;
+
+// Construit une config de score activant mentor/capacité/préférences/équité
+// seulement quand la cible (atelier/activité) ou les options le demandent.
+// Sans cible ni option, la config par défaut s'applique et la parité
+// historique (score = Σ pᵢ) est conservée.
 export function configForTarget(opts: {
   capacity?: number | null;
   requiresMentor?: boolean;
+  enablePreferences?: boolean;
+  enableFairness?: boolean;
 }): ScoreConfig {
-  if (!opts.requiresMentor && !(opts.capacity && opts.capacity > 0)) {
+  const needsActivation =
+    opts.requiresMentor ||
+    (opts.capacity && opts.capacity > 0) ||
+    opts.enablePreferences ||
+    opts.enableFairness;
+  if (!needsActivation) {
     return DEFAULT_SCORE_CONFIG;
   }
   const weights: ScoreWeights = { ...DEFAULT_SCORE_CONFIG.weights };
   if (opts.requiresMentor) weights.mentorFit = DEFAULT_MENTOR_WEIGHT;
   if (opts.capacity && opts.capacity > 0) weights.capacityFit = DEFAULT_CAPACITY_WEIGHT;
+  if (opts.enablePreferences) weights.preference = DEFAULT_PREFERENCE_WEIGHT;
+  if (opts.enableFairness) weights.fairness = DEFAULT_FAIRNESS_WEIGHT;
   return { weights };
 }
 

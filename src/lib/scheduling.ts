@@ -9,6 +9,27 @@ export function pad(n: number) {
   return String(n).padStart(2, "0");
 }
 
+// Vérifie si un créneau (jour + heure de départ) correspond aux préférences
+// d'un membre (issue #57). Renvoie true si aucune préférence n'est renseignée
+// (pas de pénalité par défaut). `startHour` est en minutes depuis minuit.
+export function isPreferenceMatch(
+  preferredDays: number,
+  morning: boolean,
+  afternoon: boolean,
+  evening: boolean,
+  day: number,
+  startMin: number
+): boolean {
+  if (preferredDays === 0 && morning && afternoon && evening) return true;
+  const dayMatch = preferredDays === 0 || (preferredDays & (1 << day)) !== 0;
+  const hour = Math.floor(startMin / 60);
+  const timeMatch =
+    (morning && hour >= 6 && hour < 12) ||
+    (afternoon && hour >= 12 && hour < 18) ||
+    (evening && hour >= 18 && hour < 24);
+  return dayMatch && timeMatch;
+}
+
 // Une disponibilité peut être pondérée par une probabilité de présence pᵢ (0..1).
 // Sans poids, `weight` vaut 1 (simple comptage). Tous les calculs ci-dessous
 // utilisent la somme des poids au lieu d'un simple comptage.
@@ -279,6 +300,84 @@ export function computeCoveragePercent(
   );
 }
 
+// Sélection greedy des meilleures recommandations sous contraintes :
+// - maxPerDay : nombre max de créneaux par jour (diversification, issue #59)
+// - maxWorkshopsPerWeek : budget hebdo par membre (issue #56) — pénalise les
+//   créneaux dont les membres ont déjà atteint le budget.
+// Sans contrainte, reproduit exactement le tri par score décroissant (rétrocompat).
+function selectTopRecommendations(
+  candidates: CandSlot[],
+  opts: {
+    maxPerDay?: number;
+    maxWorkshopsPerWeek?: number;
+    totalCount?: number;
+  } = {}
+): CandSlot[] {
+  const count = opts.totalCount ?? 6;
+  const sorted = [...candidates].sort(
+    (a, b) => b.score - a.score || a.day - b.day || a.startMin - b.startMin
+  );
+
+  // Compteur d'inclusions par membre (issue #56) : pénalise les membres
+  // ayant déjà atteint leur budget hebdomadaire.
+  const memberInclusions = new Map<string, number>();
+  if (opts.maxWorkshopsPerWeek && opts.maxWorkshopsPerWeek > 0) {
+    for (const s of candidates) {
+      const memberIds = new Set<string>();
+      for (const c of s.covering) {
+        if (c.userId) memberIds.add(c.userId);
+      }
+      for (const id of memberIds) {
+        memberInclusions.set(id, (memberInclusions.get(id) ?? 0) + 1);
+      }
+    }
+  }
+
+  const selected: CandSlot[] = [];
+  const perDayCount = new Map<number, number>();
+
+  for (const s of sorted) {
+    if (selected.length >= count) break;
+
+    // Contrainte maxPerDay (diversification, issue #59)
+    const dayCount = perDayCount.get(s.day) ?? 0;
+    if (opts.maxPerDay && dayCount >= opts.maxPerDay) continue;
+
+    // Pénalité budget hebdomadaire (issue #56) : si un membre couvrant a déjà
+    // atteint son budget, le créneau est pénalisé mais pas exclu strictement.
+    let budgetPenalty = 0;
+    if (opts.maxWorkshopsPerWeek && opts.maxWorkshopsPerWeek > 0) {
+      const memberIds = new Set<string>();
+      for (const c of s.covering) {
+        if (c.userId) memberIds.add(c.userId);
+      }
+      for (const id of memberIds) {
+        const count = memberInclusions.get(id) ?? 0;
+        if (count >= opts.maxWorkshopsPerWeek) {
+          budgetPenalty += 0.5;
+        }
+      }
+    }
+
+    if (budgetPenalty > 0 && s.score - budgetPenalty <= 0) continue;
+
+    selected.push(budgetPenalty > 0 ? { ...s, score: s.score - budgetPenalty } : s);
+    perDayCount.set(s.day, dayCount + 1);
+
+    // Mettre à jour les compteurs d'inclusion après sélection
+    if (opts.maxWorkshopsPerWeek && opts.maxWorkshopsPerWeek > 0) {
+      const memberIds = new Set<string>();
+      for (const c of s.covering) {
+        if (c.userId) memberIds.add(c.userId);
+      }
+      for (const id of memberIds) {
+        memberInclusions.set(id, (memberInclusions.get(id) ?? 0) + 1);
+      }
+    }
+  }
+  return selected;
+}
+
 // computeScheduling : pondère chaque dispo par `weight` (probabilité de présence)
 // et peut appliquer un lissage gaussien à la heatmap. Le pondéré sert au comptage
 // et à la sélection WIS ; `available` = somme attendue des présences.
@@ -295,6 +394,20 @@ export function computeScheduling(
     // capacityFit (#55) sans pénaliser les autres cas (config par défaut).
     requiresMentor?: boolean;
     capacity?: number | null;
+    // V2 Smart Scheduling Engine — issues #56/#57/#58/#59
+    maxWorkshopsPerWeek?: number;
+    maxPerDay?: number;
+    // Lookup préférences par membre (issue #57) : retourne les préférences
+    // PlanningPreferences pour un userId donné.
+    preferenceLookup?: (userId: string) => {
+      preferredDays: number;
+      morning: boolean;
+      afternoon: boolean;
+      evening: boolean;
+    } | null;
+    // Map de fairness par membre (issue #58) : 0..1, bonus pour membres
+    // sous-utilisés sur une fenêtre glissante.
+    fairnessMap?: Map<string, number>;
   } = {}
 ): HeatmapData {
   const heatmap: { day: number; hour: number; count: number; memberCount: number }[] = [];
@@ -327,19 +440,48 @@ export function computeScheduling(
   // Score composé multi-critères (V2-01). Avec la config par défaut le score
   // reproduit exactement Σ pᵢ (test de parité) ; le WIS sélectionne sur `score`.
   // Une cible mentor/capacité active les termes correspondants (issues #54/#55).
+  // Préférences (#57) et équité (#58) sont activées si la donnée est fournie.
+  const hasPreferences = !!opts.preferenceLookup;
+  const hasFairness = !!opts.fairnessMap && opts.fairnessMap.size > 0;
   const cfg =
     opts.scoreConfig ??
-    configForTarget({ capacity: opts.capacity, requiresMentor: opts.requiresMentor });
+    configForTarget({
+      capacity: opts.capacity,
+      requiresMentor: opts.requiresMentor,
+      enablePreferences: hasPreferences,
+      enableFairness: hasFairness,
+    });
   for (const s of slots) {
+    // Contexte de scoring enrichi : préférences (#57) et équité (#58)
+    const enrichedCtx: import("@/lib/scoring").SlotScoreContext = {
+      ...(opts.scoreContext ?? {}),
+      mentorAvailable: opts.requiresMentor ? s.mentorCovered : opts.scoreContext?.mentorAvailable,
+      capacity: opts.capacity ?? opts.scoreContext?.capacity,
+    };
+    if (opts.preferenceLookup) {
+      const prefs = s.covering
+        .filter((c) => c.userId)
+        .map((c) => {
+          const p = opts.preferenceLookup!(c.userId!);
+          return {
+            matched: p
+              ? isPreferenceMatch(p.preferredDays, p.morning, p.afternoon, p.evening, s.day, s.startMin)
+              : true,
+          };
+        });
+      enrichedCtx.preferences = prefs;
+    }
+    if (opts.fairnessMap && opts.fairnessMap.size > 0) {
+      const memberIds = s.covering.filter((c) => c.userId).map((c) => c.userId!);
+      const avgFairness =
+        memberIds.length > 0
+          ? memberIds.reduce((sum, id) => sum + (opts.fairnessMap!.get(id) ?? 0.5), 0) / memberIds.length
+          : 0;
+      enrichedCtx.fairness = avgFairness;
+    }
     const { score, breakdown } = computeSlotScore(
       s.covering.map((c) => c.weight ?? 1),
-      {
-        ...(opts.scoreContext ?? {}),
-        // Donnée de mentor uniquement quand la cible l'exige : sinon le terme
-        // mentorFit reste inactif (poids ET valeur = 0) — parité et UI claire.
-        mentorAvailable: opts.requiresMentor ? s.mentorCovered : opts.scoreContext?.mentorAvailable,
-        capacity: opts.capacity ?? opts.scoreContext?.capacity,
-      },
+      enrichedCtx,
       cfg
     );
     s.score = score;
@@ -353,11 +495,17 @@ export function computeScheduling(
       selectedByDay.push(...selectNonOverlappingHours(daySlots));
     }
   }
-  selectedByDay.sort(
-    (a, b) => b.score - a.score || a.day - b.day || a.startHour - b.startHour
-  );
 
-  const recommendation = selectedByDay.slice(0, 6).map((s) => {
+  // Sélection des top-N recommandations sous contraintes de diversification
+  // (maxPerDay, issue #59) et de budget hebdomadaire (maxWorkshopsPerWeek,
+  // issue #56). Sans contrainte, reproduit le tri par score décroissant.
+  const selected = selectTopRecommendations(selectedByDay, {
+    maxPerDay: opts.maxPerDay,
+    maxWorkshopsPerWeek: opts.maxWorkshopsPerWeek,
+    totalCount: 6,
+  });
+
+  const recommendation = selected.map((s) => {
     const distinct = new Set<string>();
     for (const c of s.covering) if (c.userId) distinct.add(c.userId);
     const memberCount = distinct.size > 0 ? distinct.size : s.covering.length;

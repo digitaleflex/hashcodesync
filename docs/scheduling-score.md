@@ -132,9 +132,39 @@ recommandés exposent `score`, `scoreBreakdown` et des `factors` dédiés
 | coverage (`Σ pᵢ`) | ✅ actif (`w=1`) | actif |
 | mentor | — (`w=0`) | #34 + #54 |
 | capacité | — (`w=0`) | #55 |
-| préférences | — (`w=0`) | #57 |
-| équité | — (`w=0`) | #58 |
+| préférences | — (`w=0`) | ✅ #57 (`w=0.15`) |
+| équité | — (`w=0`) | ✅ #58 (`w=0.1`) |
 | conflit | — (`w=0`) | #54 |
 
 Les termes inactifs ont un poids `0` **et** un `f_k = 0` : aucun effet de bord
 possible sur le classement tant que la donnée n'est pas branchée.
+
+## 10. V2 Smart Scheduling Engine — implémentation
+
+### Issues #56/#59 : Budget hebdomadaire et diversification
+
+- `maxWorkshopsPerWeek` : borne le nombre de fenêtres où un même membre est compté.
+  Au-delà, pénalité de score (mode soft) — pas d'exclusion stricte.
+- `maxPerDay` : nombre max de créneaux recommandés par jour (diversification).
+  Sélection greedy sous contrainte dans `selectTopRecommendations`.
+- API : params `?maxWorkshopsPerWeek=N&maxPerDay=N`.
+
+### Issue #57 : Préférences utilisateur (soft constraints)
+
+- `PlanningPreferences` (modèle Prisma existant) : `preferredDays` (bitmask),
+  `morning/afternoon/evening`, `frequency`.
+- `isPreferenceMatch()` : vérifie si un créneau correspond aux préférences.
+- `preferenceFit` dans `computeSlotScore` : `nb_membres_ok / nb_membres_couvrants`.
+- `w_pref = 0.15` (activé via `preferenceLookup` ou `configForTarget`).
+- Sans préférences renseignées : `preferenceFit = 0` (pas de pénalité).
+
+### Issue #58 : Score d'équité
+
+- `fairnessMap` : bonus 0..1 par membre, basé sur le nombre de créneaux déclarés.
+- `f_fair` dans `computeSlotScore` : moyenne du fairness des membres couvrants.
+- `w_fair = 0.1` (tie-breaker intentionnellement faible).
+
+### Issues #60/#61 : Évaluations (benchmarks documentés)
+
+- **#60 Local Search** : REJETÉ — gain 0%, le WIS est déjà optimal sur le domaine ≤ 84 fenêtres.
+- **#61 Granularité** : 30 min ACTIVABLE (ratio ×1.5), 15 min à évaluer en production.

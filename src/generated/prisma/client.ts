@@ -122,6 +122,11 @@ export type WeekSnapshot = Prisma.WeekSnapshotModel
  */
 export type SlotSnapshot = Prisma.SlotSnapshotModel
 /**
+ * Model SchedulingSnapshot
+ * 
+ */
+export type SchedulingSnapshot = Prisma.SchedulingSnapshotModel
+/**
  * Model Workshop
  * 
  */

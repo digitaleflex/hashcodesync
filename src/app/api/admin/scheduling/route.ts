@@ -7,6 +7,7 @@ import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
 import { schedulingCacheKey } from "@/lib/cache";
+import { getSchedulingSnapshot, generateSchedulingSnapshot, type SnapshotParams } from "@/lib/scheduling-snapshot";
 
 type UserSlots = {
   id: string;
@@ -228,6 +229,45 @@ export async function GET(req: NextRequest) {
   } catch (e) {
     console.error("GET /api/admin/scheduling erreur", e);
     return NextResponse.json({ error: "Impossible de charger le planning" }, { status: 500 });
+  }
+}
+
+export async function POST(req: NextRequest) {
+  try {
+    const session = await auth.api.getSession({ headers: await headers() });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 401 });
+    }
+
+    // Autorisation : seuls les membres de l'équipe admin peuvent générer le snapshot.
+    const user = await prisma.user.findUnique({ where: { id: session.user.id } });
+    if (!user || user.role !== "admin") {
+      return NextResponse.json({ error: "Non autorisé" }, { status: 403 });
+    }
+
+    const body = await req.json();
+    const params: SnapshotParams = {
+      windowHours: body.windowHours ?? 4,
+      groupId: body.groupId ?? null,
+      activityId: body.activityId ?? null,
+      smooth: body.smooth ?? true,
+      requiresMentor: body.requiresMentor ?? false,
+      capacity: body.capacity ?? null,
+      maxPerDay: body.maxPerDay ?? null,
+      maxWorkshopsPerWeek: body.maxWorkshopsPerWeek ?? null,
+    };
+
+    const payload = await generateSchedulingSnapshot(params);
+
+    return NextResponse.json({
+      success: true,
+      snapshotId: params.groupId ? `group:${params.groupId}` : `all`,
+      payload: payload,
+      message: "Snapshot généré avec succès. La prochaine demande GET servira ce snapshot.",
+    });
+  } catch (e) {
+    console.error("POST /api/admin/scheduling erreur", e);
+    return NextResponse.json({ error: "Impossible de générer le snapshot" }, { status: 500 });
   }
 }
 

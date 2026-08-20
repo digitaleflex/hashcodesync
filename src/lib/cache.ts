@@ -33,11 +33,13 @@ export interface SchedulingCacheKeyArgs {
   smooth: boolean;
   requiresMentor?: boolean;
   capacity?: number | null;
+  maxWorkshopsPerWeek?: number;
+  maxPerDay?: number;
 }
 
 // Clé de cache partagée du calcul de scheduling : doit couvrir TOUS les
 // paramètres qui modifient le payload (fenêtre, périmètre, lissage, fuseau,
-// cible mentor/capacité issues #54/#55).
+// cible mentor/capacité issues #54/#55, budget/diversification V2 issues #56/#59).
 export function schedulingCacheKey(args: SchedulingCacheKeyArgs) {
   return [
     args.windowHours,
@@ -46,6 +48,8 @@ export function schedulingCacheKey(args: SchedulingCacheKeyArgs) {
     args.smooth ? "1" : "0",
     args.requiresMentor ? "1" : "0",
     args.capacity && args.capacity > 0 ? args.capacity : "",
+    args.maxWorkshopsPerWeek ?? "",
+    args.maxPerDay ?? "",
     REFERENCE_TIMEZONE,
   ].join("|");
 }

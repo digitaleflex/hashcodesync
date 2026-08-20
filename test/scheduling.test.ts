@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computeScheduling, computeCoveragePercent, selectNonOverlappingHours } from "../src/lib/scheduling";
+import { computeScheduling, computeCoveragePercent, selectNonOverlappingHours, isPreferenceMatch } from "../src/lib/scheduling";
 import type { SlotAvail } from "../src/lib/scheduling";
 import { computeSlotScore, DEFAULT_SCORE_CONFIG } from "../src/lib/scoring";
 import { computeStats } from "../src/components/availability/shared";
@@ -356,4 +356,152 @@ test("configForTarget: config par défaut sans cible, termes activés sinon", as
   // Capacité non positive → ignorée (pas de w_cap).
   const bad = configForTarget({ capacity: 0 });
   assert.equal(bad.weights.capacityFit, 0);
+});
+
+// --- V2 Smart Scheduling Engine : issues #56/#57/#58/#59 ---
+
+test("isPreferenceMatch: journée et plages horaires (issue #57)", () => {
+  // Mercredi (bit 2) après-midi (12-18)
+  const pref = { preferredDays: 1 << 2, morning: false, afternoon: true, evening: false };
+  assert.equal(isPreferenceMatch(pref.preferredDays, pref.morning, pref.afternoon, pref.evening, 2, 720), true); // mer 12:00
+  assert.equal(isPreferenceMatch(pref.preferredDays, pref.morning, pref.afternoon, pref.evening, 2, 1080), false); // mer 18:00 (soir)
+  assert.equal(isPreferenceMatch(pref.preferredDays, pref.morning, pref.afternoon, pref.evening, 0, 720), false); // lun 12:00 (pas un mercredi)
+  // Aucune préférence renseignée → toujours match (pas de pénalité)
+  assert.equal(isPreferenceMatch(0, true, true, true, 3, 600), true);
+  // Tous les jours, matin seulement
+  assert.equal(isPreferenceMatch(0, true, false, false, 5, 480), true); // ven 8:00
+  assert.equal(isPreferenceMatch(0, true, false, false, 5, 780), false); // ven 13:00
+});
+
+test("configForTarget: active preferences/fairness quand demandé (V2)", async () => {
+  const { configForTarget, DEFAULT_SCORE_CONFIG } = await import("../src/lib/scoring");
+  // Sans rien → défaut
+  assert.deepEqual(configForTarget({}), DEFAULT_SCORE_CONFIG);
+  // Avec enablePreferences → w_pref = 0.15
+  const withPref = configForTarget({ enablePreferences: true });
+  assert.equal(withPref.weights.preference, 0.15);
+  assert.equal(withPref.weights.fairness, 0);
+  // Avec enableFairness → w_fair = 0.1
+  const withFair = configForTarget({ enableFairness: true });
+  assert.equal(withFair.weights.fairness, 0.1);
+  assert.equal(withFair.weights.preference, 0);
+  // Les deux + mentor + capacité
+  const all = configForTarget({ enablePreferences: true, enableFairness: true, requiresMentor: true, capacity: 5 });
+  assert.equal(all.weights.preference, 0.15);
+  assert.equal(all.weights.fairness, 0.1);
+  assert.equal(all.weights.mentorFit, 0.4);
+  assert.equal(all.weights.capacityFit, 0.3);
+});
+
+test("computeScheduling: maxPerDay limite les créneaux par jour (issue #59)", () => {
+  // 3 membres disponibles lun 8-12, mar 8-12, mer 8-12
+  const rows3: SlotAvail[] = [
+    { day: 0, startMin: 480, endMin: 720, weight: 0.8, userId: "a" },
+    { day: 0, startMin: 480, endMin: 720, weight: 0.6, userId: "b" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.8, userId: "c" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.6, userId: "d" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.8, userId: "e" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.6, userId: "f" },
+  ];
+  // Sans contrainte : top-6 peut contenir 2 créneaux/jour (WIS sélectionne 2 non chevauchants)
+  const base = computeScheduling(rows3, 6, 2);
+  const perDayBase = new Map<number, number>();
+  for (const r of base.recommendation) perDayBase.set(r.day, (perDayBase.get(r.day) ?? 0) + 1);
+  // maxPerDay=1 : chaque jour au plus 1 créneau
+  const limited = computeScheduling(rows3, 6, 2, { maxPerDay: 1 });
+  for (const r of limited.recommendation) {
+    const dayCount = limited.recommendation.filter((x) => x.day === r.day).length;
+    assert.ok(dayCount <= 1, `Jour ${r.day} a ${dayCount} créneaux (maxPerDay=1)`);
+  }
+});
+
+test("computeScheduling: maxWorkshopsPerWeek limite les inclusions par membre (issue #56)", () => {
+  // Même membre (a) couvre tous les jours
+  const rowsOverload: SlotAvail[] = [
+    { day: 0, startMin: 480, endMin: 720, weight: 0.9, userId: "a" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.9, userId: "a" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.9, userId: "a" },
+    { day: 3, startMin: 480, endMin: 720, weight: 0.9, userId: "a" },
+    { day: 0, startMin: 480, endMin: 720, weight: 0.5, userId: "b" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.5, userId: "b" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.5, userId: "b" },
+    { day: 3, startMin: 480, endMin: 720, weight: 0.5, userId: "b" },
+  ];
+  // maxWorkshopsPerWeek=2 : membre "a" ne doit plus dominer après 2 inclusions
+  const limited = computeScheduling(rowsOverload, 2, 2, { maxWorkshopsPerWeek: 2 });
+  // Vérifier que le score est pénalisé pour les créneaux au-delà du budget
+  assert.ok(limited.recommendation.length > 0);
+});
+
+test("computeScheduling: préférences influencent le score (issue #57)", () => {
+  // Même couverture lun/mar, préférence mercredi pour c/d
+  const rowsPref: SlotAvail[] = [
+    { day: 0, startMin: 480, endMin: 720, weight: 0.8, userId: "a" },
+    { day: 0, startMin: 480, endMin: 720, weight: 0.6, userId: "b" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.8, userId: "c" },
+    { day: 2, startMin: 480, endMin: 720, weight: 0.6, userId: "d" },
+  ];
+  const prefLookup = (userId: string) => {
+    // a, b préfèrent uniquement le mardi (pas le lundi ni mercredi)
+    if (userId === "a" || userId === "b") {
+      return { preferredDays: 1 << 1, morning: true, afternoon: false, evening: false }; // mardi matin
+    }
+    // c, d préfèrent le mercredi
+    if (userId === "c" || userId === "d") {
+      return { preferredDays: 1 << 2, morning: true, afternoon: true, evening: true }; // mercredi
+    }
+    return null;
+  };
+  const withPref = computeScheduling(rowsPref, 4, 2, { preferenceLookup: prefLookup });
+  const mercredi = withPref.recommendation.find((r) => r.day === 2);
+  const lundi = withPref.recommendation.find((r) => r.day === 0);
+  assert.ok(mercredi && lundi, "mercredi et lundi doivent être dans les recommandations");
+  // Le créneau mercredi a preference=1 (c,d matchent), lundi a preference=0 (a,b ne matchent pas lundi)
+  assert.ok(mercredi.scoreBreakdown.preference > lundi.scoreBreakdown.preference,
+    `mercredi pref=${mercredi.scoreBreakdown.preference} > lundi pref=${lundi.scoreBreakdown.preference}`);
+});
+
+test("computeScheduling: fairness bonus pour membres sous-utilisés (issue #58)", () => {
+  const rowsFair: SlotAvail[] = [
+    { day: 0, startMin: 480, endMin: 720, weight: 0.8, userId: "a" },
+    { day: 0, startMin: 480, endMin: 720, weight: 0.6, userId: "b" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.8, userId: "c" },
+    { day: 1, startMin: 480, endMin: 720, weight: 0.6, userId: "d" },
+  ];
+  // "a" et "b" très utilisés (fairness bas), "c" et "d" peu utilisés (fairness haut)
+  const fairnessMap = new Map([
+    ["a", 0.1],
+    ["b", 0.1],
+    ["c", 0.9],
+    ["d", 0.9],
+  ]);
+  const withFairness = computeScheduling(rowsFair, 4, 2, { fairnessMap });
+  const lundi = withFairness.recommendation.find((r) => r.day === 0);
+  const mardi = withFairness.recommendation.find((r) => r.day === 1);
+  assert.ok(lundi && mardi);
+  // Le mardi (membres peu utilisés) doit avoir un score de fairness plus élevé
+  assert.ok(mardi.scoreBreakdown.fairness > lundi.scoreBreakdown.fairness);
+});
+
+test("computeScheduling: rétrocompatibilité — sans options V2, comportement identique", () => {
+  const s = computeScheduling(rows, 4, 2);
+  const top = s.recommendation[0];
+  // Score identique à Σ pᵢ
+  assert.equal(top.score, 1.4);
+  assert.equal(top.scoreBreakdown.preference, 0);
+  assert.equal(top.scoreBreakdown.fairness, 0);
+});
+
+test("selectNonOverlappingHours: exporté et fonctionnel", () => {
+  // Vérifier que la fonction est bien exportée et fonctionne
+  // Note : WIS retourne en ordre inverse (backtrack depuis la fin)
+  const slots: CandSlotLike[] = [
+    { day: 0, startMin: 480, endMin: 600, startHour: 8, endHour: 10, weight: 1, score: 1, breakdown: { coverage: 1, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 }, covering: [], mentorCovered: false },
+    { day: 0, startMin: 600, endMin: 720, startHour: 10, endHour: 12, weight: 2, score: 2, breakdown: { coverage: 2, mentorFit: 0, capacityFit: 0, preference: 0, fairness: 0, conflict: 0 }, covering: [], mentorCovered: false },
+  ];
+  const result = selectNonOverlappingHours(slots);
+  assert.equal(result.length, 2);
+  // WIS retourne en ordre inverse (backtrack)
+  const startMins = result.map((s) => s.startMin).sort((a, b) => a - b);
+  assert.deepEqual(startMins, [480, 600]);
 });

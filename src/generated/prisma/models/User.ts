@@ -36,6 +36,7 @@ export type UserMinAggregateOutputType = {
   firstname: string | null
   lastname: string | null
   timezone: string | null
+  calendarToken: string | null
 }
 
 export type UserMaxAggregateOutputType = {
@@ -50,6 +51,7 @@ export type UserMaxAggregateOutputType = {
   firstname: string | null
   lastname: string | null
   timezone: string | null
+  calendarToken: string | null
 }
 
 export type UserCountAggregateOutputType = {
@@ -64,6 +66,7 @@ export type UserCountAggregateOutputType = {
   firstname: number
   lastname: number
   timezone: number
+  calendarToken: number
   _all: number
 }
 
@@ -80,6 +83,7 @@ export type UserMinAggregateInputType = {
   firstname?: true
   lastname?: true
   timezone?: true
+  calendarToken?: true
 }
 
 export type UserMaxAggregateInputType = {
@@ -94,6 +98,7 @@ export type UserMaxAggregateInputType = {
   firstname?: true
   lastname?: true
   timezone?: true
+  calendarToken?: true
 }
 
 export type UserCountAggregateInputType = {
@@ -108,6 +113,7 @@ export type UserCountAggregateInputType = {
   firstname?: true
   lastname?: true
   timezone?: true
+  calendarToken?: true
   _all?: true
 }
 
@@ -195,6 +201,7 @@ export type UserGroupByOutputType = {
   firstname: string
   lastname: string
   timezone: string
+  calendarToken: string | null
   _count: UserCountAggregateOutputType | null
   _min: UserMinAggregateOutputType | null
   _max: UserMaxAggregateOutputType | null
@@ -230,6 +237,7 @@ export type UserWhereInput = {
   firstname?: Prisma.StringFilter<"User"> | string
   lastname?: Prisma.StringFilter<"User"> | string
   timezone?: Prisma.StringFilter<"User"> | string
+  calendarToken?: Prisma.StringNullableFilter<"User"> | string | null
   sessions?: Prisma.SessionListRelationFilter
   accounts?: Prisma.AccountListRelationFilter
   availabilities?: Prisma.AvailabilityListRelationFilter
@@ -265,6 +273,7 @@ export type UserOrderByWithRelationInput = {
   firstname?: Prisma.SortOrder
   lastname?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
+  calendarToken?: Prisma.SortOrderInput | Prisma.SortOrder
   sessions?: Prisma.SessionOrderByRelationAggregateInput
   accounts?: Prisma.AccountOrderByRelationAggregateInput
   availabilities?: Prisma.AvailabilityOrderByRelationAggregateInput
@@ -291,6 +300,7 @@ export type UserOrderByWithRelationInput = {
 export type UserWhereUniqueInput = Prisma.AtLeast<{
   id?: string
   email?: string
+  calendarToken?: string
   AND?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
   OR?: Prisma.UserWhereInput[]
   NOT?: Prisma.UserWhereInput | Prisma.UserWhereInput[]
@@ -324,7 +334,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   recurringAvailabilities?: Prisma.RecurringAvailabilityListRelationFilter
   planningPreferences?: Prisma.XOR<Prisma.PlanningPreferencesNullableScalarRelationFilter, Prisma.PlanningPreferencesWhereInput> | null
   unavailabilities?: Prisma.UnavailabilityListRelationFilter
-}, "id" | "email">
+}, "id" | "email" | "calendarToken">
 
 export type UserOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -338,6 +348,7 @@ export type UserOrderByWithAggregationInput = {
   firstname?: Prisma.SortOrder
   lastname?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
+  calendarToken?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.UserCountOrderByAggregateInput
   _max?: Prisma.UserMaxOrderByAggregateInput
   _min?: Prisma.UserMinOrderByAggregateInput
@@ -358,6 +369,7 @@ export type UserScalarWhereWithAggregatesInput = {
   firstname?: Prisma.StringWithAggregatesFilter<"User"> | string
   lastname?: Prisma.StringWithAggregatesFilter<"User"> | string
   timezone?: Prisma.StringWithAggregatesFilter<"User"> | string
+  calendarToken?: Prisma.StringNullableWithAggregatesFilter<"User"> | string | null
 }
 
 export type UserCreateInput = {
@@ -372,6 +384,7 @@ export type UserCreateInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -407,6 +420,7 @@ export type UserUncheckedCreateInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -442,6 +456,7 @@ export type UserUpdateInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -477,6 +492,7 @@ export type UserUncheckedUpdateInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -512,6 +528,7 @@ export type UserCreateManyInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
 }
 
 export type UserUpdateManyMutationInput = {
@@ -526,6 +543,7 @@ export type UserUpdateManyMutationInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserUncheckedUpdateManyInput = {
@@ -540,6 +558,7 @@ export type UserUncheckedUpdateManyInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type UserCountOrderByAggregateInput = {
@@ -554,6 +573,7 @@ export type UserCountOrderByAggregateInput = {
   firstname?: Prisma.SortOrder
   lastname?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
+  calendarToken?: Prisma.SortOrder
 }
 
 export type UserMaxOrderByAggregateInput = {
@@ -568,6 +588,7 @@ export type UserMaxOrderByAggregateInput = {
   firstname?: Prisma.SortOrder
   lastname?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
+  calendarToken?: Prisma.SortOrder
 }
 
 export type UserMinOrderByAggregateInput = {
@@ -582,6 +603,7 @@ export type UserMinOrderByAggregateInput = {
   firstname?: Prisma.SortOrder
   lastname?: Prisma.SortOrder
   timezone?: Prisma.SortOrder
+  calendarToken?: Prisma.SortOrder
 }
 
 export type UserScalarRelationFilter = {
@@ -918,6 +940,7 @@ export type UserCreateWithoutSessionsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
@@ -952,6 +975,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
@@ -1002,6 +1026,7 @@ export type UserUpdateWithoutSessionsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
@@ -1036,6 +1061,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1070,6 +1096,7 @@ export type UserCreateWithoutAccountsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
@@ -1104,6 +1131,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
@@ -1154,6 +1182,7 @@ export type UserUpdateWithoutAccountsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
@@ -1188,6 +1217,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1222,6 +1252,7 @@ export type UserCreateWithoutCreatedGroupsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -1256,6 +1287,7 @@ export type UserUncheckedCreateWithoutCreatedGroupsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -1306,6 +1338,7 @@ export type UserUpdateWithoutCreatedGroupsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -1340,6 +1373,7 @@ export type UserUncheckedUpdateWithoutCreatedGroupsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -1374,6 +1408,7 @@ export type UserCreateWithoutGroupMembershipsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -1408,6 +1443,7 @@ export type UserUncheckedCreateWithoutGroupMembershipsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -1458,6 +1494,7 @@ export type UserUpdateWithoutGroupMembershipsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -1492,6 +1529,7 @@ export type UserUncheckedUpdateWithoutGroupMembershipsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -1526,6 +1564,7 @@ export type UserCreateWithoutJoinRequestsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -1560,6 +1599,7 @@ export type UserUncheckedCreateWithoutJoinRequestsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -1610,6 +1650,7 @@ export type UserUpdateWithoutJoinRequestsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -1644,6 +1685,7 @@ export type UserUncheckedUpdateWithoutJoinRequestsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -1678,6 +1720,7 @@ export type UserCreateWithoutAvailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopCreateNestedManyWithoutCreatorInput
@@ -1712,6 +1755,7 @@ export type UserUncheckedCreateWithoutAvailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   workshops?: Prisma.WorkshopUncheckedCreateNestedManyWithoutCreatorInput
@@ -1762,6 +1806,7 @@ export type UserUpdateWithoutAvailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUpdateManyWithoutCreatorNestedInput
@@ -1796,6 +1841,7 @@ export type UserUncheckedUpdateWithoutAvailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   workshops?: Prisma.WorkshopUncheckedUpdateManyWithoutCreatorNestedInput
@@ -1830,6 +1876,7 @@ export type UserCreateWithoutRecurringAvailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -1864,6 +1911,7 @@ export type UserUncheckedCreateWithoutRecurringAvailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -1914,6 +1962,7 @@ export type UserUpdateWithoutRecurringAvailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -1948,6 +1997,7 @@ export type UserUncheckedUpdateWithoutRecurringAvailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -1982,6 +2032,7 @@ export type UserCreateWithoutPlanningPreferencesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2016,6 +2067,7 @@ export type UserUncheckedCreateWithoutPlanningPreferencesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2066,6 +2118,7 @@ export type UserUpdateWithoutPlanningPreferencesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2100,6 +2153,7 @@ export type UserUncheckedUpdateWithoutPlanningPreferencesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2134,6 +2188,7 @@ export type UserCreateWithoutUnavailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2168,6 +2223,7 @@ export type UserUncheckedCreateWithoutUnavailabilitiesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2218,6 +2274,7 @@ export type UserUpdateWithoutUnavailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2252,6 +2309,7 @@ export type UserUncheckedUpdateWithoutUnavailabilitiesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2286,6 +2344,7 @@ export type UserCreateWithoutWeeklyValidationsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2320,6 +2379,7 @@ export type UserUncheckedCreateWithoutWeeklyValidationsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2370,6 +2430,7 @@ export type UserUpdateWithoutWeeklyValidationsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2404,6 +2465,7 @@ export type UserUncheckedUpdateWithoutWeeklyValidationsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2438,6 +2500,7 @@ export type UserCreateWithoutWeekValidationLogsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2472,6 +2535,7 @@ export type UserUncheckedCreateWithoutWeekValidationLogsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2522,6 +2586,7 @@ export type UserUpdateWithoutWeekValidationLogsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2556,6 +2621,7 @@ export type UserUncheckedUpdateWithoutWeekValidationLogsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2590,6 +2656,7 @@ export type UserCreateWithoutWeekSnapshotsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2624,6 +2691,7 @@ export type UserUncheckedCreateWithoutWeekSnapshotsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2674,6 +2742,7 @@ export type UserUpdateWithoutWeekSnapshotsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2708,6 +2777,7 @@ export type UserUncheckedUpdateWithoutWeekSnapshotsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2742,6 +2812,7 @@ export type UserCreateWithoutWorkshopsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2776,6 +2847,7 @@ export type UserUncheckedCreateWithoutWorkshopsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2815,6 +2887,7 @@ export type UserCreateWithoutMentoredWorkshopsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -2849,6 +2922,7 @@ export type UserUncheckedCreateWithoutMentoredWorkshopsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -2899,6 +2973,7 @@ export type UserUpdateWithoutWorkshopsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -2933,6 +3008,7 @@ export type UserUncheckedUpdateWithoutWorkshopsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -2978,6 +3054,7 @@ export type UserUpdateWithoutMentoredWorkshopsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3012,6 +3089,7 @@ export type UserUncheckedUpdateWithoutMentoredWorkshopsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3046,6 +3124,7 @@ export type UserCreateWithoutCreatedSeriesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3080,6 +3159,7 @@ export type UserUncheckedCreateWithoutCreatedSeriesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3130,6 +3210,7 @@ export type UserUpdateWithoutCreatedSeriesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3164,6 +3245,7 @@ export type UserUncheckedUpdateWithoutCreatedSeriesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3198,6 +3280,7 @@ export type UserCreateWithoutParticipationInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3232,6 +3315,7 @@ export type UserUncheckedCreateWithoutParticipationInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3282,6 +3366,7 @@ export type UserUpdateWithoutParticipationInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3316,6 +3401,7 @@ export type UserUncheckedUpdateWithoutParticipationInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3350,6 +3436,7 @@ export type UserCreateWithoutAttendancesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3384,6 +3471,7 @@ export type UserUncheckedCreateWithoutAttendancesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3434,6 +3522,7 @@ export type UserUpdateWithoutAttendancesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3468,6 +3557,7 @@ export type UserUncheckedUpdateWithoutAttendancesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3502,6 +3592,7 @@ export type UserCreateWithoutWaitlistsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3536,6 +3627,7 @@ export type UserUncheckedCreateWithoutWaitlistsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3586,6 +3678,7 @@ export type UserUpdateWithoutWaitlistsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3620,6 +3713,7 @@ export type UserUncheckedUpdateWithoutWaitlistsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3654,6 +3748,7 @@ export type UserCreateWithoutWorkshopFeedbacksInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3688,6 +3783,7 @@ export type UserUncheckedCreateWithoutWorkshopFeedbacksInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3738,6 +3834,7 @@ export type UserUpdateWithoutWorkshopFeedbacksInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3772,6 +3869,7 @@ export type UserUncheckedUpdateWithoutWorkshopFeedbacksInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3806,6 +3904,7 @@ export type UserCreateWithoutNotificationsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3840,6 +3939,7 @@ export type UserUncheckedCreateWithoutNotificationsInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -3890,6 +3990,7 @@ export type UserUpdateWithoutNotificationsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -3924,6 +4025,7 @@ export type UserUncheckedUpdateWithoutNotificationsInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -3958,6 +4060,7 @@ export type UserCreateWithoutNotificationPreferencesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityCreateNestedManyWithoutUserInput
@@ -3992,6 +4095,7 @@ export type UserUncheckedCreateWithoutNotificationPreferencesInput = {
   firstname: string
   lastname: string
   timezone?: string
+  calendarToken?: string | null
   sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
   accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
   availabilities?: Prisma.AvailabilityUncheckedCreateNestedManyWithoutUserInput
@@ -4042,6 +4146,7 @@ export type UserUpdateWithoutNotificationPreferencesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUpdateManyWithoutUserNestedInput
@@ -4076,6 +4181,7 @@ export type UserUncheckedUpdateWithoutNotificationPreferencesInput = {
   firstname?: Prisma.StringFieldUpdateOperationsInput | string
   lastname?: Prisma.StringFieldUpdateOperationsInput | string
   timezone?: Prisma.StringFieldUpdateOperationsInput | string
+  calendarToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
   accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
   availabilities?: Prisma.AvailabilityUncheckedUpdateManyWithoutUserNestedInput
@@ -4312,6 +4418,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   firstname?: boolean
   lastname?: boolean
   timezone?: boolean
+  calendarToken?: boolean
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
   availabilities?: boolean | Prisma.User$availabilitiesArgs<ExtArgs>
@@ -4348,6 +4455,7 @@ export type UserSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   firstname?: boolean
   lastname?: boolean
   timezone?: boolean
+  calendarToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -4362,6 +4470,7 @@ export type UserSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensio
   firstname?: boolean
   lastname?: boolean
   timezone?: boolean
+  calendarToken?: boolean
 }, ExtArgs["result"]["user"]>
 
 export type UserSelectScalar = {
@@ -4376,9 +4485,10 @@ export type UserSelectScalar = {
   firstname?: boolean
   lastname?: boolean
   timezone?: boolean
+  calendarToken?: boolean
 }
 
-export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "firstname" | "lastname" | "timezone", ExtArgs["result"]["user"]>
+export type UserOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "email" | "emailVerified" | "image" | "createdAt" | "updatedAt" | "role" | "firstname" | "lastname" | "timezone" | "calendarToken", ExtArgs["result"]["user"]>
 export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   sessions?: boolean | Prisma.User$sessionsArgs<ExtArgs>
   accounts?: boolean | Prisma.User$accountsArgs<ExtArgs>
@@ -4443,6 +4553,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     firstname: string
     lastname: string
     timezone: string
+    calendarToken: string | null
   }, ExtArgs["result"]["user"]>
   composites: {}
 }
@@ -4898,6 +5009,7 @@ export interface UserFieldRefs {
   readonly firstname: Prisma.FieldRef<"User", 'String'>
   readonly lastname: Prisma.FieldRef<"User", 'String'>
   readonly timezone: Prisma.FieldRef<"User", 'String'>
+  readonly calendarToken: Prisma.FieldRef<"User", 'String'>
 }
     
 

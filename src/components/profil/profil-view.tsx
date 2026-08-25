@@ -13,6 +13,7 @@ import { DataUsageCard } from "@/components/profil/data-usage-card";
 import { NotificationsCard } from "@/components/profil/notifications-card";
 import { SecurityCard } from "@/components/profil/security-card";
 import { DataCard } from "@/components/profil/data-card";
+import { CalendarCard } from "@/components/profil/calendar-card";
 import { ProfileSectionTitle } from "@/components/profil/profile-section";
 
 export function ProfilView(props: ProfilProps) {
@@ -69,6 +70,7 @@ export function ProfilView(props: ProfilProps) {
         <div className="space-y-3">
           <NotificationsCard />
           <SecurityCard user={props.user} />
+          <CalendarCard />
           <DataCard />
         </div>
       </section>

@@ -24,6 +24,7 @@ import {
   UsersIcon,
   CalendarCheck2Icon,
   CalendarPlusIcon,
+  ChevronDownIcon,
   SparklesIcon,
 } from "lucide-react";
 import {
@@ -32,6 +33,8 @@ import {
   HeatmapCard,
   RecommendationCard,
 } from "@/components/scheduling-views";
+import { MemberWeekGrid } from "@/components/member-week-grid";
+import { cn } from "@/lib/utils";
 import { AttendanceNudgeCard } from "@/components/dashboard/attendance-nudge";
 
 type HeatCell = { day: number; hour: number; count: number };
@@ -71,6 +74,7 @@ type Data = {
   totalUsers: number;
   coverage: number;
   referenceTimezone?: string;
+  weekStart?: string;
   mentees: Mentee[];
   upcomingWorkshops: Workshop[];
   groupName?: string;
@@ -92,6 +96,7 @@ export function MentorDashboard() {
   const [loading, setLoading] = useState(true);
   const [windowHours, setWindowHours] = useState(2);
   const [groupId, setGroupId] = useState("");
+  const [expandedMember, setExpandedMember] = useState<string | null>(null);
 
   const load = useCallback(async (window: number, gid: string) => {
     setLoading(true);
@@ -202,12 +207,15 @@ export function MentorDashboard() {
             maxHour={data.maxHour}
             totalMembers={data.totalMembers}
             refLabel={data.referenceTimezone}
+            weekStart={data.weekStart}
           />
 
           <RecommendationCard
             recommendation={data.recommendation}
             totalMembers={data.totalMembers}
             description="Créneaux les plus propices selon les disponibilités de la cohorte."
+            weekStart={data.weekStart}
+            refTz={data.referenceTimezone}
             actions={
               <div className="flex gap-1.5">
                 {[1, 2, 3, 4].map((w) => (
@@ -297,6 +305,7 @@ export function MentorDashboard() {
                   <ul className="space-y-3">
                     {data.mentees.map((m) => {
                       const n = m.availabilities.length;
+                      const expanded = expandedMember === m.id;
                       return (
                         <li key={m.id} className="rounded-lg border p-3">
                           <div className="flex items-center justify-between gap-2">
@@ -322,8 +331,34 @@ export function MentorDashboard() {
                             <Badge variant="outline">
                               {n > 0 ? `${n} créneau${n > 1 ? "x" : ""}` : "Aucun créneau"}
                             </Badge>
+                            {n > 0 && (
+                              <button
+                                type="button"
+                                onClick={() =>
+                                  setExpandedMember(expanded ? null : m.id)
+                                }
+                                aria-expanded={expanded}
+                                className="flex items-center gap-1 text-xs font-medium text-accent hover:underline"
+                              >
+                                <ChevronDownIcon
+                                  className={cn(
+                                    "size-3.5 transition-transform",
+                                    !expanded && "-rotate-90"
+                                  )}
+                                />
+                                {expanded ? "Masquer la grille" : "Voir la grille"}
+                              </button>
+                            )}
                           </div>
-                          {n > 0 ? (
+                          {expanded && n > 0 ? (
+                            <div className="mt-2 border-t pt-2">
+                              <MemberWeekGrid
+                                slots={m.availabilities}
+                                weekStart={data.weekStart}
+                                refTz={data.referenceTimezone}
+                              />
+                            </div>
+                          ) : n > 0 ? (
                             <div className="mt-2 flex flex-wrap gap-1.5">
                               {m.availabilities.map((a, i) => (
                                 <span

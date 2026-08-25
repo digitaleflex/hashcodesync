@@ -62,6 +62,7 @@ type Data = {
   heatmapSmoothed?: { day: number; hour: number; count: number }[];
   recommendation: Rec[];
   referenceTimezone?: string;
+  weekStart?: string;
   groupName?: string;
   maxSlotsPerUser?: number;
   groups?: GroupOption[];
@@ -315,6 +316,7 @@ export function SchedulingDashboard() {
                 maxHour={data.maxHour}
                 totalMembers={data.totalMembers}
                 refLabel={data.referenceTimezone}
+                weekStart={data.weekStart}
                 highlightCell={highlightCell}
                 onCellSelect={handleCellSelect}
                 heatmapSmoothed={data.heatmapSmoothed}
@@ -359,6 +361,8 @@ export function SchedulingDashboard() {
                 recommendation={data.recommendation.slice(0, 5)}
                 totalMembers={data.totalMembers}
                 onPlan={handlePlan}
+                weekStart={data.weekStart}
+                refTz={data.referenceTimezone}
                 actions={
                   <div className="flex gap-1.5">
                     {[1, 2, 3, 4].map((w) => (

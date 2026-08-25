@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
-import { convertToReference, REFERENCE_TIMEZONE } from "@/lib/timezone";
+import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
 import { computeMassHours } from "@/lib/masse-horaire";
 import { presenceProbability } from "@/lib/probability";
 import { schedulingCacheKey } from "@/lib/cache";
@@ -307,6 +307,8 @@ export async function GET(req: NextRequest) {
       totalUsers,
       coverage,
       referenceTimezone: REFERENCE_TIMEZONE,
+      // Semaine affichée par la heatmap : lundi 00:00 du fuseau de référence.
+      weekStart: currentWeekStart().toISOString(),
       mentees,
       groupId: groupId ?? undefined,
       groupName,

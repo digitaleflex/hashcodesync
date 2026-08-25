@@ -208,6 +208,8 @@ export async function GET(req: NextRequest) {
     const payload: Record<string, unknown> = {
       ...scheduling,
       referenceTimezone: REFERENCE_TIMEZONE,
+      // Semaine affichée par la heatmap : lundi 00:00 du fuseau de référence.
+      weekStart: currentWeekStart().toISOString(),
       groupId: groupId ?? undefined,
       groupName,
       maxSlotsPerUser,

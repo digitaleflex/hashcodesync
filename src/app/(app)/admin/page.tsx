@@ -5,7 +5,7 @@ import { auth } from "@/lib/auth";
 import { SchedulingDashboard } from "@/components/admin-scheduling";
 import { Button } from "@/components/ui/button";
 import { PageTitle } from "@/components/ui/page-title";
-import { UsersIcon, CalendarDaysIcon } from "lucide-react";
+import { UsersIcon, CalendarDaysIcon, CalendarCheck2Icon } from "lucide-react";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +26,14 @@ export default async function AdminPage() {
           subtitle="Planification et disponibilités de la cohorte."
           actions={
             <div className="flex items-center gap-2">
+              <Button
+                nativeButton={false}
+                render={<Link href="/admin/disponibilites" />}
+                variant="outline"
+              >
+                <CalendarCheck2Icon />
+                Disponibilités des membres
+              </Button>
               <Button
                 nativeButton={false}
                 render={<Link href="/admin/ateliers" />}

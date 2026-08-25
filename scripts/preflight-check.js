@@ -2,7 +2,6 @@
 // Utilisation : npm run preflight
 const REQUIRED = [
   "DATABASE_URL",
-  "AUTH_SECRET",
   "BETTER_AUTH_URL",
   "BETTER_AUTH_SECRET",
 ];

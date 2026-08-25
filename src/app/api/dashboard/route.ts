@@ -148,6 +148,7 @@ export async function GET(req: NextRequest) {
       maxHour: number;
       totalMembers: number;
       referenceTimezone: string;
+      weekStart: string;
     } | null = null;
 
     if (isLeader && cohortUsers.length > 0) {
@@ -191,6 +192,8 @@ export async function GET(req: NextRequest) {
         maxHour: scheduling.maxHour,
         totalMembers: scheduling.totalMembers,
         referenceTimezone: REFERENCE_TIMEZONE,
+        // Semaine affichée par la heatmap : lundi 00:00 du fuseau de référence.
+        weekStart: currentWeekStart().toISOString(),
       };
     }
 

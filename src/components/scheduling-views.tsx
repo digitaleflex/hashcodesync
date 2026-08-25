@@ -52,6 +52,52 @@ export const DAY_HUES = [345, 285, 220, 175, 130, 50, 25];
 
 const dayColor = (day: number) => `hsl(${DAY_HUES[day] ?? 0}, 65%, 50%)`;
 
+// --- Dates réelles de la semaine affichée -----------------------------------
+// La heatmap est ancrée sur une semaine précise (lundi → dimanche, fuseau de
+// référence) : sans dates affichées, impossible de savoir si les données
+// concernent la semaine courante ou une autre. Sans `weekStart`, on retombe
+// sur des jours génériques (comportement antérieur).
+type DayDate = { key: string; short: string; num: string; long: string };
+
+const SHORT_DATE_FMT = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", day: "2-digit", month: "2-digit" });
+const DAY_NUM_FMT = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", day: "numeric" });
+const LONG_DATE_FMT = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", weekday: "long", day: "numeric", month: "long" });
+
+function ymdInTz(ms: number, tz?: string): { y: number; m: number; d: number } | null {
+  try {
+    const fmt = new Intl.DateTimeFormat(
+      "en-CA",
+      tz
+        ? { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }
+        : { year: "numeric", month: "2-digit", day: "2-digit" }
+    );
+    const [y, m, d] = fmt.format(new Date(ms)).split("-").map(Number);
+    return { y, m, d };
+  } catch {
+    return null;
+  }
+}
+
+// 7 dates (clé ISO, « 18/08 », « 18 », « lundi 18 août ») à partir du lundi.
+export function buildDayDates(weekStart?: string | null, refTz?: string): DayDate[] | null {
+  if (!weekStart) return null;
+  const ms = new Date(weekStart).getTime();
+  if (!Number.isFinite(ms)) return null;
+  const base = ymdInTz(ms, refTz);
+  if (!base) return null;
+  return Array.from({ length: 7 }, (_, i) => {
+    const utc = new Date(Date.UTC(base.y, base.m - 1, base.d + i));
+    return {
+      key: utc.toISOString().slice(0, 10),
+      short: SHORT_DATE_FMT.format(utc),
+      num: DAY_NUM_FMT.format(utc),
+      long: LONG_DATE_FMT.format(utc),
+    };
+  });
+}
+
+const capFirst = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 const cellStyle = (day: number, ratio: number, isGap = false) => {
   const hue = DAY_HUES[day] ?? 0;
   if (isGap) {
@@ -75,6 +121,7 @@ export function HeatmapCard({
   maxHour,
   totalMembers,
   refLabel,
+  weekStart,
   highlightCell,
   title,
   description,
@@ -89,6 +136,8 @@ export function HeatmapCard({
   maxHour: number;
   totalMembers: number;
   refLabel?: string;
+  // Lundi 00:00 (ISO, fuseau de référence) de la semaine affichée.
+  weekStart?: string | null;
   highlightCell?: { day: number; hour: number } | null;
   title?: React.ReactNode;
   description?: string;
@@ -98,6 +147,26 @@ export function HeatmapCard({
   gaps?: { day: number; gaps: { startHour: number; endHour: number }[] }[];
   showGaps?: boolean;
 }) {
+  const dayDates = useMemo(() => buildDayDates(weekStart, refLabel), [weekStart, refLabel]);
+
+  const todayKey = useMemo(() => {
+    const base = ymdInTz(Date.now(), refLabel);
+    return base ? new Date(Date.UTC(base.y, base.m - 1, base.d)).toISOString().slice(0, 10) : null;
+  }, [refLabel]);
+
+  const isToday = (day: number) => dayDates?.[day].key === todayKey;
+
+  const weekRange = useMemo(() => {
+    if (!dayDates) return null;
+    const year = new Intl.DateTimeFormat("fr-FR", { timeZone: "UTC", year: "numeric" }).format(
+      new Date(`${dayDates[6].key}T00:00:00Z`)
+    );
+    return `Semaine du ${dayDates[0].long} au ${dayDates[6].long} ${year}`;
+  }, [dayDates]);
+
+  // Nom du jour avec date réelle (« Lundi 18 août ») pour les libellés riches.
+  const dayTitleName = (day: number) =>
+    dayDates ? capFirst(dayDates[day].long) : DAY_NAMES_FULL[day];
   const index = useMemo(() => {
     const map = new Map<string, HeatCell>();
     for (const c of heatmap) map.set(`${c.day}:${c.hour}`, c);
@@ -138,13 +207,14 @@ export function HeatmapCard({
     if (highlightCell) setMobileDay(highlightCell.day);
   }, [highlightCell]);
 
-  const dayLabel = (day: number, hour: number) => {
+  const cellLabel = (day: number, hour: number) => {
     const ratio = getRatio(day, hour);
     const cell = index.get(`${day}:${hour}`);
     const isGap = gapSet?.has(`${day}:${hour}`);
-    if (!cell) return `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+    const when = `${dayTitleName(day)}${isToday(day) ? " (aujourd'hui)" : ""} ${hour}:00 → ${hour + 1}:00`;
+    if (!cell) return when;
     const members = cell.memberCount ?? cell.count;
-    return `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${members} membre${members > 1 ? "s" : ""} · ${Math.round(cell.count * 10) / 10} présence(s) attendue(s) · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`;
+    return `${when} · ${members} membre${members > 1 ? "s" : ""} · ${Math.round(cell.count * 10) / 10} présence(s) attendue(s) · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`;
   };
 
   return (
@@ -157,6 +227,7 @@ export function HeatmapCard({
               {title ?? "Heatmap des disponibilités"}
             </CardTitle>
             <CardDescription>
+              {weekRange ? `${weekRange} · ` : ""}
               {description ??
                 "Une couleur par jour, l'intensité = part de la cohorte disponible à cette heure. "}
               {refLabel ? `Fuseau de référence : ${refLabel}.` : ""}
@@ -206,17 +277,21 @@ export function HeatmapCard({
                 >
                   <span className="size-2 rounded-full" style={{ backgroundColor: active ? "currentColor" : dayColor(day) }} />
                   {name}
+                  {dayDates && <span className="text-[11px] font-normal opacity-80">{dayDates[day].num}</span>}
+                  {isToday(day) && (
+                    <span className="sr-only"> (aujourd&apos;hui)</span>
+                  )}
                 </button>
               );
             })}
           </div>
-          <div className="flex flex-col gap-1.5" role="list" aria-label={`Disponibilités du ${DAY_NAMES_FULL[mobileDay]}`}>
+          <div className="flex flex-col gap-1.5" role="list" aria-label={`Disponibilités du ${dayTitleName(mobileDay)}`}>
             {hours.map((hour) => {
               const ratio = getRatio(mobileDay, hour);
               const isGap = gapSet?.has(`${mobileDay}:${hour}`);
               const hl = isHighlight(mobileDay, hour);
               const cell = index.get(`${mobileDay}:${hour}`);
-              const label = dayLabel(mobileDay, hour);
+              const label = cellLabel(mobileDay, hour);
               const row = (
                 <>
                   <span className="w-12 shrink-0 text-xs font-medium tabular-nums text-muted-foreground">
@@ -272,7 +347,8 @@ export function HeatmapCard({
         <div className="hidden sm:block overflow-x-auto">
           <table className="w-full min-w-[560px] border-separate border-spacing-1">
             <caption className="sr-only">
-              Disponibilités hebdomadaires de la cohorte par jour et par heure.
+              Disponibilités hebdomadaires de la cohorte par jour et par heure
+              {weekRange ? ` — ${weekRange}` : ""}.
             </caption>
             <thead>
               <tr>
@@ -291,13 +367,30 @@ export function HeatmapCard({
             <tbody>
               {DAY_NAMES.map((name, day) => (
                 <tr key={day}>
-                  <th scope="row" className="sticky left-0 bg-card pr-2 text-xs font-medium text-muted-foreground">
+                  <th
+                    scope="row"
+                    className={cn(
+                      "sticky left-0 bg-card pr-2 text-xs font-medium",
+                      isToday(day) ? "text-foreground" : "text-muted-foreground"
+                    )}
+                    title={isToday(day) ? "Aujourd'hui" : undefined}
+                  >
                     <span className="inline-flex items-center gap-1.5">
                       <span
                         className="size-2.5 rounded-full"
                         style={{ backgroundColor: dayColor(day) }}
                       />
-                      {name}
+                      <span className="flex flex-col leading-tight">
+                        <span>
+                          {name}
+                          {isToday(day) && <span className="sr-only"> (aujourd&apos;hui)</span>}
+                        </span>
+                        {dayDates && (
+                          <span className="text-[10px] font-normal tabular-nums opacity-80">
+                            {dayDates[day].short}
+                          </span>
+                        )}
+                      </span>
                     </span>
                   </th>
                   {hours.map((hour) => {
@@ -305,10 +398,7 @@ export function HeatmapCard({
                     const isGap = gapSet?.has(`${day}:${hour}`);
                     const style = cellStyle(day, ratio, !!isGap);
                     const hl = isHighlight(day, hour);
-                    const cell = index.get(`${day}:${hour}`);
-                    const label = cell
-                      ? `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00 · ${cell.memberCount ?? cell.count} membre${(cell.memberCount ?? cell.count) > 1 ? "s" : ""} · ${Math.round(cell.count * 10) / 10} présence(s) attendue(s) · ${Math.round(ratio * 100)}% de la cohorte${isGap ? " · zone creuse" : ""}`
-                      : `${DAY_NAMES_FULL[day]} ${hour}:00 → ${hour + 1}:00`;
+                    const label = cellLabel(day, hour);
                     const interactive = !!onCellSelect;
                     const content = (
                       <span className="hidden md:inline">
@@ -356,6 +446,11 @@ export function HeatmapCard({
                 style={{ backgroundColor: dayColor(day) }}
               />
               {n}
+              {dayDates && (
+                <span className="tabular-nums" aria-hidden="true">
+                  {dayDates[day].short}
+                </span>
+              )}
             </span>
           ))}
           <span className="ml-2 inline-flex items-center gap-1.5">
@@ -385,6 +480,8 @@ export function RecommendationCard({
   actions,
   onPlan,
   maxItems = 5,
+  weekStart,
+  refTz,
 }: {
   recommendation: Rec[];
   totalMembers: number;
@@ -393,7 +490,11 @@ export function RecommendationCard({
   actions?: React.ReactNode;
   onPlan?: (time: string, day: number) => void;
   maxItems?: number;
+  // Lundi 00:00 (ISO, fuseau de référence) : affiche la date réelle de chaque jour.
+  weekStart?: string | null;
+  refTz?: string;
 }) {
+  const dayDates = useMemo(() => buildDayDates(weekStart, refTz), [weekStart, refTz]);
   const scoreOf = (r: Rec): number =>
     Math.max(0, Math.min(100, Math.round(r.percent)));
   const durationOf = (r: Rec): number => {
@@ -434,7 +535,14 @@ export function RecommendationCard({
                   <div className="flex items-center gap-2 text-sm">
                     <span className="font-semibold text-accent">#{i + 1}</span>
                     <span className="font-medium">
-                      {DAY_NAMES_FULL[r.day]} · {r.startTime}–{r.endTime}
+                      {DAY_NAMES_FULL[r.day]}
+                      {dayDates && (
+                        <span className="ml-1 tabular-nums text-muted-foreground">
+                          {dayDates[r.day].short}
+                        </span>
+                      )}
+                      {" · "}
+                      {r.startTime}–{r.endTime}
                     </span>
                     <span className="text-xs text-muted-foreground">
                       · {durationOf(r)} h

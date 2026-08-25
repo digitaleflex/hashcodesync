@@ -53,6 +53,7 @@ type CohortData = {
   maxHour: number;
   totalMembers: number;
   referenceTimezone?: string;
+  weekStart?: string;
 };
 
 export default function DashboardPage() {
@@ -94,6 +95,7 @@ export default function DashboardPage() {
           maxHour: d.cohort.maxHour,
           totalMembers: d.cohort.totalMembers,
           referenceTimezone: d.cohort.referenceTimezone,
+          weekStart: d.cohort.weekStart,
         });
       }
     }
@@ -206,11 +208,14 @@ export default function DashboardPage() {
                 maxHour={cohort.maxHour}
                 totalMembers={cohort.totalMembers}
                 refLabel={cohort.referenceTimezone}
+                weekStart={cohort.weekStart}
               />
               <RecommendationCard
                 recommendation={cohort.recommendation}
                 totalMembers={cohort.totalMembers}
                 description="Créneaux les plus propices selon les disponibilités de la cohorte."
+                weekStart={cohort.weekStart}
+                refTz={cohort.referenceTimezone}
               />
             </>
           ) : (

@@ -17,6 +17,19 @@ export const auth = betterAuth({
   session: {
     expiresIn: 60 * 60 * 24 * 7, // 7 jours
   },
+  // Anti brute-force : activé aussi en dev (défaut better-auth = prod uniquement,
+  // stockage mémoire → réinitialisé au redémarrage, mono-instance).
+  rateLimit: {
+    enabled: true,
+    window: 60,
+    max: 30,
+    customRules: {
+      "/sign-in/email": { window: 60, max: 5 },
+      "/sign-up/email": { window: 60, max: 5 },
+      "/forget-password": { window: 300, max: 3 },
+      "/reset-password": { window: 300, max: 5 },
+    },
+  },
   advanced: {
     useSecureCookies: process.env.NODE_ENV === "production",
   },

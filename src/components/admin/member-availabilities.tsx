@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import {
+  BellRingIcon,
   CalendarCheck2Icon,
   CalendarOffIcon,
   ChevronDownIcon,
@@ -205,6 +206,26 @@ export function AdminMemberAvailabilities() {
     }
   }, []);
 
+  const [reminding, setReminding] = useState(false);
+  const remindPending = useCallback(async () => {
+    setReminding(true);
+    try {
+      const res = await fetch("/api/admin/validation-reminders", { method: "POST" });
+      const data = res.ok ? await res.json() : null;
+      if (!res.ok || !data) throw new Error();
+      toast.success(
+        data.reminded > 0
+          ? `${data.reminded} membre${data.reminded > 1 ? "s" : ""} relancé${data.reminded > 1 ? "s" : ""} (e-mail + notification).`
+          : "Tout le monde a déjà été relancé cette semaine."
+      );
+      await reloadList();
+    } catch {
+      toast.error("Relance impossible");
+    } finally {
+      setReminding(false);
+    }
+  }, [reloadList]);
+
   if (loading) {
     return (
       <div className="flex items-center justify-center py-16">
@@ -241,6 +262,22 @@ export function AdminMemberAvailabilities() {
               </Button>
             ))}
           </div>
+          {filter === "pending" && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="w-full"
+              onClick={remindPending}
+              disabled={reminding}
+            >
+              {reminding ? (
+                <Loader2Icon className="size-4 animate-spin" aria-hidden="true" />
+              ) : (
+                <BellRingIcon className="size-4" aria-hidden="true" />
+              )}
+              Relancer les non validés
+            </Button>
+          )}
           <p className="text-xs text-muted-foreground">
             {filtered.length} membre{filtered.length > 1 ? "s" : ""}
           </p>

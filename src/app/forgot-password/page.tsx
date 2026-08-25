@@ -74,11 +74,11 @@ export default function ForgotPasswordPage() {
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="space-y-2">
-          <Label htmlFor="email" className="text-sm font-medium text-[#A7B0C2] uppercase tracking-wider">
+          <Label htmlFor="email" className="text-muted-foreground">
             Email
           </Label>
           <div className="relative">
-            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A7B0C2]/60" />
+            <Mail className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground/60" />
             <Input
               id="email"
               type="email"
@@ -87,7 +87,7 @@ export default function ForgotPasswordPage() {
               required
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+              className="h-[52px] pl-10 pr-4 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
             />
           </div>
         </div>
@@ -109,7 +109,7 @@ export default function ForgotPasswordPage() {
         </Button>
       </form>
 
-      <p className="text-center text-sm text-[#A7B0C2]">
+      <p className="text-center text-sm text-muted-foreground">
         <Link href="/login" className="text-primary hover:underline">
           Revenir à la connexion
         </Link>

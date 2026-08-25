@@ -80,7 +80,7 @@ function ResetPasswordForm() {
     >
       <form onSubmit={handleSubmit} className="flex flex-col gap-5">
         <div className="space-y-2">
-          <Label htmlFor="password" className="text-sm font-medium text-[#A7B0C2] uppercase tracking-wider">
+          <Label htmlFor="password" className="text-muted-foreground">
             Nouveau mot de passe
           </Label>
           <PasswordInput
@@ -91,12 +91,12 @@ function ResetPasswordForm() {
             autoComplete="new-password"
             required
             minLength={8}
-            className="h-[52px] pl-4 pr-12 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+            className="h-[52px] pl-4 pr-12 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="confirm" className="text-sm font-medium text-[#A7B0C2] uppercase tracking-wider">
+          <Label htmlFor="confirm" className="text-muted-foreground">
             Confirmer
           </Label>
           <PasswordInput
@@ -107,8 +107,8 @@ function ResetPasswordForm() {
             autoComplete="new-password"
             required
             minLength={8}
-            ariaInvalid={confirm.length > 0 && confirm !== password}
-            className="h-[52px] pl-4 pr-12 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-[#A7B0C2]/40 focus:border-primary/50 focus:ring-primary/20 transition-all"
+            aria-invalid={confirm.length > 0 && confirm !== password}
+            className="h-[52px] pl-4 pr-12 bg-white/[0.03] border-white/[0.08] text-white placeholder:text-muted-foreground/60 focus:border-primary/50 focus:ring-primary/20 transition-all"
           />
         </div>
 
@@ -129,7 +129,7 @@ function ResetPasswordForm() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[#A7B0C2]">
+      <p className="mt-6 text-center text-sm text-muted-foreground">
         <Link
           href="/login"
           className="text-primary hover:text-primary/80 underline-offset-4 hover:underline transition-colors"

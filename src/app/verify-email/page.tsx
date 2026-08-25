@@ -23,7 +23,7 @@ export default function VerifyEmailPage() {
             Code : {error}
           </p>
         </div>
-      <p className="text-center text-sm text-[#A7B0C2]">
+      <p className="text-center text-sm text-muted-foreground">
         <Link href="/login" className="text-primary hover:underline">
           Revenir à la connexion
         </Link>
@@ -44,7 +44,7 @@ export default function VerifyEmailPage() {
           Le lien expire dans 24 heures.
         </p>
       </div>
-      <p className="text-center text-sm text-[#A7B0C2]">
+      <p className="text-center text-sm text-muted-foreground">
         <Link href="/login" className="text-primary hover:underline">
           J&apos;ai vérifié, me connecter
         </Link>

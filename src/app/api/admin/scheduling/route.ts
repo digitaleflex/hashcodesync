@@ -2,43 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
-import { computeScheduling, expandPatterns, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
+import { computeScheduling, mergePerUserIntervals, SlotAvail } from "@/lib/scheduling";
 import { convertToReference, REFERENCE_TIMEZONE, currentWeekStart } from "@/lib/timezone";
-import { computeMassHours } from "@/lib/masse-horaire";
-import { presenceProbability } from "@/lib/probability";
 import { schedulingCacheKey } from "@/lib/cache";
-
-type UserSlots = {
-  id: string;
-  role: string;
-  timezone: string;
-  attendance: { present: number; absent: number };
-  availabilities: { day: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
-  recurring: { dayMask: number; startTime: string; endTime: string; groupId: string | null; activityId: string | null }[];
-};
-
-function weightedRows(u: UserSlots, groupScope: string | null, activityId: string | null, massScope: boolean) {
-  const declared = [...u.availabilities, ...expandPatterns(u.recurring)];
-  const slots = massScope
-    ? declared
-    : declared.filter(
-        (a) =>
-          (a.groupId === groupScope || a.groupId === null) &&
-          (!activityId || a.activityId === activityId || a.activityId === null)
-      );
-  if (slots.length === 0) return [];
-  const mass = computeMassHours(slots.map((s) => ({ day: s.day, startTime: s.startTime, endTime: s.endTime })));
-  const weight = presenceProbability({ present: u.attendance.present, absent: u.attendance.absent }, mass);
-  return slots.map((a) => ({
-    day: a.day,
-    startTime: a.startTime,
-    endTime: a.endTime,
-    userTz: u.timezone,
-    userId: u.id,
-    weight,
-    mentor: u.role === "mentor",
-  }));
-}
+import { loadSchedulingUsers, weightedRows, type UserSlots } from "@/lib/scheduling-users";
 
 const CACHE_TTL_MS = 4000;
 const cache = new Map<
@@ -91,95 +58,16 @@ export async function GET(req: NextRequest) {
       });
     }
 
-    let totalMembers: number;
     let groupName: string | null = null;
-    let users: UserSlots[];
-
     if (groupId) {
       const group = await prisma.group.findUnique({
         where: { id: groupId },
         select: { id: true, name: true },
       });
       groupName = group?.name ?? null;
-
-      const members = await prisma.groupMember.findMany({
-        where: { groupId },
-        include: {
-          user: {
-            select: {
-              id: true,
-              role: true,
-              timezone: true,
-              attendances: { select: { status: true } },
-              availabilities: {
-                select: {
-                  day: true,
-                  startTime: true,
-                  endTime: true,
-                  groupId: true,
-                  activityId: true,
-                },
-              },
-              recurringAvailabilities: {
-                select: {
-                  dayMask: true,
-                  startTime: true,
-                  endTime: true,
-                  groupId: true,
-                  activityId: true,
-                },
-              },
-            },
-          },
-        },
-      });
-      totalMembers = members.length;
-      users = members.map((m) => ({
-        id: m.user.id,
-        role: m.user.role,
-        timezone: m.user.timezone,
-        attendance: countAttendance(m.user.attendances),
-        availabilities: m.user.availabilities,
-        recurring: m.user.recurringAvailabilities,
-      }));
-    } else {
-      const all = await prisma.user.findMany({
-        where: { availabilities: { some: {} } },
-        select: {
-          id: true,
-          role: true,
-          timezone: true,
-          attendances: { select: { status: true } },
-          availabilities: {
-            select: {
-              day: true,
-              startTime: true,
-              endTime: true,
-              groupId: true,
-              activityId: true,
-            },
-          },
-          recurringAvailabilities: {
-            select: {
-              dayMask: true,
-              startTime: true,
-              endTime: true,
-              groupId: true,
-              activityId: true,
-            },
-          },
-        },
-      });
-      totalMembers = all.length;
-      users = all.map((u) => ({
-        id: u.id,
-        role: u.role,
-        timezone: u.timezone,
-        attendance: countAttendance(u.attendances),
-        availabilities: u.availabilities,
-        recurring: u.recurringAvailabilities,
-      }));
     }
+
+    const { totalMembers, users } = await loadSchedulingUsers(groupId);
 
     const rows = users.flatMap((u) => weightedRows(u, groupId, activityId, !groupId));
 
@@ -231,11 +119,4 @@ export async function GET(req: NextRequest) {
     console.error("GET /api/admin/scheduling erreur", e);
     return NextResponse.json({ error: "Impossible de charger le planning" }, { status: 500 });
   }
-}
-
-function countAttendance(rows: { status: string }[]) {
-  return {
-    present: rows.filter((r) => r.status === "present").length,
-    absent: rows.filter((r) => r.status === "absent").length,
-  };
 }

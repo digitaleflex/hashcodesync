@@ -35,6 +35,7 @@ import { CoverageTrend } from "@/components/admin/coverage-trend";
 import { CellDrillDown } from "@/components/admin/cell-drilldown";
 import { GapTimeline } from "@/components/admin/gap-timeline";
 import { AdminExportBar } from "@/components/admin/admin-export";
+import { SeriesPlannerDialog } from "@/components/admin/series-planner-dialog";
 
 type Rec = {
   day: number;
@@ -267,6 +268,7 @@ export function SchedulingDashboard() {
               ))}
             </SelectContent>
           </Select>
+          <SeriesPlannerDialog groups={groups} />
           <Button
             variant="ghost"
             size="icon"

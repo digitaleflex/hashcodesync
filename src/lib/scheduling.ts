@@ -51,7 +51,7 @@ type HeatmapData = {
   }[];
 };
 
-type CandSlot = {
+export type CandSlot = {
   day: number;
   startMin: number;
   endMin: number;
@@ -279,6 +279,66 @@ export function computeCoveragePercent(
   );
 }
 
+// rankedSlots : toutes les fenêtres candidates scorées (score composé V2-01),
+// non chevauchantes par jour via le WIS. Utilisé par computeScheduling et par
+// le planificateur de séries (#79). `bounds` évite un recalcul quand l'appelant
+// connaît déjà minHour/maxHour (comportement strictement identique).
+export function rankedSlots(
+  availabilities: SlotAvail[],
+  windowHours: number,
+  opts: {
+    scoreConfig?: ScoreConfig;
+    scoreContext?: import("@/lib/scoring").SlotScoreContext;
+    requiresMentor?: boolean;
+    capacity?: number | null;
+  } = {},
+  bounds?: { minHour: number; maxHour: number }
+): CandSlot[] {
+  let minHour = bounds?.minHour ?? 24;
+  let maxHour = bounds?.maxHour ?? -1;
+  if (!bounds) {
+    for (let day = 0; day < 7; day++) {
+      const members = availabilities.filter((a) => a.day === day);
+      if (members.length === 0) continue;
+      const hours = new Set<number>();
+      // Bornes dérivées des créneaux déclarés : même convention que la heatmap.
+      for (const m of members) {
+        for (let h = Math.floor(m.startMin / 60); h < Math.ceil(m.endMin / 60); h++) {
+          hours.add(h);
+        }
+      }
+      for (const h of hours) {
+        minHour = Math.min(minHour, h);
+        maxHour = Math.max(maxHour, h + 1);
+      }
+    }
+    if (minHour === 24) {
+      minHour = 8;
+      maxHour = 20;
+    }
+  }
+
+  const slots = candidateSlots(availabilities, windowHours * 60, minHour, maxHour);
+
+  const cfg =
+    opts.scoreConfig ??
+    configForTarget({ capacity: opts.capacity, requiresMentor: opts.requiresMentor });
+  for (const s of slots) {
+    const { score, breakdown } = computeSlotScore(
+      s.covering.map((c) => c.weight ?? 1),
+      {
+        ...(opts.scoreContext ?? {}),
+        mentorAvailable: opts.requiresMentor ? s.mentorCovered : opts.scoreContext?.mentorAvailable,
+        capacity: opts.capacity ?? opts.scoreContext?.capacity,
+      },
+      cfg
+    );
+    s.score = score;
+    s.breakdown = breakdown;
+  }
+  return slots;
+}
+
 // computeScheduling : pondère chaque dispo par `weight` (probabilité de présence)
 // et peut appliquer un lissage gaussien à la heatmap. Le pondéré sert au comptage
 // et à la sélection WIS ; `available` = somme attendue des présences.
@@ -321,30 +381,7 @@ export function computeScheduling(
     maxHour = 20;
   }
 
-  const windowMinutes = windowHours * 60;
-  const slots = candidateSlots(availabilities, windowMinutes, minHour, maxHour);
-
-  // Score composé multi-critères (V2-01). Avec la config par défaut le score
-  // reproduit exactement Σ pᵢ (test de parité) ; le WIS sélectionne sur `score`.
-  // Une cible mentor/capacité active les termes correspondants (issues #54/#55).
-  const cfg =
-    opts.scoreConfig ??
-    configForTarget({ capacity: opts.capacity, requiresMentor: opts.requiresMentor });
-  for (const s of slots) {
-    const { score, breakdown } = computeSlotScore(
-      s.covering.map((c) => c.weight ?? 1),
-      {
-        ...(opts.scoreContext ?? {}),
-        // Donnée de mentor uniquement quand la cible l'exige : sinon le terme
-        // mentorFit reste inactif (poids ET valeur = 0) — parité et UI claire.
-        mentorAvailable: opts.requiresMentor ? s.mentorCovered : opts.scoreContext?.mentorAvailable,
-        capacity: opts.capacity ?? opts.scoreContext?.capacity,
-      },
-      cfg
-    );
-    s.score = score;
-    s.breakdown = breakdown;
-  }
+  const slots = rankedSlots(availabilities, windowHours, opts, { minHour, maxHour });
 
   const selectedByDay: CandSlot[] = [];
   for (let day = 0; day < 7; day++) {

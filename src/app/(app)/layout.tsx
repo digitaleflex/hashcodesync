@@ -6,9 +6,8 @@ export default function AppLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <div className="min-h-screen">
-      <AppShell />
-      <main className="min-h-[calc(100vh-3.5rem)] pb-20 md:pb-0">{children}</main>
+    <div className="min-h-screen bg-[#FCFCFD]">
+      <AppShell>{children}</AppShell>
     </div>
   );
 }

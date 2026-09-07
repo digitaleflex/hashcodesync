@@ -53,9 +53,14 @@ export async function POST(req: NextRequest) {
     const weekStart = currentWeekStart();
 
     // Garde : on ne peut valider/dévalider que la semaine en cours.
-    if (!isCurrentWeek(weekStart)) {
+    const isCurrent = isCurrentWeek(weekStart);
+    if (!isCurrent) {
       return NextResponse.json(
-        { error: "Vous ne pouvez valider/dévalider que la semaine en cours." },
+        {
+          error: "Vous ne pouvez valider/dévalider que la semaine en cours.",
+          reason: "not_current_week",
+          currentWeekStart: currentWeekStart().toISOString(),
+        },
         { status: 403 }
       );
     }
@@ -68,10 +73,57 @@ export async function POST(req: NextRequest) {
     if (modificationCount >= MAX_VALIDATIONS_PER_WEEK) {
       return NextResponse.json(
         {
-          error: `Limite atteinte : vous ne pouvez modifier la validation que ${MAX_VALIDATIONS_PER_WEEK} fois par semaine.`,
+          error: `Limite de ${MAX_VALIDATIONS_PER_WEEK} modifications par semaine atteinte. Vous avez déjà effectué ${modificationCount} modification(s) cette semaine. Vous pourrez de nouveau valider la semaine prochaine (lundi).`,
+          reason: "modification_limit_reached",
+          modificationsUsed: modificationCount,
+          modificationsLimit: MAX_VALIDATIONS_PER_WEEK,
+          nextAvailableWeek: new Date(weekStart.getTime() + 7 * 24 * 3600 * 1000).toISOString(),
         },
         { status: 429 }
       );
+    }
+
+    // Vérifier que l'utilisateur a au moins un créneau (avant de créer le log).
+    if (validated) {
+      const availCount = await prisma.availability.count({
+        where: { userId: session.user.id },
+      });
+      if (availCount === 0) {
+        return NextResponse.json(
+          {
+            error: "Aucun créneau disponible. Vous devez d'abord renseignez vos disponibilités avant de valider la semaine.",
+            reason: "no_availabilities",
+          },
+          { status: 400 }
+        );
+      }
+
+      // Vérifier les chevauchements côté serveur (garde-fous supplémentaire).
+      const allAvails = await prisma.availability.findMany({
+        where: { userId: session.user.id },
+        orderBy: [{ day: "asc" }, { startTime: "asc" }],
+      });
+      const byDay = new Map<number, { start: string; end: string }[]>();
+      for (const a of allAvails) {
+        const arr = byDay.get(a.day) ?? [];
+        arr.push({ start: a.startTime, end: a.endTime });
+        byDay.set(a.day, arr);
+      }
+      for (const arr of byDay.values()) {
+        arr.sort((a, b) => a.start.localeCompare(b.start));
+        for (let i = 1; i < arr.length; i++) {
+          if (arr[i].start < arr[i - 1].end) {
+            return NextResponse.json(
+              {
+                error: "Chevauchement détecté : deux créneaux se superposent le même jour. Corrigez-les avant de valider.",
+                reason: "overlapping_slots",
+                day: arr[i].start,
+              },
+              { status: 400 }
+            );
+          }
+        }
+      }
     }
 
     // Journaliser l'action (avant l'exécution pour pouvoir compter même en cas d'erreur).

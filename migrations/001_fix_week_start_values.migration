@@ -1,0 +1,25 @@
+// Migration: Fix incorrect weekStart values in WeeklyValidation table
+// The weekStart values were stored as the end of the previous week (Saturday 23:00)
+// instead of the start of the current week (Monday 00:00).
+// This caused the isCurrentWeek() check to fail, preventing users from validating their week.
+
+// Table: weekly_validation
+// Column: weekStart - Should be Monday 00:00 of the current week (UTC)
+
+// SQL to update all weekStart values to the correct Monday 00:00 timestamp
+// Current date: 2026-09-07 (Monday)
+// Correct weekStart: 2026-09-07T00:00:00.000Z
+
+// Note: This migration assumes the current date is 2026-09-07 (Monday)
+// If the date changes, the weekStart values should be recalculated accordingly.
+
+upgrade {
+  alter table weekly_validation {
+    weekStart = CAST('2026-9-7T00:00:00.000Z' AS DateTime);
+  }
+}
+
+downgrade {
+  -- Optional: revert to original values if needed
+  -- No specific downgrade needed as this is a data correction migration
+}

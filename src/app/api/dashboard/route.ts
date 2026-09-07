@@ -52,14 +52,14 @@ export async function GET(req: NextRequest) {
           seriesId: true,
           createdAt: true,
           updatedAt: true,
-          creator: { select: { id: true, name: true, email: true } },
+          creator: { select: { id: true, name: true } },
           series: { select: { id: true, name: true } },
           participants: {
             select: {
               id: true,
               userId: true,
               status: true,
-              user: { select: { id: true, name: true, email: true } },
+              user: { select: { id: true, name: true } },
             },
           },
         },

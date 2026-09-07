@@ -23,16 +23,16 @@ const select = {
   requiresMentor: true,
   createdAt: true,
   updatedAt: true,
-  creator: { select: { id: true, name: true, email: true } },
+  creator: { select: { id: true, name: true } },
   series: { select: { id: true, name: true } },
-  mentee: { select: { id: true, name: true, email: true } },
+  mentee: { select: { id: true, name: true } },
   activity: { select: { id: true, name: true, type: true } },
   participants: {
     select: {
       id: true,
       userId: true,
       status: true,
-      user: { select: { id: true, name: true, email: true } },
+      user: { select: { id: true, name: true } },
     },
   },
 };

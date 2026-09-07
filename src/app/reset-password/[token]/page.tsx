@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter, useParams } from "next/navigation";
+import { useRouter, useParams, useSearchParams } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -13,7 +13,10 @@ import { Loader2Icon, KeyRoundIcon } from "lucide-react";
 export default function ResetPasswordPage() {
   const router = useRouter();
   const params = useParams<{ token: string }>();
-  const token = Array.isArray(params.token) ? params.token[0] : params.token;
+  const searchParams = useSearchParams();
+  const pathToken = Array.isArray(params.token) ? params.token[0] : params.token;
+  const queryToken = searchParams.get("token");
+  const token = pathToken || queryToken;
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [submitting, setSubmitting] = useState(false);

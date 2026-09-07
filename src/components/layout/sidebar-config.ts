@@ -1,9 +1,6 @@
-import { type Route } from "next";
-
 export interface NavItem {
-  href: Route;
+  href: string;
   label: string;
-  /** Nom de l'icône (correspond aux clés de ICON_MAP dans Sidebar) */
   icon: string;
   desc: string;
   exact?: boolean;

@@ -50,7 +50,7 @@ const ROLE_LABELS: Record<string, string> = {
   admin: "Administrateur",
 };
 
-export function AppShell() {
+export function AppShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
   const { data } = authClient.useSession();
@@ -279,6 +279,7 @@ export function AppShell() {
       </header>
 
       <MobileBottomNav userRole={user?.role} />
+      {children}
     </>
   );
 }

@@ -135,34 +135,39 @@ export async function POST(req: NextRequest) {
     overlapWhere.activityId = null;
   }
 
-  const existing = await prisma.availability.findMany({
-    where: overlapWhere,
-  });
-  const overlaps = existing.some(
-    (a) => startTime < a.endTime && endTime > a.startTime
-  );
-  if (overlaps) {
-    return NextResponse.json(
-      { error: "Ce créneau chevauche une disponibilité existante" },
-      { status: 409 }
-    );
-  }
+  try {
+      const [existing, newAvailability] = await prisma.$transaction([
+        prisma.availability.findMany({ where: overlapWhere }),
+        prisma.availability.create({
+          data: {
+            userId: session.user.id,
+            day,
+            startTime,
+            endTime,
+            groupId,
+            activityId,
+            recurring,
+          },
+          include: {
+            group: { select: { id: true, name: true } },
+            activity: { select: { id: true, name: true } },
+          },
+      }));
 
-  const created = await prisma.availability.create({
-    data: {
-      userId: session.user.id,
-      day,
-      startTime,
-      endTime,
-      groupId,
-      activityId,
-      recurring,
-    },
-    include: {
-      group: { select: { id: true, name: true } },
-      activity: { select: { id: true, name: true } },
-    },
-  });
+      const overlaps = existing.some(
+        (a) => startTime < a.endTime && endTime > a.startTime
+      );
+      if (overlaps) {
+        throw new Error("Ce créneau chevauche une disponibilité existante");
+      }
 
-  return NextResponse.json(created, { status: 201 });
+      // No overlaps - transaction committed, return created availability
+      return NextResponse.json(newAvailability, { status: 201 });
+    } catch (transactionError) {
+      // Transaction was rejected (overlap detected) - Prisma rolled back changes
+      return NextResponse.json(
+        { error: "Ce créneau chevauche une disponibilité existante" },
+        { status: 409 }
+      );
+    }
 }

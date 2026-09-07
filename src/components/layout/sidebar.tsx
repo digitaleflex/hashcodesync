@@ -53,12 +53,12 @@ export function Sidebar({ className, spaceKey }: { className?: string; spaceKey:
   return (
     <aside
       className={cn(
-        "flex w-64 shrink-0 flex-col border-r bg-white shadow-sm",
+        "flex w-64 shrink-0 flex-col border-r shadow-sm",
         className
       )}
       aria-label={`Navigation ${config.title}`}
     >
-      <div className="px-4 py-4 border-b bg-gray-50">
+      <div className="px-4 py-4 border-b bg-[var(--card)]">
         <div className="flex items-center gap-3">
           <div className="flex size-9 items-center justify-center rounded-lg bg-primary/10 text-primary">
             {(() => {
@@ -66,10 +66,10 @@ export function Sidebar({ className, spaceKey }: { className?: string; spaceKey:
               return BrandIcon ? <BrandIcon className="size-5" /> : null;
             })()}
           </div>
-          <div>
-            <p className="text-xs font-bold tracking-widest uppercase text-primary">{config.title}</p>
-            <p className="text-sm font-semibold leading-none text-slate-900">{config.subtitle}</p>
-          </div>
+<div>
+  <p className="text-xs font-bold tracking-widest uppercase text-primary">{config.title}</p>
+  <p className="text-sm font-semibold leading-none text-white/90">{config.subtitle}</p>
+</div>
         </div>
         <p className="mt-1 text-xs text-muted-foreground">{config.description}</p>
       </div>

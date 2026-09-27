@@ -53,7 +53,13 @@ services:
     container_name: hashcodesync_db
     restart: unless-stopped
     ports:
-      - "5433:5432"
+      # ⚠️ Bind sur la boucle locale UNIQUEMENT. Ce port etait publie sur
+      # 0.0.0.0, donc PostgreSQL etait joignable depuis Internet sur
+      # 72.61.90.216:5433. hashcodesync_app n'utilise pas ce port : sa
+      # DATABASE_URL pointe sur db:5432 via le reseau Docker interne
+      # (voir service 'app' plus haut). Seul un acces depuis l'hote
+      # (psql, .env en localhost:5433) depend de cette publication.
+      - "127.0.0.1:5433:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-hcode_prod_usr}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
